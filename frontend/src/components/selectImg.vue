@@ -4,7 +4,7 @@
 
 <template>
     <div>
-        <p>230727 test from main branch</p>
+        <p>累死了快發瘋</p>
         <!-- <p>now show: {{ props.imgNum }}</p> -->
         <button @click="$emit('prevImg')">Prev</button>
         <button @click="$emit('nextImg')">Next</button>
