@@ -31,6 +31,8 @@ def get_files_from_google_drive():
         print("找到以下檔案:")
         for file in files:
             print(f"檔案名稱: {file['name']}, 檔案 ID: {file['id']}, MIME 類型: {file['mimeType']}")
+            download_url = f"https://drive.google.com/uc?id={file['id']}"
+            print(f"下載連結: {download_url}")
 
 if __name__ == "__main__":
     get_files_from_google_drive()
