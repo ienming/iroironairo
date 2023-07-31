@@ -13,7 +13,6 @@ def get_database():
    db_password = config['db_password']
    # Provide the mongodb atlas url to connect python to mongodb using pymongo
    CONNECTION_STRING = "mongodb+srv://"+db_username+":"+db_password+"@mycluster.uhrwact.mongodb.net/?retryWrites=true&w=majority"
-   # CONNECTION_STRING = "mongodb+srv://root:root123@mycluster.uhrwact.mongodb.net/?retryWrites=true&w=majority"
  
    # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
    client = MongoClient(CONNECTION_STRING, tlsCAFile=certifi.where())
