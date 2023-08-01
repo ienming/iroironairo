@@ -38,6 +38,7 @@ def get_files_from_google_drive():
                 "url": download_url
             }
             files_list.append(dict)
+            print(dict)
             # print(f"檔案名稱: {file['name']}, 檔案 ID: {file['id']}, MIME 類型: {file['mimeType']}")
             # print(f"下載連結: {download_url}")
     return files_list
