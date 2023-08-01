@@ -1,7 +1,7 @@
 import piexif
 
 # 讀取轉存的 JPG 檔案的 EXIF 資訊
-jpeg_path = "example.jpg"
+jpeg_path = "./output/F26CC8AC-CFB8-44CE-8EA9-3AD7D64B88A4.jpg"
 exif_dict = piexif.load(jpeg_path)
 
 # 檢視 EXIF 資訊中的拍攝日期
