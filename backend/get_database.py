@@ -7,7 +7,7 @@ def get_database_config():
         config = json.load(f)
     return config
 
-def get_database():
+def get_database(dbName):
    config = get_database_config()
    db_username = config['db_username']
    db_password = config['db_password']
@@ -16,7 +16,7 @@ def get_database():
  
    # Create a connection using MongoClient. You can import MongoClient or use pymongo.MongoClient
    client = MongoClient(CONNECTION_STRING, tlsCAFile=certifi.where())
-   db = client.test
+   db = client[dbName]
    return db
 
 # This is added so that many files can reuse the function get_database()

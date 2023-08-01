@@ -1,6 +1,6 @@
 from flask import *
 from get_database import get_database
-# db = get_database()
+# db = get_database('test')
 # collections = db.list_collection_names()
 
 app = Flask(
