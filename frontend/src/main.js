@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import router from './router';
 
 import './assets/main.css'
 
@@ -7,4 +8,8 @@ import './assets/main.css'
 import mitt from 'mitt';
 export const eventBus = mitt();
 
-createApp(App).mount('#app')
+// 使用 Vue Router
+const app = createApp(App);
+app.use(router);
+
+createApp(app).mount('#app')
