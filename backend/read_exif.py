@@ -18,6 +18,7 @@ def read_exif(name):
             exif_data['date'] = date_time_original.split()[0]
             exif_data['time'] = date_time_original.split()[1]
 
+    # print(exif_data)
     return exif_data
 
 if __name__ == "__main__":

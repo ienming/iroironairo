@@ -1,6 +1,6 @@
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
-import random, os
+import os
 
 # API_KEY = "AIzaSyCNHtgh8KrjRg8FXVRbB39JFpOZdiZ3QKw"
 SERVICE_ACCOUNT_FILE = "../key/iroironairo-087af1abad0e.json"
@@ -20,30 +20,37 @@ def get_files_from_google_drive():
     query = f"'{folder_id}' in parents and trashed=false"
 
     # 取得資料夾下的所有檔案
-    results = service.files().list(q=query,
-                                   fields="files(id, name, mimeType)").execute()
-    files = results.get('files', [])
-    # 測試，隨機取得兩個檔案
-    # files = random.sample(results.get('files', []), 2)
+    page_token = None
+    all_files = []
+    while True:
+        results = service.files().list(q=query,
+                                        fields="nextPageToken, files(id, name, mimeType, webViewLink)",
+                                        pageToken=page_token).execute()
+        files = results.get('files', [])
+        # 測試，隨機取得兩個檔案
+        # files = random.sample(results.get('files', []), 2)
+        
+        if not files:
+            print("找不到任何檔案.")
+        else:
+            print("找到以下檔案:")
+            for file in files:
+                download_url = f"https://drive.google.com/uc?id={file['id']}"
+                dict = {
+                    "name": os.path.splitext(file['name'])[0],
+                    "id": file['id'],
+                    "type": file['mimeType'],
+                    "url": download_url
+                }
+                all_files.append(dict)
+                print(dict)
+                # print(f"檔案名稱: {file['name']}, 檔案 ID: {file['id']}, MIME 類型: {file['mimeType']}")
+                # print(f"下載連結: {download_url}")
+        page_token = results.get('nextPageToken')
+        if not page_token:
+            break
 
-    files_list = []
-    if not files:
-        print("找不到任何檔案.")
-    else:
-        print("找到以下檔案:")
-        for file in files:
-            download_url = f"https://drive.google.com/uc?id={file['id']}"
-            dict = {
-                "name": os.path.splitext(file['name'])[0],
-                "id": file['id'],
-                "type": file['mimeType'],
-                "url": download_url
-            }
-            files_list.append(dict)
-            print(dict)
-            # print(f"檔案名稱: {file['name']}, 檔案 ID: {file['id']}, MIME 類型: {file['mimeType']}")
-            # print(f"下載連結: {download_url}")
-    return files_list
+    return all_files
 
 if __name__ == "__main__":
     get_files_from_google_drive()
