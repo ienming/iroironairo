@@ -1,5 +1,4 @@
-<script setup>
-  import {ref, provide} from 'vue'
+<script>
 </script>
 
 <template>

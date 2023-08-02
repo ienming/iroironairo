@@ -1,4 +1,3 @@
-import * as Vue from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import Frontend from "./views/Frontend.vue";
 import Backend from "./views/Backend.vue";

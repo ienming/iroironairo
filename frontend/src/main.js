@@ -1,6 +1,6 @@
-import { createApp } from 'vue'
+import { createApp, defineAsyncComponent } from 'vue'
 import App from './App.vue'
-import router from './router';
+// import router from './router';
 
 import './assets/main.css'
 
@@ -8,8 +8,22 @@ import './assets/main.css'
 import mitt from 'mitt';
 export const eventBus = mitt();
 
-// 使用 Vue Router
+
+import { createRouter, createWebHistory } from "vue-router";
+import Frontend from "./views/Frontend.vue";
+import Backend from "./views/Backend.vue";
+
+const routes = [
+  { path: "/", component: Frontend },
+//   { path: "/backend", component: defineAsyncComponent(() => import("./views/Backend.vue")) },
+];
+
+const router = createRouter({
+  history: createWebHistory("/iroironairo/"),
+  routes,
+});
+
 const app = createApp(App);
 app.use(router);
 
-createApp(app).mount('#app')
+app.mount('#app')
