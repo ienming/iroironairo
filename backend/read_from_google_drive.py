@@ -53,4 +53,5 @@ def get_files_from_google_drive():
     return all_files
 
 if __name__ == "__main__":
-    get_files_from_google_drive()
+    files = get_files_from_google_drive()
+    print(F"從 Google Drive 取得 {len(files)} 筆資料")

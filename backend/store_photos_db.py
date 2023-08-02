@@ -7,6 +7,7 @@ collection = db.photos
 files = get_files_from_google_drive()
 print(F"從 Google Drive 取得 {len(files)} 筆資料")
 
+count = 0
 for file in files:
     exif_data = read_exif(file['name'])
 
@@ -22,6 +23,8 @@ for file in files:
     else:
         collection.insert_one(file)
         print(f"已插入資料: {file}")
+    print(f"目前已經儲存／更新{count}筆資料")
+    count+=1
 
 # if __name__ == "__main__":
 #     file = {'name': 'IMG_7274', 'id': '1etu4Ic_b-9ylWEOwDpP4nplesEsIRAyj', 'type': 'image/jpeg', 'url': 'https://drive.google.com/uc?id=1etu4Ic_b-9ylWEOwDpP4nplesEsIRAyj'}
