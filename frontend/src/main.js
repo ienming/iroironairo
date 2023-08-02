@@ -15,7 +15,7 @@ import Backend from "./views/Backend.vue";
 
 const routes = [
   { path: "/", component: Frontend },
-//   { path: "/backend", component: defineAsyncComponent(() => import("./views/Backend.vue")) },
+  { path: "/backend", component: Backend },
 ];
 
 const router = createRouter({

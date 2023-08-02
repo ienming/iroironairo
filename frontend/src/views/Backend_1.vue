@@ -1,50 +1,47 @@
 <script setup>
-  // import p5Canvas from '../components/p5Canvas.vue'
-  // import selectImg from '../components/selectImg.vue';
-  // import viewImg from '../components/viewImg.vue';
-  // import selectScale from '../components/selectScale.vue';
-  // import selectOrder from '../components/selectOrder.vue';
-  // import showMainColor from '../components/showMainColor.vue';
-  // import showData from '../components/showData.vue';
+  import p5Canvas from '../components/p5Canvas.vue'
+  import selectImg from '../components/selectImg.vue';
+  import viewImg from '../components/viewImg.vue';
+  import selectScale from '../components/selectScale.vue';
+  import selectOrder from '../components/selectOrder.vue';
+  import showMainColor from '../components/showMainColor.vue';
+  import showData from '../components/showData.vue';
   import {ref, provide} from 'vue'
   import axios from 'axios'
 
-  // const sampling = ref(20)
-  // const order = ref('lightness')
-  // provide('sampling', sampling)
-  // provide('order', order)
-  // const imgNum = ref(1)
-  // const photoNum = 18
+  const sampling = ref(20)
+  const order = ref('lightness')
+  provide('sampling', sampling)
+  provide('order', order)
+  const imgNum = ref(1)
+  const photoNum = 18
 
-  // function prevImg(){
-  //   if (imgNum.value > 1){
-  //     imgNum.value--
-  //   }else{imgNum.value = photoNum}
-  // }
+  function prevImg(){
+    if (imgNum.value > 1){
+      imgNum.value--
+    }else{imgNum.value = photoNum}
+  }
 
-  // function nextImg(){
-  //   if (imgNum.value < photoNum){
-  //     imgNum.value ++
-  //   }else{
-  //     imgNum.value = 1
-  //   }
-  // }
+  function nextImg(){
+    if (imgNum.value < photoNum){
+      imgNum.value ++
+    }else{
+      imgNum.value = 1
+    }
+  }
 
-  // function randomImg(){
-  //   let [max, min] = [photoNum,1];
-  //   imgNum.value = Math.floor(Math.random() * (max - min) + min)
-  // }
+  function randomImg(){
+    let [max, min] = [photoNum,1];
+    imgNum.value = Math.floor(Math.random() * (max - min) + min)
+  }
 
   // 0802
   // fetch photos data from db through API
-  const dataLoading = ref(true)
-  const data = ref([])
   const API_URL = 'http://127.0.0.1:3000'
   axios.get(`${API_URL}/fetch_all_photos`)
     .then((response) => {
       // 處理後端回傳的資料
-      data.value = response.data
-      dataLoading.value = false
+      console.log(response.data);
     })
     .catch((error) => {
       // 處理錯誤
@@ -54,16 +51,7 @@
 
 <template>
   <main>
-    <h1>Hello 後台頁面</h1>
-    <div>
-      <p v-if="dataLoading">載入中...</p>
-      <div v-else>
-        <p v-for="d of data" :key="d.id">
-          {{ d }}
-        </p>
-      </div>
-    </div>
-    <!-- <p5Canvas :imgNum="imgNum"/>
+    <p5Canvas :imgNum="imgNum"/>
     <section id="descripPanel">
       <viewImg :img-num="imgNum"/>
       <showMainColor :img-num="imgNum"/>
@@ -73,7 +61,7 @@
       <selectScale/>
       <selectOrder/>
       <selectImg :img-num="imgNum" @prev-img="prevImg" @next-img="nextImg" @random-img="randomImg" />
-    </aside> -->
+    </aside>
   </main>
 </template>
 
