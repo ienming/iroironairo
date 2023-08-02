@@ -8,7 +8,6 @@ import glob
 
 register_heif_opener()
 
-
 heic_folder = "origin"
 jpeg_folder = "output"
 

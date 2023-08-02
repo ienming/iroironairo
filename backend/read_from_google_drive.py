@@ -1,5 +1,6 @@
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
+import random, os
 
 # API_KEY = "AIzaSyCNHtgh8KrjRg8FXVRbB39JFpOZdiZ3QKw"
 SERVICE_ACCOUNT_FILE = "../key/iroironairo-087af1abad0e.json"
@@ -9,7 +10,6 @@ credentials = service_account.Credentials.from_service_account_file(
     scopes=["https://www.googleapis.com/auth/drive"]  # 設定所需的 API 權限
 )
 
-
 def get_files_from_google_drive():
     # 建立 Google Drive API 的 service 物件
     # service = build("drive", "v3", developerKey=API_KEY)
@@ -17,12 +17,14 @@ def get_files_from_google_drive():
 
     # 要取得資料的 Google Drive 資料夾 ID（這裡使用根目錄的 ID）
     folder_id = "1kg5sdAeTw5alEIpxO9tK1mH_dYkmBYcn"
+    query = f"'{folder_id}' in parents and trashed=false"
 
     # 取得資料夾下的所有檔案
-    results = service.files().list(q=f"'{folder_id}' in parents and trashed=false",
+    results = service.files().list(q=query,
                                    fields="files(id, name, mimeType)").execute()
     files = results.get('files', [])
-
+    # 測試，隨機取得兩個檔案
+    # files = random.sample(results.get('files', []), 2)
 
     files_list = []
     if not files:
@@ -32,7 +34,7 @@ def get_files_from_google_drive():
         for file in files:
             download_url = f"https://drive.google.com/uc?id={file['id']}"
             dict = {
-                "name": file['name'],
+                "name": os.path.splitext(file['name'])[0],
                 "id": file['id'],
                 "type": file['mimeType'],
                 "url": download_url
