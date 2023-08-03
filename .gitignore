@@ -4,4 +4,5 @@ key/
 data-process/origin/
 data-process/output/
 frontend/src/assets/photos
+frontend/dist
 .vscode
