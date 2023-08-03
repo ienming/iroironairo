@@ -58,9 +58,14 @@
     <div>
       <p v-if="dataLoading">載入中...</p>
       <div v-else>
-        <p v-for="d of data" :key="d.id">
-          {{ d }}
-        </p>
+        <div v-for="d of data" :key="d.id">
+        <router-link :to="{
+          path: '/operator_edit',
+          query: {
+            name: d.name
+          }}">前往後台編輯頁面</router-link>
+          <p>{{ d }}</p>
+        </div>
       </div>
     </div>
     <!-- <p5Canvas :imgNum="imgNum"/>

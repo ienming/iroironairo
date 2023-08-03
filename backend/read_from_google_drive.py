@@ -40,7 +40,7 @@ def get_files_from_google_drive():
                     "name": os.path.splitext(file['name'])[0],
                     "id": file['id'],
                     "type": file['mimeType'],
-                    "url": download_url
+                    "url_google": download_url
                 }
                 all_files.append(dict)
                 print(dict)

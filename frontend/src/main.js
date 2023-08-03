@@ -4,18 +4,20 @@ import App from './App.vue'
 
 import './assets/main.css'
 
-// gloval event
-import mitt from 'mitt';
-export const eventBus = mitt();
+// // Global event
+// import mitt from 'mitt';
+// export const eventBus = mitt();
 
-
+// Setting routers
 import { createRouter, createWebHistory } from "vue-router";
-import Frontend from "./views/Frontend.vue";
-import Backend from "./views/Backend.vue";
+import User from "./views/User.vue";
+import OperatorIndex from "./views/Operator/index.vue";
+import OperatorEdit from "./views/Operator/edit.vue"
 
 const routes = [
-  { path: "/", component: Frontend },
-  { path: "/backend", component: Backend },
+  { path: "/", component: User },
+  { path: "/operator", component: OperatorIndex },
+  { path: "/operator_edit", component: OperatorEdit },
 ];
 
 const router = createRouter({
@@ -23,6 +25,7 @@ const router = createRouter({
   routes,
 });
 
+// Mount
 const app = createApp(App);
 app.use(router);
 

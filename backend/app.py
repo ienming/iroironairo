@@ -17,7 +17,22 @@ def index():
 def fetch_all_photos():
     db = get_database('exchange_japan')
     collection = db.photos
-    data = list(collection.find({}, {"_id": 0}))
+    data = list(collection.find({}, {"_id": 0}).limit(10))
+    return jsonify(data)
+
+@app.route("/fetch_photo/", methods=['GET'])
+def fetch_photo():
+    name = request.args.get('name')
+    print(f"Received name parameter: {name}")
+
+    db = get_database('exchange_japan')
+    collection = db.photos
+    data = collection.find_one({'name': name}, {"_id": 0})
+    print(f"Result from database: {data}")
+
+    if data is None:
+        # 如果找不到對應的照片資料，回傳 404 錯誤
+        return jsonify({'error': 'Photo not found'}), 404
     return jsonify(data)
 
 if __name__ == "__main__":
