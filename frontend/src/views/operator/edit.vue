@@ -71,7 +71,7 @@
             <p v-if="photoLoading">Loading photo...</p>
             <div v-else>
                 <p>{{ photo.name }}</p>
-                <img :src="photo.url" alt="" class="photo"/>
+                <img :src="photo.url_google" alt="" class="photo"/>
                 <p>Image shot date: {{ photo.date }}</p>
                 <p>Image shot time: {{ photo.time }}</p>
             </div>

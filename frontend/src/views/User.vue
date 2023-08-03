@@ -10,6 +10,9 @@
 </template>
 
 <style scoped>
+img{
+  max-width: 500px;
+}
 .logo {
   display: block;
   margin: 0 auto 2rem;
