@@ -9,7 +9,7 @@ import './assets/main.css'
 // export const eventBus = mitt();
 
 // Setting routers
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import User from "./views/User.vue";
 import OperatorIndex from "./views/Operator/index.vue";
 import OperatorEdit from "./views/Operator/edit.vue"
@@ -21,7 +21,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory("/iroironairo/"),
+  history: createWebHashHistory("/iroironairo/"),
   routes,
 });
 

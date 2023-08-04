@@ -1,84 +1,107 @@
 <script setup>
-  import p5Canvas from '../../components/p5Canvas.vue'
-  // import selectImg from '../components/selectImg.vue';
-  // import viewImg from '../components/viewImg.vue';
-  // import selectScale from '../components/selectScale.vue';
-  // import selectOrder from '../components/selectOrder.vue';
-  // import showMainColor from '../components/showMainColor.vue';
-  // import showData from '../components/showData.vue';
-  import {ref, provide, onMounted} from 'vue'
+import p5Canvas from '../../components/p5Canvas.vue'
+// import selectImg from '../components/selectImg.vue';
+// import viewImg from '../components/viewImg.vue';
+// import selectScale from '../components/selectScale.vue';
+// import selectOrder from '../components/selectOrder.vue';
+// import showMainColor from '../components/showMainColor.vue';
+// import showData from '../components/showData.vue';
+import { ref, onMounted } from 'vue'
 
-  // const sampling = ref(20)
-  // const order = ref('lightness')
-  // provide('sampling', sampling)
-  // provide('order', order)
-  // const imgNum = ref(1)
-  // const photoNum = 18
+let mainColors = ref({})
+function showMainColors(colors){
+  let obj = {}, arr = []
+  colors.forEach(c => {
+    obj.h = Math.floor(c.color[0])
+    obj.s = Math.floor(c.color[1])
+    obj.l = Math.floor(c.color[2])
+    arr.push(obj)
+    obj = {}
+  })
+  mainColors.value = arr
+}
 
-  // function prevImg(){
-  //   if (imgNum.value > 1){
-  //     imgNum.value--
-  //   }else{imgNum.value = photoNum}
-  // }
+// const sampling = ref(20)
+// const order = ref('lightness')
+// provide('sampling', sampling)
+// provide('order', order)
+// const imgNum = ref(1)
+// const photoNum = 18
 
-  // function nextImg(){
-  //   if (imgNum.value < photoNum){
-  //     imgNum.value ++
-  //   }else{
-  //     imgNum.value = 1
-  //   }
-  // }
+// function prevImg(){
+//   if (imgNum.value > 1){
+//     imgNum.value--
+//   }else{imgNum.value = photoNum}
+// }
 
-  // function randomImg(){
-  //   let [max, min] = [photoNum,1];
-  //   imgNum.value = Math.floor(Math.random() * (max - min) + min)
-  // }
+// function nextImg(){
+//   if (imgNum.value < photoNum){
+//     imgNum.value ++
+//   }else{
+//     imgNum.value = 1
+//   }
+// }
+
+// function randomImg(){
+//   let [max, min] = [photoNum,1];
+//   imgNum.value = Math.floor(Math.random() * (max - min) + min)
+// }
 //   ---------------------------------------編輯的功能 0803----------------
-    import { useRoute } from 'vue-router';
-    import axios from 'axios'
-    const route = useRoute();
+import { useRoute } from 'vue-router';
+import axios from 'axios'
+const route = useRoute();
 
-    const photo = ref({})
-    const photoLoading = ref(true)
-    function getPhoto(){
-        const API_URL = 'http://127.0.0.1:3000'
-        axios.get(`${API_URL}/fetch_photo/`, {
-            params: {
-                name: route.query.name
-            }
-        })
-        .then((response) => {
-            // 處理後端回傳的資料
-            photo.value = response.data
-            photoLoading.value = false
-        })
-        .catch((error) => {
-            // 處理錯誤
-            console.error(error);
-        });
+const photo = ref({})
+const photoLoading = ref(true)
+function getPhoto() {
+  const API_URL = 'http://127.0.0.1:3000'
+  axios.get(`${API_URL}/fetch_photo/`, {
+    params: {
+      name: route.query.name
     }
-
-    onMounted(()=>{
-        getPhoto()
+  })
+    .then((response) => {
+      // 處理後端回傳的資料
+      console.log(response)
+      photo.value = response.data
+      photoLoading.value = false
     })
+    .catch((error) => {
+      // 處理錯誤
+      console.error(error);
+    });
+}
+
+onMounted(() => {
+  getPhoto()
+})
 </script>
 
 <template>
-    <div class="wrapper">
-        <aside>
-            <h1>Hihihi 編輯頁面</h1>
-            <h2>照片：{{ route.query.name }}</h2>
-            <p v-if="photoLoading">Loading photo...</p>
-            <div v-else>
-                <p>{{ photo.name }}</p>
-                <img :src="photo.url_google" alt="" class="photo"/>
-                <p>Image shot date: {{ photo.date }}</p>
-                <p>Image shot time: {{ photo.time }}</p>
-            </div>
-        </aside>
-        <main>
-            <p5Canvas :photo-name="route.query.name"/>
-            <!-- <section id="descripPanel">
+  <div class="wrapper">
+    <aside>
+      <h1>後台編輯頁面</h1>
+      <h2>照片：{{ route.query.name }}</h2>
+      <p v-if="photoLoading">Loading photo...</p>
+      <div v-else>
+        <img :src="photo.url_google" alt="" class="photo" />
+        <p>Image shot date: {{ photo.date }}</p>
+        <p>Image shot time: {{ photo.time }}</p>
+        <div class="d-flex">
+          <div :style="{ 'background-color': 'hsl('+color.h+','+color.s+'%,'+color.l+'%)'}"
+          class="main-cs"
+          v-for="color of mainColors"></div>
+        </div>
+        <form action="">
+          <textarea name="description" id="" cols="30" rows="10"></textarea>
+          <button>Submit</button>
+        </form>
+      </div>
+    </aside>
+    <main>
+      <p5Canvas :photo-name="route.query.name"
+      @main-colors-handler="showMainColors"/>
+      <!-- <section id="descripPanel">
                 <viewImg :img-num="imgNum"/>
                 <showMainColor :img-num="imgNum"/>
                 <showData />
@@ -88,8 +111,8 @@
                 <selectOrder/>
                 <selectImg :img-num="imgNum" @prev-img="prevImg" @next-img="nextImg" @random-img="randomImg" />
             </aside> -->
-        </main>
-    </div>
+    </main>
+  </div>
 </template>
 
 <style scoped>
@@ -98,7 +121,20 @@ header {
 }
 
 .photo {
-    max-width: 300px;
+  max-width: 300px;
+}
+
+.main-cs{
+  height: 30px;
+  width: 30px;
+  margin: 0 3px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all .5s ease
+}
+
+.main-cs:hover{
+  opacity: .5;
 }
 
 #descripPanel {
@@ -146,7 +182,8 @@ header {
     flex-wrap: wrap;
   }
 }
-.wrapper{
-    display: flex;
+
+.wrapper {
+  display: flex;
 }
 </style>

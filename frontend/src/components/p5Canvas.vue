@@ -1,11 +1,11 @@
 <script setup>
-import { watch, inject, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { eventBus } from '../eventbus.js'
-import axios from 'axios'
 
 let [draw, sample, reorder, findMainColor, data, mainCs] = [undefined, undefined, undefined, undefined, undefined, []]
 
 const props = defineProps(['photoName'])
+const emit = defineEmits(['main-colors-handler'])
 
 // 測試用 hardcode
 const sampling = ref(20)
@@ -17,17 +17,17 @@ const nowOrder = ref('lightness')
 //   sample()
 // })
 
-// // temporary Data to be interactive
+// Change sampling number
 // const sampling = inject('sampling')
 // watch(sampling, (newValue, oldValue)=>{
-//   // console.log("p5: imgNum sampling changed to "+newValue.imgNum)
 //   sample()
 //   reorder()
 //   draw()
 // })
+
+// Change order by
 // const nowOrder = inject('order')
 // watch(nowOrder, (newValue, oldValue)=>{
-//   // console.log("p5: imgNum nowOrder changed to "+newValue.imgNum)
 //   reorder()
 //   draw()
 // })
@@ -51,23 +51,23 @@ const script = function (p5) {
   };
 
   // draw
-  draw = function(){
+  draw = function () {
     // clear
     p5.clear()
     p5.noStroke()
     // draw
-    for (let i=0; i<cs.length; i++){
+    for (let i = 0; i < cs.length; i++) {
       p5.fill(cs[i].r, cs[i].g, cs[i].b)
-      p5.rect(0, i*window.innerHeight/cs.length, canvasW, window.innerHeight/cs.length)
+      p5.rect(0, i * window.innerHeight / cs.length, canvasW, window.innerHeight / cs.length)
     }
   };
 
   // sampling color
-  sample = function(){
+  sample = function () {
     // clear cs
     cs.length = 0
     p5.loadImage(new URL(`../assets/photos/${props.photoName}.jpg`, import.meta.url).href,
-      img=>{
+      img => {
         p5.image(
           img,
           0,
@@ -113,7 +113,7 @@ const script = function (p5) {
     )
   }
 
-  reorder = function(){
+  reorder = function () {
     // reorder cs
     switch (nowOrder.value) {
       case "hue":
@@ -136,7 +136,7 @@ const script = function (p5) {
     // console.log(cs);
   }
 
-  findMainColor = function(){
+  findMainColor = function () {
     mainCs = []
     // start sampling
     for (let i = 0; i < 100; i++) {
@@ -152,28 +152,32 @@ const script = function (p5) {
         let threshold = 10
         let temp = mainCs.find((el) => {
           return Math.abs(el.color[0] - h) <= threshold &&
-          Math.abs(el.color[1] - s) <= threshold*3 &&
-          Math.abs(el.color[2] - l) <= threshold*4;
+            Math.abs(el.color[1] - s) <= threshold * 3 &&
+            Math.abs(el.color[2] - l) <= threshold * 4;
         });
 
         if (!temp) {
-            mainCs.push({ color: [h, s, l], amount: 1});  
+          mainCs.push({ color: [h, s, l], amount: 1 });
         } else {
-            temp.amount += 1; 
+          temp.amount += 1;
         }
       }
     }
     mainCs = mainCs.sort((a, b) => b.amount - a.amount)
-    if (mainCs.length > 5){
+    if (mainCs.length > 5) {
       mainCs.length = 5
     }
     console.log('find main colors')
     console.log(mainCs)
+    // Send colors to other components
     eventBus.emit('main-colors-evt', mainCs);
+    emit('main-colors-handler', mainCs)
   }
 };
 
-new p5(script)
+onMounted(() => {
+  new p5(script)
+})
 </script>
 
 <template>
