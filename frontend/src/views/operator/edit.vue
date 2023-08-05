@@ -120,7 +120,10 @@ onMounted(() => {
         <form action="">
           <textarea name="description" id="" cols="30" rows="10"
           v-model="description" placeholder="寫一些說明"></textarea>
-          <button @click.prevent="sendData">Submit</button>
+          <!-- <button @click.prevent="sendData">Submit</button> -->
+          <v-btn @click.prevent="sendData">
+            Submit
+          </v-btn>
         </form>
       </div>
     </aside>
