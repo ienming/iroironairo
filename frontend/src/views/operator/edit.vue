@@ -49,12 +49,12 @@ function showMainColors(colors){
 //   ---------------------------------------編輯的功能 0803----------------
 import { useRoute } from 'vue-router';
 import axios from 'axios'
+const API_URL = 'http://127.0.0.1:3000'
 const route = useRoute();
 
 const photo = ref({})
 const photoLoading = ref(true)
 function getPhoto() {
-  const API_URL = 'http://127.0.0.1:3000'
   axios.get(`${API_URL}/fetch_photo/`, {
     params: {
       name: route.query.name
@@ -65,6 +65,27 @@ function getPhoto() {
       console.log(response)
       photo.value = response.data
       photoLoading.value = false
+    })
+    .catch((error) => {
+      // 處理錯誤
+      console.error(error);
+    });
+}
+
+
+// Send data
+const description = ref("")
+function sendData(){
+  console.log("Send data to backend")
+  console.log(description.value, mainColors.value, photo.value.name)
+  axios.post(`${API_URL}/update_photo/`, {
+    name: photo.value.name,
+    description: description.value,
+    colors: mainColors.value
+  })
+    .then((response) => {
+      // 處理後端回傳的資料
+      console.log(response)
     })
     .catch((error) => {
       // 處理錯誤
@@ -85,6 +106,7 @@ onMounted(() => {
       <p v-if="photoLoading">Loading photo...</p>
       <div v-else>
         <img :src="photo.url_google" alt="" class="photo" />
+        <p>Description: {{ description }}</p>
         <p>Image shot date: {{ photo.date }}</p>
         <p>Image shot time: {{ photo.time }}</p>
         <div class="d-flex">
@@ -93,13 +115,15 @@ onMounted(() => {
           v-for="color of mainColors"></div>
         </div>
         <form action="">
-          <textarea name="description" id="" cols="30" rows="10"></textarea>
-          <button>Submit</button>
+          <textarea name="description" id="" cols="30" rows="10"
+          v-model="description" placeholder="寫一些說明"></textarea>
+          <button @click.prevent="sendData">Submit</button>
         </form>
       </div>
     </aside>
     <main>
       <p5Canvas :photo-name="route.query.name"
+      :canvas-width="300" :canvas-height="400"
       @main-colors-handler="showMainColors"/>
       <!-- <section id="descripPanel">
                 <viewImg :img-num="imgNum"/>

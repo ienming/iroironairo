@@ -1,10 +1,19 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { eventBus } from '../eventbus.js'
 
 let [draw, sample, reorder, findMainColor, data, mainCs] = [undefined, undefined, undefined, undefined, undefined, []]
 
-const props = defineProps(['photoName'])
+const props = defineProps({
+  "photoName": {
+    default: ""
+  },
+  "canvasWidth": {
+    default: window.innerWidth
+  },
+  "canvasHeight": {
+    default: window.innerHeight
+  }
+})
 const emit = defineEmits(['main-colors-handler'])
 
 // 測試用 hardcode
@@ -37,8 +46,8 @@ import p5 from "p5";
 
 const script = function (p5) {
   let canvas;
-  let canvasW = 800
-  let canvasH = window.innerHeight
+  let canvasW = props.canvasWidth
+  let canvasH = props.canvasHeight
   let cs = [];
   let [pct, dWidth, dHeight] = [0.25, 0, 0];
 
@@ -169,8 +178,6 @@ const script = function (p5) {
     }
     console.log('find main colors')
     console.log(mainCs)
-    // Send colors to other components
-    eventBus.emit('main-colors-evt', mainCs);
     emit('main-colors-handler', mainCs)
   }
 };

@@ -19,6 +19,7 @@ def fetch_all_photos():
     collection = db.photos
     data = list(collection.find({}, {"_id": 0}).limit(10))
     return jsonify(data)
+    db.close()
 
 @app.route("/fetch_photo/", methods=['GET'])
 def fetch_photo():
@@ -34,6 +35,30 @@ def fetch_photo():
         # 如果找不到對應的照片資料，回傳 404 錯誤
         return jsonify({'error': 'Photo not found'}), 404
     return jsonify(data)
+    db.close()
+
+@app.route("/update_photo/", methods=['POST'])
+def update_photo():
+    try:
+        data = request.json
+        db = get_database('exchange_japan')
+        collection = db.photos
+        query = {'name': data['name']}
+        collection.update_one(query, {'$set':
+            {
+                'description': data['description'],
+                'colors': data['colors']
+            }
+        })
+        print(f"已經更新{data['name']}的資料到資料庫")
+        return jsonify({
+            "message": "資料更新成功",
+            "data": data
+        })
+    except Exception as e:
+        # 如果發生錯誤，回傳錯誤訊息
+        return jsonify({"error": str(e)}), 500
+    db.close()
 
 if __name__ == "__main__":
     app.run(port=3000)
