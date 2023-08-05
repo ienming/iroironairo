@@ -11,6 +11,7 @@ import { ref, onMounted } from 'vue'
 
 // UI
 const articleBgObj = ref({})
+const cavansWidth = ref(window.innerWidth/2)
 
 let mainColors = ref({})
 function showMainColors(colors) {
@@ -111,68 +112,62 @@ onMounted(() => {
 </script>
 
 <template>
-  <div :style="articleBgObj" id="Article">
-    <v-sheet class="wrapper" :elevation="4" rounded style="width: 80vw;">
-      <v-container>
-        <v-row justify="space-between">
-          <v-col>
-            <p class="mb-4">
-              <router-link :to="{
-            path: '/operator'
-          }" class="text-teal-lighten-1">&lt;返回</router-link>
-              <h1 class="d-inline ml-2 text-h6">修改照片資訊</h1>
-            </p>
-            <h2 class="text-h2">{{ route.query.name }}</h2>
-          </v-col>
-          <v-col>
-            <div class="d-flex mr-2">
-              <div :style="{ 'background-color': 'hsl(' + color.h + ',' + color.s + '%,' + color.l + '%)' }" class="main-cs"
-                v-for="color of mainColors"></div>
-            </div>
-            <p5Canvas :photo-name="route.query.name" :canvas-width="45" :canvas-height="60"
-              @main-colors-handler="showMainColors" />
-          </v-col>
-        </v-row>
-        <v-divider class="my-4"></v-divider>
+  <v-container>
+    <v-row>
+      <v-col cols="6">
+        <nav class="top-nav px-3">
+          <p class="mb-4">
+            <router-link :to="{
+              path: '/operator'
+            }" class="text-teal-lighten-1">&lt;返回</router-link>
+            <h1 class="d-inline ml-2 text-h6">修改照片資訊：{{ route.query.name }}</h1>
+          </p>
+        </nav>
         <p v-if="photoLoading">正在取得照片...</p>
-        <v-row v-else>
-          <v-col>
-            <form action="">
-              <v-textarea label="照片說明" variant="filled" clearable clear-icon="mdi-close-circle"
-                v-model="description"></v-textarea>
-              <v-btn class="bg-indigo-darken-1 float-right" @click.prevent="sendData">
-                更新資訊
-              </v-btn>
-            </form>
-          </v-col>
-          <v-col class="d-flex">
-            <div>
-              <p>拍攝日期: {{ photo.date }}</p>
-              <p>拍攝時間: {{ photo.time }}</p>
-              <p>文字說明: {{ description }}</p>
+        <article v-else>
+          <img :src="photo.url_google" alt="" class="photo ml-3" />
+          <v-sheet>
+            <div class="d-flex mr-2">
+              <div :style="{ 'background-color': 'hsl(' + color.h + ',' + color.s + '%,' + color.l + '%)' }"
+                class="main-cs" v-for="color of mainColors"></div>
             </div>
-            <img :src="photo.url_google" alt="" class="photo ml-3" />
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-sheet>
-  </div>
+          </v-sheet>
+          <div class="mb-4">
+            <p>拍攝日期: {{ photo.date }}</p>
+            <p>拍攝時間: {{ photo.time }}</p>
+            <p>文字說明: {{ description }}</p>
+          </div>
+          <form action="">
+            <v-textarea label="照片說明" variant="filled" clearable clear-icon="mdi-close-circle"
+              v-model="description"></v-textarea>
+            <v-btn class="bg-indigo-darken-1" @click.prevent="sendData">
+              更新資訊
+            </v-btn>
+          </form>
+        </article>
+      </v-col>
+      <v-col cols="6">
+        <p5Canvas :photo-name="route.query.name"
+        :canvas-width="cavansWidth"
+        @main-colors-handler="showMainColors" />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <style scoped>
-#Article {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+p {
+  word-wrap: break-word;
 }
 
 header {
   line-height: 1.5;
 }
+
 .photo {
   max-width: 250px;
 }
+
 .main-cs {
   height: 30px;
   width: 30px;
@@ -181,8 +176,18 @@ header {
   cursor: pointer;
   transition: all .5s ease
 }
+
 .main-cs:hover {
   opacity: .5;
+}
+
+.top-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  background-color: rgba(255, 255, 255, .5);
+  backdrop-filter: blur(4px);
 }
 
 #descripPanel {
@@ -231,7 +236,7 @@ header {
   }
 }
 
-.wrapper{
+.wrapper {
   padding: 30px;
 }
 </style>

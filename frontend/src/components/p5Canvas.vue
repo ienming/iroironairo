@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-
+import { diff } from 'color-diff';
 let [draw, sample, reorder, findMainColor, data, mainCs] = [undefined, undefined, undefined, undefined, undefined, []]
 
 const props = defineProps({
@@ -17,7 +17,7 @@ const props = defineProps({
 const emit = defineEmits(['main-colors-handler'])
 
 // 測試用 hardcode
-const sampling = ref(20)
+const sampling = ref(30)
 const nowOrder = ref('lightness')
 
 // if the img is changed
@@ -40,6 +40,11 @@ const nowOrder = ref('lightness')
 //   reorder()
 //   draw()
 // })
+
+function colorDifference(color1, color2) {
+  let result = diff(color1, color2)
+  return result;
+}
 
 // p5
 import p5 from "p5";
@@ -156,17 +161,26 @@ const script = function (p5) {
         ];
         let c = p5.get(x, y);
         let [h, s, l] = [p5.hue(c), p5.saturation(c), p5.lightness(c)];
+        let colorRGB = {
+          "R": p5.red(c),
+          "G": p5.green(c),
+          "B": p5.blue(c)
+        }
 
         // match main color
-        let threshold = 10
+        // let threshold = 10
+        // let temp = mainCs.find((el) => {
+        //   return Math.abs(el.color[0] - h) <= threshold &&
+        //     Math.abs(el.color[1] - s) <= threshold * 3 &&
+        //     Math.abs(el.color[2] - l) <= threshold * 4;
+        // });
+        let threshold = 31;
         let temp = mainCs.find((el) => {
-          return Math.abs(el.color[0] - h) <= threshold &&
-            Math.abs(el.color[1] - s) <= threshold * 3 &&
-            Math.abs(el.color[2] - l) <= threshold * 4;
-        });
+          return colorDifference(colorRGB, el.color_rgb) <= threshold;
+        })
 
         if (!temp) {
-          mainCs.push({ color: [h, s, l], amount: 1 });
+          mainCs.push({ color: [h, s, l], color_rgb: colorRGB, amount: 1 });
         } else {
           temp.amount += 1;
         }
