@@ -53,6 +53,7 @@ const API_URL = 'http://127.0.0.1:3000'
 const route = useRoute();
 
 const photo = ref({})
+const description = ref("")
 const photoLoading = ref(true)
 function getPhoto() {
   axios.get(`${API_URL}/fetch_photo/`, {
@@ -65,6 +66,9 @@ function getPhoto() {
       console.log(response)
       photo.value = response.data
       photoLoading.value = false
+      if (photo.value.description){
+        description.value = photo.value.description
+      }
     })
     .catch((error) => {
       // 處理錯誤
@@ -74,7 +78,6 @@ function getPhoto() {
 
 
 // Send data
-const description = ref("")
 function sendData(){
   console.log("Send data to backend")
   console.log(description.value, mainColors.value, photo.value.name)

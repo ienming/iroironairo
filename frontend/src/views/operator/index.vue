@@ -1,19 +1,17 @@
 <script setup>
-  import {ref, provide} from 'vue'
+  import {ref} from 'vue'
   import axios from 'axios'
 
-  // fetch photos data from db through API
+  // Fetch all photos from db through API
   const dataLoading = ref(true)
   const data = ref([])
   const API_URL = 'http://127.0.0.1:3000'
   axios.get(`${API_URL}/fetch_all_photos`)
     .then((response) => {
-      // 處理後端回傳的資料
       data.value = response.data
       dataLoading.value = false
     })
     .catch((error) => {
-      // 處理錯誤
       console.error(error);
     });
 </script>
