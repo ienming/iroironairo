@@ -8,8 +8,12 @@ import p5Canvas from '../../components/p5Canvas.vue'
 // import showData from '../components/showData.vue';
 import { ref, onMounted } from 'vue'
 
+
+// UI
+const articleBgObj = ref({})
+
 let mainColors = ref({})
-function showMainColors(colors){
+function showMainColors(colors) {
   let obj = {}, arr = []
   colors.forEach(c => {
     obj.h = Math.floor(c.color[0])
@@ -19,6 +23,11 @@ function showMainColors(colors){
     obj = {}
   })
   mainColors.value = arr
+
+  // Update article bg color
+  articleBgObj.value = {
+    backgroundColor: `hsl(${mainColors.value[0]['h']},${mainColors.value[0]['s']}%,${mainColors.value[0]['l']}%)`
+  }
 }
 
 // const sampling = ref(20)
@@ -66,7 +75,7 @@ function getPhoto() {
       console.log(response)
       photo.value = response.data
       photoLoading.value = false
-      if (photo.value.description){
+      if (photo.value.description) {
         description.value = photo.value.description
       }
     })
@@ -78,7 +87,7 @@ function getPhoto() {
 
 
 // Send data
-function sendData(){
+function sendData() {
   console.log("Send data to backend")
   console.log(description.value, mainColors.value, photo.value.name)
   axios.post(`${API_URL}/update_photo/`, {
@@ -102,59 +111,69 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="wrapper">
-    <aside>
-      <h1>後台編輯頁面</h1>
-      <h2>照片：{{ route.query.name }}</h2>
-      <p v-if="photoLoading">Loading photo...</p>
-      <div v-else>
-        <img :src="photo.url_google" alt="" class="photo" />
-        <p>Description: {{ description }}</p>
-        <p>Image shot date: {{ photo.date }}</p>
-        <p>Image shot time: {{ photo.time }}</p>
-        <div class="d-flex">
-          <div :style="{ 'background-color': 'hsl('+color.h+','+color.s+'%,'+color.l+'%)'}"
-          class="main-cs"
-          v-for="color of mainColors"></div>
-        </div>
-        <form action="">
-          <textarea name="description" id="" cols="30" rows="10"
-          v-model="description" placeholder="寫一些說明"></textarea>
-          <!-- <button @click.prevent="sendData">Submit</button> -->
-          <v-btn @click.prevent="sendData">
-            Submit
-          </v-btn>
-        </form>
-      </div>
-    </aside>
-    <main>
-      <p5Canvas :photo-name="route.query.name"
-      :canvas-width="300" :canvas-height="400"
-      @main-colors-handler="showMainColors"/>
-      <!-- <section id="descripPanel">
-                <viewImg :img-num="imgNum"/>
-                <showMainColor :img-num="imgNum"/>
-                <showData />
-            </section>
-            <aside id="controlPanel">
-                <selectScale/>
-                <selectOrder/>
-                <selectImg :img-num="imgNum" @prev-img="prevImg" @next-img="nextImg" @random-img="randomImg" />
-            </aside> -->
-    </main>
+  <div :style="articleBgObj" id="Article">
+    <v-sheet class="wrapper" :elevation="4" rounded style="width: 80vw;">
+      <v-container>
+        <v-row justify="space-between">
+          <v-col>
+            <p class="mb-4">
+              <router-link :to="{
+            path: '/operator'
+          }" class="text-teal-lighten-1">&lt;返回</router-link>
+              <h1 class="d-inline ml-2 text-h6">修改照片資訊</h1>
+            </p>
+            <h2 class="text-h2">{{ route.query.name }}</h2>
+          </v-col>
+          <v-col>
+            <div class="d-flex mr-2">
+              <div :style="{ 'background-color': 'hsl(' + color.h + ',' + color.s + '%,' + color.l + '%)' }" class="main-cs"
+                v-for="color of mainColors"></div>
+            </div>
+            <p5Canvas :photo-name="route.query.name" :canvas-width="45" :canvas-height="60"
+              @main-colors-handler="showMainColors" />
+          </v-col>
+        </v-row>
+        <v-divider class="my-4"></v-divider>
+        <p v-if="photoLoading">正在取得照片...</p>
+        <v-row v-else>
+          <v-col>
+            <form action="">
+              <v-textarea label="照片說明" variant="filled" clearable clear-icon="mdi-close-circle"
+                v-model="description"></v-textarea>
+              <v-btn class="bg-indigo-darken-1 float-right" @click.prevent="sendData">
+                更新資訊
+              </v-btn>
+            </form>
+          </v-col>
+          <v-col class="d-flex">
+            <div>
+              <p>拍攝日期: {{ photo.date }}</p>
+              <p>拍攝時間: {{ photo.time }}</p>
+              <p>文字說明: {{ description }}</p>
+            </div>
+            <img :src="photo.url_google" alt="" class="photo ml-3" />
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-sheet>
   </div>
 </template>
 
 <style scoped>
+#Article {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 header {
   line-height: 1.5;
 }
-
 .photo {
-  max-width: 300px;
+  max-width: 250px;
 }
-
-.main-cs{
+.main-cs {
   height: 30px;
   width: 30px;
   margin: 0 3px;
@@ -162,8 +181,7 @@ header {
   cursor: pointer;
   transition: all .5s ease
 }
-
-.main-cs:hover{
+.main-cs:hover {
   opacity: .5;
 }
 
@@ -213,7 +231,7 @@ header {
   }
 }
 
-.wrapper {
-  display: flex;
+.wrapper{
+  padding: 30px;
 }
 </style>

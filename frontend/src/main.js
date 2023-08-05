@@ -1,7 +1,5 @@
 import { createApp, defineAsyncComponent } from 'vue'
 import App from './App.vue'
-import './assets/main.css'
-
 
 // // Global event
 // import mitt from 'mitt';

@@ -27,7 +27,8 @@
           path: '/operator_edit',
           query: {
             name: d.name
-          }}">前往後台編輯頁面</router-link>
+          }}"
+          class="text-teal-lighten-1">前往後台編輯頁面</router-link>
           <p>{{ d }}</p>
         </div>
       </div>
