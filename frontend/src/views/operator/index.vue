@@ -14,6 +14,21 @@
     .catch((error) => {
       console.error(error);
     });
+
+  // Data Table
+  const headers = [
+        {
+          title: 'Dessert (100g serving)',
+          align: 'start',
+          sortable: false,
+          key: 'name',
+        },
+        { title: 'Calories', key: 'calories', align: 'end' },
+        { title: 'Fat (g)', key: 'fat', align: 'end' },
+        { title: 'Carbs (g)', key: 'carbs', align: 'end' },
+        { title: 'Protein (g)', key: 'protein', align: 'end' },
+        { title: 'Iron (%)', key: 'iron', align: 'end' },
+      ] 
 </script>
 
 <template>
@@ -21,17 +36,32 @@
     <h1>Hello 後台頁面</h1>
     <div>
       <p v-if="dataLoading">載入中...</p>
-      <div v-else>
-        <div v-for="d of data" :key="d.id">
-        <router-link :to="{
-          path: '/operator_edit',
-          query: {
-            name: d.name
-          }}"
-          class="text-teal-lighten-1">前往後台編輯頁面</router-link>
-          <p>{{ d }}</p>
-        </div>
-      </div>
+      <v-data-table-server v-else
+      :headers="headers">
+        <tbody>
+          <tr v-for="d of data" :key="d.id">
+            <td>{{ d.name }}</td>
+            <td>{{ d.date }}</td>
+            <td v-if="d.colors" class="d-flex align-center">
+              <div v-for="color of d.colors" class="main-cs"
+              :style="{ 'background-color': 'hsl(' + color.h + ',' + color.s + '%,' + color.l + '%)' }">
+              </div>
+            </td>
+            <td v-else>尚未儲存</td>
+            <td v-if="d.description">{{ d.description.slice(0, 10)+'...' }}</td>
+            <td v-else>尚無說明</td>
+            <td>
+              <router-link :to="{
+                path: '/operator_edit',
+                query: {
+                  name: d.name
+                }}"
+              class="text-teal-lighten-1">編輯</router-link>
+            </td>
+            <td><a :href="d.url_google" target="_blank">連結</a></td>
+          </tr>
+        </tbody>
+      </v-data-table-server>
     </div>
   </main>
 </template>
@@ -39,6 +69,12 @@
 <style scoped>
 header {
   line-height: 1.5;
+}
+
+.main-cs {
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
 }
 
 .logo {

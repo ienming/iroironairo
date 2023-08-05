@@ -1,10 +1,6 @@
 import { createApp, defineAsyncComponent } from 'vue'
 import App from './App.vue'
 
-// // Global event
-// import mitt from 'mitt';
-// export const eventBus = mitt();
-
 // Setting routers
 // import router from './router';
 import { createRouter, createWebHashHistory } from "vue-router";
