@@ -87,9 +87,9 @@ function getPhoto() {
 }
 
 
-// Send data
-function sendData() {
-  console.log("Send data to backend")
+// Update data
+function updateData() {
+  console.log("Update data to backend")
   console.log(description.value, mainColors.value, photo.value.name)
   axios.post(`${API_URL}/update_photo/`, {
     name: photo.value.name,
@@ -99,6 +99,7 @@ function sendData() {
     .then((response) => {
       // 處理後端回傳的資料
       console.log(response)
+      alert("資料更新成功！")
     })
     .catch((error) => {
       // 處理錯誤
@@ -140,7 +141,7 @@ onMounted(() => {
           <form action="">
             <v-textarea label="照片說明" variant="filled" clearable clear-icon="mdi-close-circle"
               v-model="description"></v-textarea>
-            <v-btn class="bg-indigo-darken-1" @click.prevent="sendData">
+            <v-btn class="bg-indigo-darken-1" @click.prevent="updateData">
               更新資訊
             </v-btn>
           </form>

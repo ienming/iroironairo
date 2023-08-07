@@ -15,9 +15,13 @@ def index():
 
 @app.route("/fetch_all_photos")
 def fetch_all_photos():
+    page_num = int(request.args.get('page'))
+    page_size = 10
+    skip_count = (page_num - 1) * page_size
+
     db = get_database('exchange_japan')
     collection = db.photos
-    data = list(collection.find({}, {"_id": 0}).limit(10))
+    data = list(collection.find({}, {"_id": 0}).sort("iso_date", 1).skip(skip_count).limit(page_size))
     return jsonify(data)
     db.close()
 

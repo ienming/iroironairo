@@ -1,43 +1,52 @@
 <script setup>
-  import {ref} from 'vue'
+  import {onMounted, ref} from 'vue'
   import axios from 'axios'
 
+  
+  const nowPage = ref(1)
   // Fetch all photos from db through API
   const dataLoading = ref(true)
   const data = ref([])
   const API_URL = 'http://127.0.0.1:3000'
-  axios.get(`${API_URL}/fetch_all_photos`)
-    .then((response) => {
-      data.value = response.data
-      dataLoading.value = false
+  
+  function fetchPhotos(){
+    axios.get(`${API_URL}/fetch_all_photos`, {
+      params: {
+        page: nowPage.value
+      }
     })
-    .catch((error) => {
-      console.error(error);
-    });
+    .then((response) => {
+      response.data.forEach(d => {
+        data.value.push(d)
+      })
+      dataLoading.value = false
+      nowPage.value += 1
+    })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
-  // Data Table
-  const headers = [
-        {
-          title: 'Dessert (100g serving)',
-          align: 'start',
-          sortable: false,
-          key: 'name',
-        },
-        { title: 'Calories', key: 'calories', align: 'end' },
-        { title: 'Fat (g)', key: 'fat', align: 'end' },
-        { title: 'Carbs (g)', key: 'carbs', align: 'end' },
-        { title: 'Protein (g)', key: 'protein', align: 'end' },
-        { title: 'Iron (%)', key: 'iron', align: 'end' },
-      ] 
+  onMounted(()=>{
+    fetchPhotos()
+  })
 </script>
 
 <template>
   <main>
     <h1>Hello 後台頁面</h1>
+    <v-btn @click="fetchPhotos">載入更多</v-btn>
     <div>
       <p v-if="dataLoading">載入中...</p>
-      <v-data-table-server v-else
-      :headers="headers">
+      <v-table v-else>
+        <thead>
+          <th>照片</th>
+          <th>拍攝時間</th>
+          <th>主要顏色</th>
+          <th>說明</th>
+          <th>編輯</th>
+          <th>URL</th>
+        </thead>
         <tbody>
           <tr v-for="d of data" :key="d.id">
             <td>{{ d.name }}</td>
@@ -56,12 +65,13 @@
                 query: {
                   name: d.name
                 }}"
+                target="_blank"
               class="text-teal-lighten-1">編輯</router-link>
             </td>
             <td><a :href="d.url_google" target="_blank">連結</a></td>
           </tr>
         </tbody>
-      </v-data-table-server>
+      </v-table>
     </div>
   </main>
 </template>
