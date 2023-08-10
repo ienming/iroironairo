@@ -17,7 +17,7 @@ const props = defineProps({
 const emit = defineEmits(['main-colors-handler'])
 
 // 測試用 hardcode
-const sampling = ref(30)
+const sampling = ref(25)
 const nowOrder = ref('lightness')
 
 // if the img is changed
@@ -187,8 +187,8 @@ const script = function (p5) {
       }
     }
     mainCs = mainCs.sort((a, b) => b.amount - a.amount)
-    if (mainCs.length > 5) {
-      mainCs.length = 5
+    if (mainCs.length > 1) {
+      mainCs.length = 1
     }
     console.log('find main colors')
     console.log(mainCs)

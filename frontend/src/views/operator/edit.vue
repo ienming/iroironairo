@@ -11,7 +11,7 @@ import { ref, onMounted } from 'vue'
 
 // UI
 const articleBgObj = ref({})
-const cavansWidth = ref(window.innerWidth/2)
+const cavansWidth = ref(window.innerWidth / 2)
 
 let mainColors = ref({})
 function showMainColors(colors) {
@@ -107,6 +107,15 @@ function updateData() {
     });
 }
 
+
+const colorFamily = ref("")
+// Push color to color family
+function push2ColorFamily(color, colorFamily) {
+  alert(`把照片${photo.value.name}的代表顏色 HSL ${color.h},${color.s},${color.l} 推到索引表${colorFamily}`)
+}
+
+const colorFamilies = ["Brown", "Yellow", "Amber", "Blue"]
+
 onMounted(() => {
   getPhoto()
 })
@@ -115,42 +124,43 @@ onMounted(() => {
 <template>
   <v-container>
     <v-row>
-      <v-col cols="6">
+      <v-col cols="6" style="padding-top: 100px;">
         <nav class="top-nav px-3">
           <p class="mb-4">
             <router-link :to="{
               path: '/operator'
             }" class="text-teal-lighten-1">&lt;返回</router-link>
-            <h1 class="d-inline ml-2 text-h6">修改照片資訊：{{ route.query.name }}</h1>
+          <h1 class="d-inline ml-2 text-h6">修改照片資訊：{{ route.query.name }}</h1>
           </p>
         </nav>
         <p v-if="photoLoading">正在取得照片...</p>
         <article v-else>
-          <img :src="photo.url_google" alt="" class="photo ml-3" />
-          <v-sheet>
-            <div class="d-flex mr-2">
-              <div :style="{ 'background-color': 'hsl(' + color.h + ',' + color.s + '%,' + color.l + '%)' }"
-                class="main-cs" v-for="color of mainColors"></div>
-            </div>
-          </v-sheet>
+          <img :src="photo.url_google" alt="" class="photo" />
           <div class="mb-4">
-            <p>拍攝日期: {{ photo.date }}</p>
-            <p>拍攝時間: {{ photo.time }}</p>
-            <p>文字說明: {{ description }}</p>
+            <p class="mb-2">拍攝日期: {{ photo.date }}</p>
+            <p class="mb-2">拍攝時間: {{ photo.time }}</p>
+            <p class="mb-2">文字說明: {{ description }}</p>
+            <p class="mb-2">代表色系: {{ colorFamily }}</p>
           </div>
-          <form action="">
+          <v-form>
             <v-textarea label="照片說明" variant="filled" clearable clear-icon="mdi-close-circle"
-              v-model="description"></v-textarea>
+            v-model="description"></v-textarea>
             <v-btn class="bg-indigo-darken-1" @click.prevent="updateData">
               更新資訊
             </v-btn>
-          </form>
+          </v-form>
+          <div class="d-flex my-4" v-for="color of mainColors">
+            <div :style="{ 'background-color': 'hsl(' + color.h + ',' + color.s + '%,' + color.l + '%)' }"
+              class="main-cs"></div>
+              <v-select label="Select" :items="colorFamilies" v-model="colorFamily" required></v-select>
+              <v-btn class="bg-indigo-darken-1" @click.prevent="push2ColorFamily(color, colorFamily)">
+              加入色系表
+            </v-btn>
+          </div>
         </article>
       </v-col>
-      <v-col cols="6">
-        <p5Canvas :photo-name="route.query.name"
-        :canvas-width="cavansWidth"
-        @main-colors-handler="showMainColors" />
+      <v-col cols="6" style="position: fixed; top: 0; right: 0;">
+        <p5Canvas :photo-name="route.query.name" :canvas-width="cavansWidth" @main-colors-handler="showMainColors" />
       </v-col>
     </v-row>
   </v-container>
