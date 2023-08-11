@@ -65,6 +65,15 @@ const route = useRoute();
 const photo = ref({})
 const description = ref("")
 const photoLoading = ref(true)
+
+// Place
+const place = ref("")
+const places = ref([])
+const addShotPlace = function(){
+  places.value.push(place.value)
+  place.value = ""
+}
+
 function getPhoto() {
   axios.get(`${API_URL}/fetch_photo/`, {
     params: {
@@ -79,13 +88,15 @@ function getPhoto() {
       if (photo.value.description) {
         description.value = photo.value.description
       }
+      if (photo.value.places) {
+        places.value = photo.value.places
+      }
     })
     .catch((error) => {
       // 處理錯誤
       console.error(error);
     });
 }
-
 
 // Update data
 function updateData() {
@@ -94,7 +105,8 @@ function updateData() {
   axios.post(`${API_URL}/update_photo/`, {
     name: photo.value.name,
     description: description.value,
-    colors: mainColors.value
+    colors: mainColors.value,
+    places: places.value
   })
     .then((response) => {
       // 處理後端回傳的資料
@@ -107,14 +119,11 @@ function updateData() {
     });
 }
 
-
-const colorFamily = ref("")
-// Push color to color family
-function push2ColorFamily(color, colorFamily) {
-  alert(`把照片${photo.value.name}的代表顏色 HSL ${color.h},${color.s},${color.l} 推到索引表${colorFamily}`)
+function removePlace(target){
+  let result = places.value.filter((place)=>place !== target)
+  places.value = result
+  updateData()
 }
-
-const colorFamilies = ["Brown", "Yellow", "Amber", "Blue"]
 
 onMounted(() => {
   getPhoto()
@@ -122,9 +131,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-container>
-    <v-row>
-      <v-col cols="6" style="padding-top: 100px;">
+  <main>
+    <div>
+      <div style="padding-top: 100px;">
         <nav class="top-nav px-3">
           <p class="mb-4">
             <router-link :to="{
@@ -139,31 +148,35 @@ onMounted(() => {
           <div class="mb-4">
             <p class="mb-2">拍攝日期: {{ photo.date }}</p>
             <p class="mb-2">拍攝時間: {{ photo.time }}</p>
+            <p class="mb-2">拍攝地點: </p>
+            <div>
+              <p v-for="place of places">{{ place }} <span @click="removePlace(place)">Delete</span></p>
+            </div>
             <p class="mb-2">文字說明: {{ description }}</p>
-            <p class="mb-2">代表色系: {{ colorFamily }}</p>
           </div>
-          <v-form>
-            <v-textarea label="照片說明" variant="filled" clearable clear-icon="mdi-close-circle"
-            v-model="description"></v-textarea>
-            <v-btn class="bg-indigo-darken-1" @click.prevent="updateData">
-              更新資訊
-            </v-btn>
-          </v-form>
-          <div class="d-flex my-4" v-for="color of mainColors">
-            <div :style="{ 'background-color': 'hsl(' + color.h + ',' + color.s + '%,' + color.l + '%)' }"
-              class="main-cs"></div>
-              <v-select label="Select" :items="colorFamilies" v-model="colorFamily" required></v-select>
-              <v-btn class="bg-indigo-darken-1" @click.prevent="push2ColorFamily(color, colorFamily)">
-              加入色系表
-            </v-btn>
+          <div :style="{ 'background-color': 'hsl(' + color.h + ',' + color.s + '%,' + color.l + '%)' }"
+            class="main-cs" v-for="color of mainColors"></div>
+          <hr />
+          <div>
+            <label for="inpt_place">
+              <input type="text" id="inpt_place" v-model="place"/>
+            </label>
+            <button @click="addShotPlace">新增拍攝地點</button>
           </div>
+          <label for="#inpt_descript">
+            <p>文字說明</p>
+            <textarea id="inpt_descript" v-model="description"></textarea>
+          </label>
+          <button class="bg-indigo-darken-1" @click.prevent="updateData">
+            更新資訊
+          </button>
         </article>
-      </v-col>
-      <v-col cols="6" style="position: fixed; top: 0; right: 0;">
+      </div>
+      <div style="position: fixed; top: 0; right: 0;">
         <p5Canvas :photo-name="route.query.name" :canvas-width="cavansWidth" @main-colors-handler="showMainColors" />
-      </v-col>
-    </v-row>
-  </v-container>
+      </div>
+    </div>
+  </main>
 </template>
 
 <style scoped>
@@ -180,10 +193,10 @@ header {
 }
 
 .main-cs {
-  height: 30px;
-  width: 30px;
+  height: 50px;
+  width: 100%;
   margin: 0 3px;
-  border-radius: 50%;
+  border-radius: 4px;
   cursor: pointer;
   transition: all .5s ease
 }
@@ -199,29 +212,6 @@ header {
   width: 100vw;
   background-color: rgba(255, 255, 255, .5);
   backdrop-filter: blur(4px);
-}
-
-#descripPanel {
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  /*  */
-  position: fixed;
-  left: 0;
-  top: 0;
-  background-color: #fff;
-  padding: 12px;
-}
-
-#controlPanel {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  background-color: #fff;
-  padding: 12px;
-  width: 224px;
 }
 
 .logo {

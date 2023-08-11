@@ -51,7 +51,8 @@ def update_photo():
         collection.update_one(query, {'$set':
             {
                 'description': data['description'],
-                'colors': data['colors']
+                'colors': data['colors'],
+                'places': data['places']
             }
         })
         print(f"已經更新{data['name']}的資料到資料庫")

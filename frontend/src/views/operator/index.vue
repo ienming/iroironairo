@@ -35,14 +35,15 @@
 <template>
   <main>
     <h1>Hello 後台頁面</h1>
-    <v-btn @click="fetchPhotos">載入更多</v-btn>
+    <button @click="fetchPhotos">載入更多</button>
     <div>
       <p v-if="dataLoading">載入中...</p>
-      <v-table v-else>
+      <table v-else>
         <thead>
           <th>照片</th>
           <th>拍攝時間</th>
-          <th>主要顏色</th>
+          <th>拍攝地點</th>
+          <th>代表顏色</th>
           <th>說明</th>
           <th>編輯</th>
           <th>URL</th>
@@ -51,12 +52,17 @@
           <tr v-for="d of data" :key="d.id">
             <td>{{ d.name }}</td>
             <td>{{ d.date }}</td>
+            <!-- Places -->
+            <td v-if="d.places">{{ d.places }}</td>
+            <td v-else>尚未儲存</td>
+            <!-- Colors -->
             <td v-if="d.colors" class="d-flex align-center">
               <div v-for="color of d.colors" class="main-cs"
               :style="{ 'background-color': 'hsl(' + color.h + ',' + color.s + '%,' + color.l + '%)' }">
               </div>
             </td>
             <td v-else>尚未儲存</td>
+            <!-- Description -->
             <td v-if="d.description">{{ d.description.slice(0, 10)+'...' }}</td>
             <td v-else>尚無說明</td>
             <td>
@@ -71,7 +77,7 @@
             <td><a :href="d.url_google" target="_blank">連結</a></td>
           </tr>
         </tbody>
-      </v-table>
+      </table>
     </div>
   </main>
 </template>
