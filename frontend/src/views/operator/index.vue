@@ -10,6 +10,7 @@
   const API_URL = 'http://127.0.0.1:3000'
   
   function fetchPhotos(){
+    dataLoading.value = true
     axios.get(`${API_URL}/fetch_all_photos`, {
       params: {
         page: nowPage.value
@@ -33,12 +34,13 @@
 </script>
 
 <template>
-  <main>
-    <h1>Hello 後台頁面</h1>
-    <button @click="fetchPhotos">載入更多</button>
+  <main class="main mx-auto">
+    <div class="mt-5 mb-4">
+      <h1 class="fs-4">色々な色 後台頁面</h1>
+      <h2 class="fs-5">iroironairo</h2>
+    </div>
     <div>
-      <p v-if="dataLoading">載入中...</p>
-      <table v-else>
+      <table class="table table-hover">
         <thead>
           <th>照片</th>
           <th>拍攝時間</th>
@@ -50,10 +52,15 @@
         </thead>
         <tbody>
           <tr v-for="d of data" :key="d.id">
-            <td>{{ d.name }}</td>
+            <td>{{ d.name.slice(0, 8) }}</td>
             <td>{{ d.date }}</td>
             <!-- Places -->
-            <td v-if="d.places">{{ d.places }}</td>
+            <td v-if="d.places">
+              <span v-for="(place,id) of d.places">
+                <span>{{ place }}</span>
+                <span v-if="id+1 !== d.places.length">、</span>
+              </span>
+            </td>
             <td v-else>尚未儲存</td>
             <!-- Colors -->
             <td v-if="d.colors" class="d-flex align-center">
@@ -78,6 +85,11 @@
           </tr>
         </tbody>
       </table>
+      <p v-if="dataLoading">載入中...</p>
+      <div class="mb-3 text-center">
+        <button class="btn btn-primary" :disabled="dataLoading ? true:false"
+        @click="fetchPhotos">載入更多</button>
+      </div>
     </div>
   </main>
 </template>
@@ -85,12 +97,6 @@
 <style scoped>
 header {
   line-height: 1.5;
-}
-
-.main-cs {
-  height: 15px;
-  width: 15px;
-  border-radius: 50%;
 }
 
 .logo {
@@ -114,10 +120,5 @@ header {
     place-items: flex-start;
     flex-wrap: wrap;
   }
-}
-
-main{
-  display: flex;
-  justify-content: space-between;
 }
 </style>

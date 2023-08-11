@@ -115,9 +115,6 @@ const script = function (p5) {
               b: p5.int(b),
             };
             cs.push(obj);
-            //debug
-            // p5.fill(0);
-            // p5.circle(x, y, 0.25);
           }
         }
         findMainColor()

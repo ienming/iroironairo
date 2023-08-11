@@ -1,5 +1,6 @@
 <script setup>
 import p5Canvas from '../../components/p5Canvas.vue'
+import modalLoading from '../../components/modalLoading.vue'
 // import selectImg from '../components/selectImg.vue';
 // import viewImg from '../components/viewImg.vue';
 // import selectScale from '../components/selectScale.vue';
@@ -99,7 +100,9 @@ function getPhoto() {
 }
 
 // Update data
+const updating = ref(false)
 function updateData() {
+  updating.value = true
   console.log("Update data to backend")
   console.log(description.value, mainColors.value, photo.value.name)
   axios.post(`${API_URL}/update_photo/`, {
@@ -111,6 +114,7 @@ function updateData() {
     .then((response) => {
       // 處理後端回傳的資料
       console.log(response)
+      updating.value = false
       alert("資料更新成功！")
     })
     .catch((error) => {
@@ -122,7 +126,6 @@ function updateData() {
 function removePlace(target){
   let result = places.value.filter((place)=>place !== target)
   places.value = result
-  updateData()
 }
 
 onMounted(() => {
@@ -133,50 +136,58 @@ onMounted(() => {
 <template>
   <main>
     <div>
-      <div style="padding-top: 100px;">
-        <nav class="top-nav px-3">
-          <p class="mb-4">
-            <router-link :to="{
-              path: '/operator'
-            }" class="text-teal-lighten-1">&lt;返回</router-link>
-          <h1 class="d-inline ml-2 text-h6">修改照片資訊：{{ route.query.name }}</h1>
-          </p>
+      <div class="card">
+        <nav class="mb-4 d-flex justify-content-between">
+          <router-link :to="{
+            path: '/operator'
+          }" class="text-teal-lighten-1">&lt;返回</router-link>
+          <h1 class="d-inline ml-2 fs-6">修改照片資訊：{{ route.query.name }}</h1>
         </nav>
         <p v-if="photoLoading">正在取得照片...</p>
-        <article v-else>
-          <img :src="photo.url_google" alt="" class="photo" />
-          <div class="mb-4">
-            <p class="mb-2">拍攝日期: {{ photo.date }}</p>
-            <p class="mb-2">拍攝時間: {{ photo.time }}</p>
-            <p class="mb-2">拍攝地點: </p>
-            <div>
-              <p v-for="place of places">{{ place }} <span @click="removePlace(place)">Delete</span></p>
+        <section v-else>
+          <section>
+            <img :src="photo.url_google" alt="" class="photo" />
+            <div class="mt-2 mb-4">
+              <p class="mb-3"><b>拍攝日期｜</b>{{ photo.date }}</p>
+              <p class="mb-3"><b>拍攝時間｜</b>{{ photo.time }}</p>
+              <p class="mb-3"><b>拍攝地點｜</b></p>
+              <div class="d-flex gap-1">
+                <p v-for="place of places" class="chip" @click="removePlace(place)">
+                  <span>{{ place }}</span>
+                </p>
+              </div>
+              <p class="mb-3"><b>文字說明｜</b>{{ description }}</p>
             </div>
-            <p class="mb-2">文字說明: {{ description }}</p>
-          </div>
-          <div :style="{ 'background-color': 'hsl(' + color.h + ',' + color.s + '%,' + color.l + '%)' }"
-            class="main-cs" v-for="color of mainColors"></div>
+            <div :style="{ 'background-color': 'hsl(' + color.h + ',' + color.s + '%,' + color.l + '%)' }"
+              class="main-cs" v-for="color of mainColors"></div>
+          </section>
           <hr />
-          <div>
-            <label for="inpt_place">
-              <input type="text" id="inpt_place" v-model="place"/>
-            </label>
-            <button @click="addShotPlace">新增拍攝地點</button>
-          </div>
-          <label for="#inpt_descript">
-            <p>文字說明</p>
-            <textarea id="inpt_descript" v-model="description"></textarea>
-          </label>
-          <button class="bg-indigo-darken-1" @click.prevent="updateData">
-            更新資訊
-          </button>
-        </article>
+          <section>
+            <h2 class="fs-4">更新資料</h2>
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="inpt_place" v-model="place"
+              placeholder="照片拍攝地點：都道府縣、市...">
+              <label for="inpt_place">拍攝地點</label>
+              <button class="btn btn-primary mt-2" :disabled="place ? false : true"
+              @click="addShotPlace">新增拍攝地點</button>
+            </div>
+            <div class="form-floating">
+              <textarea class="form-control" placeholder="輸入照片當時的一些事情" id="inpt_descript"
+              v-model="description" style="height: 150px"></textarea>
+              <label for="inpt_descript">文字說明</label>
+              <button class="d-block w-100 mt-2 btn btn-primary" @click.prevent="updateData">
+                更新資訊
+              </button>
+            </div>
+          </section>
+        </section>
       </div>
       <div style="position: fixed; top: 0; right: 0;">
-        <p5Canvas :photo-name="route.query.name" :canvas-width="cavansWidth" @main-colors-handler="showMainColors" />
+        <p5Canvas :photo-name="route.query.name" @main-colors-handler="showMainColors" />
       </div>
     </div>
   </main>
+  <modalLoading v-show="updating"></modalLoading>
 </template>
 
 <style scoped>
@@ -188,30 +199,18 @@ header {
   line-height: 1.5;
 }
 
+.card {
+  position: relative;
+  z-index: 99;
+  background-color: #fff;
+  max-width: 500px;
+  padding: 30px;
+  margin: 30px;
+  border-radius:  12px;
+}
+
 .photo {
   max-width: 250px;
-}
-
-.main-cs {
-  height: 50px;
-  width: 100%;
-  margin: 0 3px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all .5s ease
-}
-
-.main-cs:hover {
-  opacity: .5;
-}
-
-.top-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  background-color: rgba(255, 255, 255, .5);
-  backdrop-filter: blur(4px);
 }
 
 .logo {
