@@ -17,11 +17,13 @@
       }
     })
     .then((response) => {
-      response.data.forEach(d => {
-        data.value.push(d)
-      })
+      data.value = response.data
       dataLoading.value = false
-      nowPage.value += 1
+      // 無限載入
+      // response.data.forEach(d => {
+        // data.value.push(d)
+      // })
+      // nowPage.value += 1
     })
       .catch((error) => {
         console.error(error);
@@ -36,11 +38,18 @@
 <template>
   <main class="main mx-auto">
     <div class="mt-5 mb-4">
-      <h1 class="fs-4">色々な色 後台頁面</h1>
+      <h1 class="fs-4">色々な色 照片資料管理</h1>
       <h2 class="fs-5">iroironairo</h2>
     </div>
-    <div>
-      <table class="table table-hover">
+    <div class="mb-4 form-floating">
+      <select name="" id="floatingSelect" class="form-select" v-model="nowPage" @change="fetchPhotos">
+        <option :value="i" v-for="i of 28">{{ i }}</option>
+      </select>
+      <label for="floatingSelect">跳至頁面</label>
+    </div>
+    <div class="mb-5">
+      <p v-if="dataLoading">載入中...</p>
+      <table v-else class="table table-hover table-striped">
         <thead>
           <th>照片</th>
           <th>拍攝時間</th>
@@ -85,11 +94,6 @@
           </tr>
         </tbody>
       </table>
-      <p v-if="dataLoading">載入中...</p>
-      <div class="mb-3 text-center">
-        <button class="btn btn-primary" :disabled="dataLoading ? true:false"
-        @click="fetchPhotos">載入更多</button>
-      </div>
     </div>
   </main>
 </template>

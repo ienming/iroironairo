@@ -16,7 +16,7 @@ def index():
 @app.route("/fetch_all_photos")
 def fetch_all_photos():
     page_num = int(request.args.get('page'))
-    page_size = 10
+    page_size = 50
     skip_count = (page_num - 1) * page_size
 
     db = get_database('exchange_japan')
