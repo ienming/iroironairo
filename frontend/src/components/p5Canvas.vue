@@ -80,7 +80,7 @@ const script = function (p5) {
   sample = function () {
     // clear cs
     cs.length = 0
-    p5.loadImage(new URL(`../assets/photos/${props.photoName}.jpg`, import.meta.url).href,
+    p5.loadImage(new URL(`../assets/photos/${props.photoName}.jpg` || `../assets/photos/${props.photoName}.JPG`, import.meta.url).href,
       img => {
         p5.image(
           img,

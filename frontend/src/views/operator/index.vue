@@ -1,11 +1,11 @@
 <script setup>
-  import {onMounted, ref} from 'vue'
+  import {ref} from 'vue'
   import axios from 'axios'
 
   
-  const nowPage = ref(1)
+  const nowPage = ref(0)
   // Fetch all photos from db through API
-  const dataLoading = ref(true)
+  const dataLoading = ref(false)
   const data = ref([])
   const API_URL = 'http://127.0.0.1:3000'
   
@@ -29,10 +29,6 @@
         console.error(error);
       });
   }
-
-  onMounted(()=>{
-    fetchPhotos()
-  })
 </script>
 
 <template>
@@ -43,9 +39,10 @@
     </div>
     <div class="mb-4 form-floating">
       <select name="" id="floatingSelect" class="form-select" v-model="nowPage" @change="fetchPhotos">
-        <option :value="i" v-for="i of 28">{{ i }}</option>
+        <option value="0" disabled>上次處理到...</option>
+        <option :value="i" v-for="i of 28">{{ `${50*(i-1)+1}-${50*i}筆` }}</option>
       </select>
-      <label for="floatingSelect">跳至頁面</label>
+      <label for="floatingSelect">讀取資料</label>
     </div>
     <div class="mb-5">
       <p v-if="dataLoading">載入中...</p>

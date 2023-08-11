@@ -187,7 +187,9 @@ onMounted(() => {
       </div>
     </div>
   </main>
-  <modalLoading v-show="updating"></modalLoading>
+  <transition name="fade">
+    <modalLoading v-if="updating"></modalLoading>
+  </transition>
 </template>
 
 <style scoped>
