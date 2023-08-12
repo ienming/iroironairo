@@ -24,12 +24,12 @@ def compress_image_to_png(input_path, output_path, max_size=300, dpi=72):
     img.save(output_path, format="PNG", optimize=True)
 
 # 測試
-origin_folder = "output"
+origin_folder = "googleDrive"
 jpg_files = glob.iglob(os.path.join(origin_folder, '*.jpg'), recursive=True)
 
 count = 0
 for jpg_path in list(jpg_files):
     jpg_name = os.path.splitext(os.path.basename(jpg_path))[0]
-    compress_image_to_png(f"output/{jpg_name}.jpg", f"../frontend/src/assets/photos/{jpg_name}.jpg")
+    compress_image_to_png(f"googleDrive/{jpg_name}.jpg", f"compressed/{jpg_name}.jpg", 600)
     print(f"已壓縮{count}張照片")
     count += 1
