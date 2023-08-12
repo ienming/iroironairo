@@ -29,6 +29,22 @@
         console.error(error);
       });
   }
+
+
+
+
+  // Test reading from CSV without backend
+  const CSV_URL = "/src/assets/data.csv"
+  function readFromCSV(){
+    axios.get(CSV_URL)
+    .then((response) => {
+      alert("讀取本地 CSV 成功")
+      console.log(response.data)
+    })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 </script>
 
 <template>
@@ -36,6 +52,7 @@
     <div class="mt-5 mb-4">
       <h1 class="fs-4">色々な色 照片資料管理</h1>
       <h2 class="fs-5">iroironairo</h2>
+      <!-- <button @click="readFromCSV">測試讀取CSV檔案</button> -->
     </div>
     <div class="mb-4 form-floating">
       <select name="" id="floatingSelect" class="form-select" v-model="nowPage" @change="fetchPhotos">
