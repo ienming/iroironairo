@@ -30,6 +30,7 @@ jpg_files = glob.iglob(os.path.join(origin_folder, '*.jpg'), recursive=True)
 count = 0
 for jpg_path in list(jpg_files):
     jpg_name = os.path.splitext(os.path.basename(jpg_path))[0]
-    compress_image_to_png(f"googleDrive/{jpg_name}.jpg", f"compressed/{jpg_name}.jpg", 600)
+    compress_image_to_png(f"googleDrive/{jpg_name}.jpg", f"compressed/{jpg_name}.jpg", 800)
+    # print(jpg_name)
     print(f"已壓縮{count}張照片")
     count += 1
