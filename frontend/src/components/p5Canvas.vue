@@ -183,9 +183,10 @@ const script = function (p5) {
         }
       }
     }
+    mainCs = mainCs.filter(c => c.amount > 10000/10)
     mainCs = mainCs.sort((a, b) => b.amount - a.amount)
-    if (mainCs.length > 1) {
-      mainCs.length = 1
+    if (mainCs.length > 3) {
+      mainCs.length = 3
     }
     console.log('find main colors')
     console.log(mainCs)

@@ -159,7 +159,7 @@ onMounted(() => {
               <p class="mb-3"><b>文字說明｜</b>{{ description }}</p>
             </div>
             <div :style="{ 'background-color': 'hsl(' + color.h + ',' + color.s + '%,' + color.l + '%)' }"
-              class="main-cs" v-for="color of mainColors"></div>
+              class="main-cs mb-2" v-for="color of mainColors"></div>
           </section>
           <hr />
           <section>
