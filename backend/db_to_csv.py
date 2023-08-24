@@ -6,17 +6,17 @@ from get_database import get_database
 db = get_database('exchange_japan')
 collection = db.photos
 
-amount = 2
+amount = 100
 data = collection.find().limit(amount)
 
 output_folder_path = "../frontend/src/assets"
 csv_file_name = "data.csv"
 output_file_path = os.path.join(output_folder_path, csv_file_name)
 
-
 # 寫入 CSV 文件
 with open(output_file_path, "w", newline="") as csvfile:
-    fieldnames = data[0].keys()
+    # fieldnames = data[0].keys()
+    fieldnames = ["_id", "name", "id", "type", "url", "date", "time", "url_google", "colors", "description", "iso_date", "places"]
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
     # 寫入 CSV 文件的標題行

@@ -168,14 +168,14 @@ onMounted(() => {
               <input type="text" class="form-control" id="inpt_place" v-model="place"
               placeholder="照片拍攝地點：都道府縣、市...">
               <label for="inpt_place">拍攝地點</label>
-              <button class="btn btn-primary mt-2" :disabled="place ? false : true"
+              <button class="btn btn-dark mt-2" :disabled="place ? false : true"
               @click="addShotPlace">新增拍攝地點</button>
             </div>
             <div class="form-floating">
               <textarea class="form-control" placeholder="輸入照片當時的一些事情" id="inpt_descript"
               v-model="description" style="height: 150px"></textarea>
               <label for="inpt_descript">文字說明</label>
-              <button class="d-block w-100 mt-2 btn btn-primary" @click.prevent="updateData">
+              <button class="d-block w-100 mt-2 btn btn-dark" @click.prevent="updateData">
                 更新資訊
               </button>
             </div>

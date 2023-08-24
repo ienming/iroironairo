@@ -29,22 +29,6 @@
         console.error(error);
       });
   }
-
-
-
-
-  // Test reading from CSV without backend
-  const CSV_URL = "/src/assets/data.csv"
-  function readFromCSV(){
-    axios.get(CSV_URL)
-    .then((response) => {
-      alert("讀取本地 CSV 成功")
-      console.log(response.data)
-    })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
 </script>
 
 <template>

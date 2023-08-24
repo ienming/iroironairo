@@ -34,6 +34,17 @@
 @import "../../node_modules/bootstrap/scss/utilities/api";
 
 // 8. Add additional custom code here
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;200;300;400;500;600;700;800&family=Noto+Serif+JP:wght@200;300;400;500;600;700;900&display=swap');
+.ff-serif{
+    font-family: 'Noto Serif JP', serif;
+}
+
+.ff-sans{
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+
+
 .luc-btn{
     border-radius: 50px;
 }
