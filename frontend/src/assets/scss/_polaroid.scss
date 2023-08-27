@@ -1,0 +1,23 @@
+.polaroid {
+  background-color: #fff;
+  &.hero{
+    padding: 20px;
+  }
+  &.color-swatch{
+    border-radius: 4px;
+    padding: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    &:hover{
+      opacity: .85;
+      >div{
+        border-radius: 50%;
+        transform: rotate(90deg);
+      };
+    }
+  }
+}
+
+.polaroid.color-swatch > div {
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
