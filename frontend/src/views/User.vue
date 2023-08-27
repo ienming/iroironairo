@@ -123,19 +123,23 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="bodyBgColor" :style="backgroundStyle" class="pt-5">
+  <div v-if="bodyBgColor" :style="backgroundStyle" class="pt-3 pt-md-7">
     <div class="container">
       <div class="mb-5 row flex-column-revrese flex-md-row justify-content-center">
         <div v-if="heroData" class="col-md-6">
-          <div class="polaroid hero d-flex flex-column text-dark sticky-top">
+          <div class="polaroid hero d-flex flex-column text-dark">
             <div class="placeholder-glow ratio ratio-1x1"
             :style="{
               'background': 'url('+heroData.url_google+')',
               'background-size': 'cover',
               'background-repeat': 'no-repeat',
               }"></div>
-            <div class="mt-3">
-              <p>{{ heroData.date + ' ' + heroData.time }}</p>
+            <div>
+              <p class="d-flex justify-content-between align-items-center border-bottom p-2 ff-serif"
+              :style="backgroundStyle">
+                <i class="fa-solid fa-camera fa-xl"></i>
+                <span class="ps-2">{{ heroData.date + ' ' + heroData.time }}</span>
+              </p>
               <p>
                 <span v-for="place of heroData.places" class="me-2 rounded-pill p-2 border"
                 :style="backgroundStyleReverse"
@@ -145,7 +149,7 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <div class="ff-serif col-md-6 px-md-5 px-lg-7 pt-md-9">
+        <div class="ff-serif col-md-6 mt-5 mt-md-0 px-md-5 px-lg-7 pt-md-9">
           <h2 class="fs-4">iroironairo</h2>
           <h1 class="fw-semibold my-4">色々な色</h1>
           <h3 class="fs-5 d-flex align-items-center">
@@ -161,9 +165,25 @@ onMounted(() => {
         </div>
       </div>
     </div>
+    <section class="p-4 my-4 bg-white bg-opacity-25">
+      <div class="container">
+        <div class="row no-wrap align-items-center gap-3">
+          <div class="form-check w-auto">
+            <input class="form-check-input" type="checkbox" v-model="polaroidPlaceShown" id="polaroid_place">
+            <label class="form-check-label" for="polaroid_place">
+              顯示拍攝地點
+            </label>
+          </div>
+          <div class="d-flex align-items-center w-auto">
+            <span class="pe-2">拍攝地點</span>
+            <select class="form-select w-auto" aria-label="Default select example">
+              <option value="1">顏色</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
     <main class="container text-dark">
-      <input type="checkbox" v-model="polaroidPlaceShown" />
-      <label for="">顯示拍攝地點</label>
       <section class="d-flex flex-wrap gap-3">
         <transition-group name="fade">
           <div v-for="(d, idx) of reorderData" :key="d.id"
