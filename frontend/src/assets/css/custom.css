@@ -3857,6 +3857,51 @@ textarea.form-control-lg {
     --bs-spinner-animation-speed: 1.5s;
   }
 }
+.placeholder {
+  display: inline-block;
+  min-height: 1em;
+  vertical-align: middle;
+  cursor: wait;
+  background-color: currentcolor;
+  opacity: 0.5;
+}
+.placeholder.btn::before {
+  display: inline-block;
+  content: "";
+}
+
+.placeholder-xs {
+  min-height: 0.6em;
+}
+
+.placeholder-sm {
+  min-height: 0.8em;
+}
+
+.placeholder-lg {
+  min-height: 1.2em;
+}
+
+.placeholder-glow .placeholder {
+  animation: placeholder-glow 2s ease-in-out infinite;
+}
+
+@keyframes placeholder-glow {
+  50% {
+    opacity: 0.2;
+  }
+}
+.placeholder-wave {
+  mask-image: linear-gradient(130deg, #000 55%, rgba(0, 0, 0, 0.8) 75%, #000 95%);
+  mask-size: 200% 100%;
+  animation: placeholder-wave 2s linear infinite;
+}
+
+@keyframes placeholder-wave {
+  100% {
+    mask-position: -200% 0%;
+  }
+}
 .align-baseline {
   vertical-align: baseline !important;
 }
@@ -10073,24 +10118,47 @@ textarea.form-control-lg {
   opacity: 0;
 }
 
-.polaroid {
-  background-color: #fff;
+.transition {
+  transition: background-color 1.5s ease, color 1.5s ease;
 }
+
 .polaroid.hero {
+  background-color: #fff;
   padding: 20px;
 }
 .polaroid.color-swatch {
-  border-radius: 4px;
-  padding: 5px;
   cursor: pointer;
+  border-radius: 25px;
+  border: 1px solid rgba(0, 0, 0, 0.25);
   transition: all 0.2s ease-in-out;
+  position: relative;
+}
+.polaroid.color-swatch > div {
+  border-radius: 25px;
 }
 .polaroid.color-swatch:hover {
-  opacity: 0.85;
+  border-radius: 50%;
 }
 .polaroid.color-swatch:hover > div {
   border-radius: 50%;
   transform: rotate(90deg);
+}
+.polaroid.color-swatch:hover::after {
+  opacity: 1;
+  transform: scale(1);
+}
+.polaroid.color-swatch::after {
+  content: attr(data-description);
+  position: absolute;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 4px 8px;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  transform: scale(0);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .polaroid.color-swatch > div {

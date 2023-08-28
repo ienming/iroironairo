@@ -1,19 +1,40 @@
 .polaroid {
-  background-color: #fff;
   &.hero{
+    background-color: #fff;
     padding: 20px;
   }
   &.color-swatch{
-    border-radius: 4px;
-    padding: 5px;
     cursor: pointer;
+    border-radius: 25px;
+    border: 1px solid rgba(0,0,0,.25);
     transition: all 0.2s ease-in-out;
+    position: relative;
+    >div{
+      border-radius: 25px;
+    }
     &:hover{
-      opacity: .85;
+      border-radius: 50%;
       >div{
         border-radius: 50%;
         transform: rotate(90deg);
       };
+      &::after{
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    &::after{
+      content: attr(data-description);
+      position: absolute;
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 4px 8px;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+      transform: scale(0);
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
   }
 }

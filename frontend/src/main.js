@@ -4,12 +4,12 @@ import App from './App.vue'
 // Setting routers
 // import router from './router';
 import { createRouter, createWebHashHistory } from "vue-router";
-import User from "./views/User.vue";
+import UserIndex from "./views/user/Index.vue";
 import OperatorIndex from "./views/Operator/index.vue";
 import OperatorEdit from "./views/Operator/edit.vue"
 
 const routes = [
-  { path: "/", component: User },
+  { path: "/", component: UserIndex },
   { path: "/operator", component: OperatorIndex },
   { path: "/operator_edit", component: OperatorEdit },
 ];
