@@ -2,11 +2,14 @@
 import { onMounted, ref, computed, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 import colorSwatch from '../../components/colorSwatch.vue';
+import controllerManual from '../../components/controllerManual.vue';
+import controllerAuto from '../../components/controllerAuto.vue';
 
 const data = ref([])
 const heroData = ref(undefined)
 const bodyBgColor = ref(undefined)
 const bodyTextColor = ref(undefined)
+const imgLoaded = ref(false)
 let timer
 
 // HSL to Hex
@@ -20,6 +23,11 @@ function hsl2Hex(h, s, l) {
   };
   let result = `#${f(0)}${f(8)}${f(4)}`
   return result.toUpperCase();
+}
+
+// 重設圖片載入狀態，已顯示 spinner
+function resetImgLoaded(){
+  imgLoaded.value = false
 }
 
 // 把色票依照彩度排列
@@ -135,6 +143,7 @@ onMounted(() => {
 
   // 定時隨機抽選
   timer = window.setInterval(() => {
+    resetImgLoaded()
     randomHero()
   }, 10000)
 })
@@ -146,13 +155,18 @@ onBeforeUnmount(() => {
 
 <template>
   <main v-if="bodyBgColor" :style="backgroundStyle" class="transition">
-    <div class="container vh-100 d-flex flex-column-revrese flex-md-row align-items-center justify-content-center gap-5">
+    <div class="container vh-100 d-flex flex-column flex-md-row align-items-center justify-content-center gap-5">
       <div class="polaroid hero d-flex flex-column text-dark">
-        <div class="ratio ratio-1x1" :style="{
-          'background': 'url(' + heroData.url_google + ')',
-          'background-size': 'cover',
-          'background-repeat': 'no-repeat',
-        }"></div>
+        <div class="ratio ratio-1x1">
+          <img :src="heroData.url_google" alt="" class="d-none" @load="imgLoaded = true">
+          <div v-if="imgLoaded" class="overflow-hidden">
+            <img :src="heroData.url_google" alt="" class="w-100 h-100 object-fit-cover"
+            style="object-position: center;">
+          </div>
+          <div v-else class="d-flex justify-content-center align-items-center">
+            <div class="spinner-border" role="status"></div>
+          </div>
+        </div>
         <div>
           <p class="d-flex justify-content-between align-items-center border-bottom p-2 ff-serif transition mb-0"
             :style="backgroundStyle">
@@ -173,6 +187,9 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </div>
+    <!-- Controller -->
+    <controller-manual></controller-manual>
+    <controller-auto></controller-auto>
   </main>
 </template>
 

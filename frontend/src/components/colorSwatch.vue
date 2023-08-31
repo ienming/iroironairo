@@ -24,7 +24,7 @@ function hsl2Hex(h, s, l) {
 // Copy color to clipboard
 function copyColor(){
     navigator.clipboard.writeText(color.value)
-    copyText.value = "已複製 コピーした！"
+    copyText.value = "已複製 コピーされました！"
 }
 
 function resetCopyText(){
