@@ -1,0 +1,14 @@
+.luc-controller {
+    // init
+    border: none;
+    background: none;
+    padding: .5rem .75rem;
+    border-radius: 50%;
+    // 
+    opacity: .75;
+    min-width: 40px;
+    min-height: 40px;
+    &:hover{
+        opacity: 1;
+    }
+}

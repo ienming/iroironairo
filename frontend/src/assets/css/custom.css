@@ -10268,4 +10268,17 @@ textarea.form-control-lg {
   opacity: 1;
 }
 
+.luc-controller {
+  border: none;
+  background: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 50%;
+  opacity: 0.75;
+  min-width: 40px;
+  min-height: 40px;
+}
+.luc-controller:hover {
+  opacity: 1;
+}
+
 /*# sourceMappingURL=custom.css.map */

@@ -2,14 +2,17 @@
 import { onMounted, ref, computed, onBeforeUnmount } from 'vue'
 import axios from 'axios'
 import colorSwatch from '../../components/colorSwatch.vue';
-import controllerManual from '../../components/controllerManual.vue';
-import controllerAuto from '../../components/controllerAuto.vue';
+import controller from '../../components/controller.vue';
 
 const data = ref([])
 const heroData = ref(undefined)
 const bodyBgColor = ref(undefined)
 const bodyTextColor = ref(undefined)
 const imgLoaded = ref(false)
+
+// 隨機
+const shuffling = ref(true)
+// 自動播放
 let timer
 
 // HSL to Hex
@@ -141,7 +144,7 @@ function readFromCSV() {
 onMounted(() => {
   readFromCSV()
 
-  // 定時隨機抽選
+  // 自動播放 + 隨機抽選
   timer = window.setInterval(() => {
     resetImgLoaded()
     randomHero()
@@ -155,8 +158,9 @@ onBeforeUnmount(() => {
 
 <template>
   <main v-if="bodyBgColor" :style="backgroundStyle" class="transition">
-    <div class="container vh-100 d-flex flex-column flex-md-row align-items-center justify-content-center gap-5">
-      <div class="polaroid hero d-flex flex-column text-dark">
+    <section class="container vh-100 d-flex flex-column flex-md-row align-items-center justify-content-center gap-5 position-relative"
+    style="z-index: 1;">
+      <div class="polaroid hero d-flex flex-column text-dark shadow-lg">
         <div class="ratio ratio-1x1">
           <img :src="heroData.url_google" alt="" class="d-none" @load="imgLoaded = true">
           <div v-if="imgLoaded" class="overflow-hidden">
@@ -186,10 +190,9 @@ onBeforeUnmount(() => {
             v-for="color of heroData.colors"></color-swatch>
         </div>
       </div>
-    </div>
+    </section>
     <!-- Controller -->
-    <controller-manual></controller-manual>
-    <controller-auto></controller-auto>
+    <controller :theme="backgroundStyle" :shuffling="shuffling"></controller>
   </main>
 </template>
 
