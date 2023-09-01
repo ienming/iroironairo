@@ -1,8 +1,9 @@
 <script setup>
 import { watch, ref, onMounted } from 'vue';
-const props = defineProps(['theme', 'shuffling'])
+const props = defineProps(['theme', 'autoPlaying', 'timeLeft'])
+const emit = defineEmits(['show-next', 'show-prev', 'start-playing', 'stop-playing', 'shuffle'])
 
-const controllerContainer = ref(null)
+const controllerEl = ref(null)
 
 watch(props, (oldValue, newValue)=>{
     let newStyle = newValue.theme
@@ -10,13 +11,13 @@ watch(props, (oldValue, newValue)=>{
 })
 
 function setStyle(styleObj){
-    controllerContainer.value.style
+    controllerEl.value.style
+    .setProperty('--luc-text-color', styleObj['color'])
+    controllerEl.value.style
+    .setProperty('--luc-border-color', styleObj['color'])
+    controllerEl.value.style
         .setProperty('--luc-bg-color', styleObj['color'])
-    controllerContainer.value.style
-        .setProperty('--luc-text-color', styleObj['color'])
-    controllerContainer.value.style
-        .setProperty('--luc-border-color', styleObj['color'])
-    controllerContainer.value.style
+    controllerEl.value.style
         .setProperty('--luc-text-color-reverse', styleObj['backgroundColor'])
 }
 
@@ -27,27 +28,28 @@ onMounted(()=>{
 
 <template>
     <section class="position-fixed top-50 translate-middle-y w-100 d-flex justify-content-between align-items-center"
-    ref="controllerContainer">
+    ref="controllerEl">
         <div class="d-flex flex-column p-3 gap-3">
-            <button class="luc-controller" @click="shuffle">
+            <button class="luc-controller" @click="emit('shuffle')">
                 <i class="fa-solid fa-shuffle"></i>
             </button>
-            <!-- 沒有播放時出現 -->
-            <button class="luc-controller" @click="autoPlay">
+            <button class="luc-controller" @click="emit('start-playing')"
+            v-if="!autoPlaying">
                 <i class="fa-solid fa-play"></i>
             </button>
-            <!-- 正在播放時出現 -->
-            <button class="luc-controller" @click="stopAuto">
+            <button class="luc-controller" @click="emit('stop-playing')"
+            v-else>
                 <!-- 顯示數字 -->
+                {{ timeLeft }}
                 <!-- Hover 顯示圖案 -->
-                <i class="fa-solid fa-stop"></i>
+                <!-- <i class="fa-solid fa-stop"></i> -->
             </button>
         </div>
         <div class="d-flex flex-column p-3 gap-3">
-            <button class="luc-controller" @click="prev">
+            <button class="luc-controller" @click="emit('show-prev')">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
-            <button class="luc-controller" @click="next">
+            <button class="luc-controller" @click="emit('show-next')">
                 <i class="fa-solid fa-arrow-right"></i>
             </button>
         </div>
@@ -56,10 +58,10 @@ onMounted(()=>{
 
 <style scoped>
 section {
-    --luc-border-color: #000;
-    --luc-bg-color: #fff;
     --luc-text-color: #000;
-    --luc-text-color-reverse: #000;
+    --luc-border-color: #000;
+    --luc-bg-color: #000;
+    --luc-text-color-reverse: #fff;
 }
 
 button {

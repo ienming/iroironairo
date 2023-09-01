@@ -1,19 +1,36 @@
 <script setup>
-import { onMounted, ref, computed, onBeforeUnmount } from 'vue'
+import { onMounted, ref, computed, onBeforeUnmount, provide } from 'vue'
 import axios from 'axios'
 import colorSwatch from '../../components/colorSwatch.vue';
 import controller from '../../components/controller.vue';
 
-const data = ref([])
-const heroData = ref(undefined)
-const bodyBgColor = ref(undefined)
-const bodyTextColor = ref(undefined)
 const imgLoaded = ref(false)
-
-// 隨機
-const shuffling = ref(true)
-// 自動播放
-let timer
+const data = ref([])
+const nowHeroIndex = ref(0)
+const heroData = computed(()=>{
+  return reorderData.value[nowHeroIndex.value]
+})
+const bodyBgColor = computed(()=>{
+  if (heroData.value){
+    return heroData.value.main_color
+  }
+  return {}
+})
+const bodyTextColor = computed(()=>{
+  if (33 < bodyBgColor.value.l && bodyBgColor.value.l < 67) {
+    return {
+      'h': 360,
+      's': 0,
+      'l': 100,
+    }
+  } else {
+    return {
+      'h': bodyBgColor.value.h,
+      's': bodyBgColor.value.s,
+      'l': 100 - bodyBgColor.value.l,
+    }
+  }
+})
 
 // HSL to Hex
 function hsl2Hex(h, s, l) {
@@ -27,41 +44,27 @@ function hsl2Hex(h, s, l) {
   let result = `#${f(0)}${f(8)}${f(4)}`
   return result.toUpperCase();
 }
+provide('hsl2Hex', hsl2Hex)
 
 // 重設圖片載入狀態，已顯示 spinner
 function resetImgLoaded(){
   imgLoaded.value = false
 }
 
-// 把色票依照彩度排列
+// 依照時間排列
 const reorderData = computed(() => {
-  const orderBy = 'h'
   // 測試時先篩選出確定有顏色的
-  return data.value.filter(d => d['main_color']).sort(
-    (a, b) => a.main_color[orderBy] - b.main_color[orderBy])
+  if (shuffleNum.value){
+    return data.value.filter(d => d['main_color']).sort(() => Math.random() - shuffleNum.value)
+  }else{
+    return data.value.filter(d => d['main_color']).sort(
+      (a, b) => {
+        return new Date(a.iso_date.slice(0, -1)) - new Date(b.iso_date.slice(0, -1))
+      })
+  }
 })
 
-// 隨機取得一張照片做主角
-function randomHero() {
-  let randomNum = Math.floor(Math.random() * reorderData.value.length)
-  heroData.value = reorderData.value[randomNum]
-  bodyBgColor.value = heroData.value.main_color
-  if (33 < bodyBgColor.value.l && bodyBgColor.value.l < 67) {
-    bodyTextColor.value = {
-      'h': 360,
-      's': 0,
-      'l': 100,
-    }
-  } else {
-    bodyTextColor.value = {
-      'h': bodyBgColor.value.h,
-      's': bodyBgColor.value.s,
-      'l': 100 - bodyBgColor.value.l,
-    }
-  }
-}
-
-// 依照隨機選出的照片設定背景色和文字顏色
+// 依照照片設定背景色和文字顏色
 const backgroundStyle = computed(() => {
   if (bodyBgColor) {
     return {
@@ -81,6 +84,55 @@ const backgroundStyleReverse = computed(() => {
   }
   return {}
 })
+
+// 控制
+function showNext(){
+  resetImgLoaded()
+  if (nowHeroIndex.value == reorderData.value.length-1){
+    nowHeroIndex.value = 0
+  }else{
+    nowHeroIndex.value++
+  }
+}
+
+function showPrev(){
+  resetImgLoaded()
+  if (nowHeroIndex.value == 0){
+    nowHeroIndex.value = reorderData.value.length-1
+  }else{
+    nowHeroIndex.value --
+  }
+}
+
+// 自動播放
+let timer
+const autoPlaying = ref(false)
+const timeLeft = ref(15)
+
+function startPlaying(){
+  autoPlaying.value = true
+  timer = window.setInterval(()=>{
+    if (timeLeft.value >= 1){
+      timeLeft.value --
+    }else{
+      showNext()
+      timeLeft.value = 15
+    }
+  }, 1000)
+}
+
+function stopPlaying(){
+  autoPlaying.value = false
+  timeLeft.value = 15
+  clearInterval(timer)
+}
+
+// 隨機排序
+const shuffleNum = ref(undefined)
+function shuffle() {
+  resetImgLoaded()
+  shuffleNum.value = Math.random()
+}
 
 // Test reading from CSV without backend
 const CSV_URL = "/src/assets/data.csv"
@@ -133,7 +185,6 @@ function readFromCSV() {
         }
         data.value.push(obj)
       })
-      randomHero()
       console.log("讀取本地 CSV 成功")
     })
     .catch((error) => {
@@ -143,12 +194,7 @@ function readFromCSV() {
 
 onMounted(() => {
   readFromCSV()
-
-  // 自動播放 + 隨機抽選
-  timer = window.setInterval(() => {
-    resetImgLoaded()
-    randomHero()
-  }, 10000)
+  startPlaying()
 })
 
 onBeforeUnmount(() => {
@@ -157,7 +203,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main v-if="bodyBgColor" :style="backgroundStyle" class="transition">
+  <main v-if="heroData" :style="backgroundStyle" class="transition">
     <section class="container vh-100 d-flex flex-column flex-md-row align-items-center justify-content-center gap-5 position-relative"
     style="z-index: 1;">
       <div class="polaroid hero d-flex flex-column text-dark shadow-lg">
@@ -192,7 +238,14 @@ onBeforeUnmount(() => {
       </div>
     </section>
     <!-- Controller -->
-    <controller :theme="backgroundStyle" :shuffling="shuffling"></controller>
+    <controller :theme="backgroundStyle"
+      :auto-playing="autoPlaying"
+      :time-left="timeLeft"
+      @start-playing="startPlaying"
+      @stop-playing="stopPlaying"
+      @show-next="showNext"
+      @show-prev="showPrev"
+      @shuffle="shuffle"></controller>
   </main>
 </template>
 
