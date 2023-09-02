@@ -1,0 +1,15 @@
+$custom_utilities: (
+    "viewport-height": map-merge(
+        map-get($utilities, "viewport-height"),
+        (
+            responsive: true
+        )
+      ),
+    "width": map-merge(
+        map-get($utilities, "width"),
+        (
+            responsive: true
+        )
+    )
+    
+)

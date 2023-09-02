@@ -1,7 +1,16 @@
 .polaroid {
+  --border-radius: 0px;
+  border-radius: var(--border-radius);
   &.hero{
     background-color: #fff;
-    padding: 20px;
-    width: 40vw;;
+    padding: 10px;
+    width: 100%;
+    @media screen and (min-width: map-get($grid-breakpoints, "md")){
+      padding: 20px;
+      width: 40vw;
+    }
+    @media screen and (min-width: map-get($grid-breakpoints, "xl")){
+      width: 35vw;
+    }
   }
 }

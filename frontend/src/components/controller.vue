@@ -27,9 +27,9 @@ onMounted(()=>{
 </script>
 
 <template>
-    <section class="position-fixed top-50 translate-middle-y w-100 d-flex justify-content-between align-items-center"
+    <section class="position-fixed w-md-100 d-flex flex-column flex-md-row justify-content-md-between align-items-center"
     ref="controllerEl">
-        <div class="d-flex flex-column p-3 gap-3">
+        <div class="d-flex flex-column px-3 pb-3 pb-md-0 gap-3">
             <button class="luc-controller" @click="emit('shuffle')">
                 <i class="fa-solid fa-shuffle"></i>
             </button>
@@ -45,7 +45,7 @@ onMounted(()=>{
                 <!-- <i class="fa-solid fa-stop"></i> -->
             </button>
         </div>
-        <div class="d-flex flex-column p-3 gap-3">
+        <div class="d-flex flex-column px-3 pb-3 pb-md-0 gap-3">
             <button class="luc-controller" @click="emit('show-prev')">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
@@ -62,6 +62,15 @@ section {
     --luc-border-color: #000;
     --luc-bg-color: #000;
     --luc-text-color-reverse: #fff;
+    bottom: 0;
+}
+
+@media screen and (min-width: 768px) {
+  section{
+    bottom: unset;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 
 button {
