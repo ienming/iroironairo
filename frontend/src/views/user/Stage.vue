@@ -1,14 +1,10 @@
 <script setup>
 import { onMounted, ref, computed, onBeforeUnmount, provide } from 'vue'
-import { usePhotoStore } from '@/stores/PhotoStore'
 import axios from 'axios'
-import ColorSwatch from '@/components/colorSwatch.vue';
-import Controller from '@/components/controller.vue';
-import Bookmark from '@/components/bookmark.vue';
-import Navigator from '@/components/navigator.vue';
-
-// Prepare stores for storing all photos
-const photoStore = usePhotoStore()
+import ColorSwatch from '@/components/ColorSwatch.vue';
+import Controller from '@/components/Controller.vue';
+import Bookmark from '@/components/Bookmark.vue';
+import Navigator from '@/components/Navigator.vue';
 
 const imgLoaded = ref(false)
 const data = ref([])
@@ -192,7 +188,6 @@ function readFromCSV() {
         data.value.push(obj)
       })
       console.log("讀取本地 CSV 成功")
-      photoStore.photos = data.value
     })
     .catch((error) => {
       console.error(error);

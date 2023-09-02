@@ -1,10 +1,6 @@
 import { createApp, defineAsyncComponent } from 'vue'
 import App from './App.vue'
 
-// Pinia
-import { createPinia } from 'pinia'
-const pinia = createPinia()
-
 // Setting routers
 // import router from './router';
 import { createRouter, createWebHashHistory } from "vue-router";
@@ -29,8 +25,6 @@ const router = createRouter({
 
 // Mount
 const app = createApp(App);
-
 app.use(router);
-app.use(pinia)
 
 app.mount('#app')
