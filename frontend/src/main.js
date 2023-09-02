@@ -1,17 +1,21 @@
 import { createApp, defineAsyncComponent } from 'vue'
 import App from './App.vue'
 
+// Pinia
+import { createPinia } from 'pinia'
+const pinia = createPinia()
+
 // Setting routers
 // import router from './router';
 import { createRouter, createWebHashHistory } from "vue-router";
-import UserIndex from "./views/user/Index.vue";
+import UserStage from "./views/user/Stage.vue";
 import AllPhotos from "./views/user/AllPhotos.vue";
 import About from "./views/user/About.vue";
 import OperatorIndex from "./views/Operator/index.vue";
 import OperatorEdit from "./views/Operator/edit.vue"
 
 const routes = [
-  { path: "/", component: UserIndex },
+  { path: "/", component: UserStage },
   { path: "/all", component: AllPhotos },
   { path: "/about", component: About },
   { path: "/operator", component: OperatorIndex },
@@ -25,6 +29,8 @@ const router = createRouter({
 
 // Mount
 const app = createApp(App);
+
 app.use(router);
+app.use(pinia)
 
 app.mount('#app')

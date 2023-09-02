@@ -1,10 +1,14 @@
 <script setup>
 import { onMounted, ref, computed, onBeforeUnmount, provide } from 'vue'
+import { usePhotoStore } from '@/stores/PhotoStore'
 import axios from 'axios'
-import colorSwatch from '../../components/colorSwatch.vue';
-import controller from '../../components/controller.vue';
-import bookmark from '../../components/bookmark.vue';
-import Navigator from '../../components/navigator.vue';
+import ColorSwatch from '@/components/colorSwatch.vue';
+import Controller from '@/components/controller.vue';
+import Bookmark from '@/components/bookmark.vue';
+import Navigator from '@/components/navigator.vue';
+
+// Prepare stores for storing all photos
+const photoStore = usePhotoStore()
 
 const imgLoaded = ref(false)
 const data = ref([])
@@ -188,6 +192,7 @@ function readFromCSV() {
         data.value.push(obj)
       })
       console.log("讀取本地 CSV 成功")
+      photoStore.photos = data.value
     })
     .catch((error) => {
       console.error(error);
@@ -232,7 +237,7 @@ onBeforeUnmount(() => {
             place }}</span>
         </p>
         <p class="mb-0 mt-3">{{ heroData.description }}</p>
-        <div class="d-flex flex-wrap gap-2 mt-5 mt-lg-7 z-1">
+        <div class="d-flex flex-wrap gap-2 mt-5 mt-lg-6 z-1">
             <color-swatch :color-hsl="color"
             v-for="color of heroData.colors"></color-swatch>
         </div>

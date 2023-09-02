@@ -1,29 +1,13 @@
 <script setup>
-import { watch, ref, onMounted } from 'vue';
 const props = defineProps(['theme'])
-
-const navEl = ref(null)
-
-watch(props, (oldValue, newValue)=>{
-    let newStyle = newValue.theme
-    setStyle(newStyle)
-})
-
-function setStyle(styleObj){
-    navEl.value.style
-        .setProperty('--luc-bg-color', styleObj['color'])
-}
-
-onMounted(()=>{
-    setStyle(props.theme)
-})
 </script>
 
 <template>
-    <nav class="d-flex gap-4 py-3 py-lg-4" ref="navEl">
+    <nav class="d-flex gap-4 py-3 py-lg-4">
         <router-link :to="{
                 path: '/about'
             }"
+            :style="{'color': theme.color}"
             class="txt-lang-hover">
             <div>
                 <span>關於 iroironairo</span>
@@ -31,8 +15,9 @@ onMounted(()=>{
             </div>
         </router-link>
         <router-link :to="{
-                path: '/all'
+                path: '/all',
             }"
+            :style="{'color': theme.color}"
             class="txt-lang-hover">
             <div>
                 <span>瀏覽全部相片</span>
@@ -43,12 +28,7 @@ onMounted(()=>{
 </template>
 
 <style scoped>
-nav{
-    --luc-bg-color: #000;
-}
-
 nav a {
-    color: var(--luc-bg-color);
     text-decoration: none;
 }
 </style>

@@ -10397,6 +10397,9 @@ textarea.form-control-lg {
     height: 100px;
   }
 }
+.bookmark .text {
+  font-size: 14px;
+}
 @media screen and (min-width: 992px) {
   .bookmark .text {
     writing-mode: vertical-rl;
