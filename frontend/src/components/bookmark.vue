@@ -20,8 +20,9 @@ onMounted(()=>{
 </script>
 
 <template>
-    <div class="bookmark ff-serif" ref="bookmarkEl">
-        <span>iroironairo</span>
+    <div class="bookmark ff-serif p-3 p-lg-4 flex-lg-column" ref="bookmarkEl">
+        <span class="anim-line"></span>
+        <span class="text">iroironairo</span>
     </div>
 </template>
 
@@ -29,7 +30,7 @@ onMounted(()=>{
 div{
     --luc-bg-color: #000;
 }
-div::before{
+.anim-line{
     background-color: var(--luc-bg-color);
 }
 </style>

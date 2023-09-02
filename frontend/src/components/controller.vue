@@ -4,6 +4,11 @@ const props = defineProps(['theme', 'autoPlaying', 'timeLeft'])
 const emit = defineEmits(['show-next', 'show-prev', 'start-playing', 'stop-playing', 'shuffle'])
 
 const controllerEl = ref(null)
+const hoveringStop = ref(false)
+
+function toggleStop(){
+    hoveringStop.value = !hoveringStop.value
+}
 
 watch(props, (oldValue, newValue)=>{
     let newStyle = newValue.theme
@@ -27,9 +32,9 @@ onMounted(()=>{
 </script>
 
 <template>
-    <section class="position-fixed w-md-100 d-flex flex-column flex-md-row justify-content-md-between align-items-center"
+    <section class="position-fixed w-lg-100 d-flex flex-column flex-lg-row justify-content-lg-between align-items-center"
     ref="controllerEl">
-        <div class="d-flex flex-column px-3 pb-3 pb-md-0 gap-3">
+        <div class="d-flex flex-column px-3 pb-3 pb-lg-0 gap-3">
             <button class="luc-controller" @click="emit('shuffle')">
                 <i class="fa-solid fa-shuffle"></i>
             </button>
@@ -38,14 +43,14 @@ onMounted(()=>{
                 <i class="fa-solid fa-play"></i>
             </button>
             <button class="luc-controller" @click="emit('stop-playing')"
+            @mouseenter="toggleStop"
+            @mouseleave="toggleStop"
             v-else>
-                <!-- 顯示數字 -->
-                {{ timeLeft }}
-                <!-- Hover 顯示圖案 -->
-                <!-- <i class="fa-solid fa-stop"></i> -->
+                <span v-if="!hoveringStop">{{ timeLeft }}</span>
+                <i class="fa-solid fa-stop" v-else></i>
             </button>
         </div>
-        <div class="d-flex flex-column px-3 pb-3 pb-md-0 gap-3">
+        <div class="d-flex flex-column px-3 pb-3 pb-lg-0 gap-3">
             <button class="luc-controller" @click="emit('show-prev')">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
@@ -63,11 +68,13 @@ section {
     --luc-bg-color: #000;
     --luc-text-color-reverse: #fff;
     bottom: 0;
+    right: 0;
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 992px) {
   section{
     bottom: unset;
+    right: unset;
     top: 50%;
     transform: translateY(-50%);
   }

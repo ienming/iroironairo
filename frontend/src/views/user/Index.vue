@@ -4,6 +4,7 @@ import axios from 'axios'
 import colorSwatch from '../../components/colorSwatch.vue';
 import controller from '../../components/controller.vue';
 import bookmark from '../../components/bookmark.vue';
+import Navigator from '../../components/navigator.vue';
 
 const imgLoaded = ref(false)
 const data = ref([])
@@ -205,7 +206,7 @@ onBeforeUnmount(() => {
 
 <template>
   <main v-if="heroData" :style="backgroundStyle" class="transition">
-    <section class="container min-vh-100 d-flex flex-column flex-md-row align-items-center justify-content-start justify-content-md-center gap-5 position-relative py-5">
+    <section class="container min-vh-100 d-flex flex-column flex-lg-row align-items-center justify-content-start justify-content-lg-center gap-5 position-relative py-5">
       <div class="polaroid hero d-flex flex-column text-dark shadow-lg">
         <div class="ratio ratio-1x1">
           <img :src="heroData.url_google" alt="" class="d-none" @load="imgLoaded = true">
@@ -231,7 +232,7 @@ onBeforeUnmount(() => {
             place }}</span>
         </p>
         <p class="mb-0 mt-3">{{ heroData.description }}</p>
-        <div class="d-flex flex-wrap gap-2 mt-5 mt-md-7 z-1">
+        <div class="d-flex flex-wrap gap-2 mt-5 mt-lg-7 z-1">
             <color-swatch :color-hsl="color"
             v-for="color of heroData.colors"></color-swatch>
         </div>
@@ -247,17 +248,21 @@ onBeforeUnmount(() => {
       @show-prev="showPrev"
       @shuffle="shuffle"></controller>
     <!-- Bookmark -->
-    <bookmark :theme="backgroundStyle"></bookmark>
+    <bookmark :theme="backgroundStyle"
+    class="position-fixed top-0 d-flex align-items-center gap-1"></bookmark>
+    <!-- Nav -->
+    <navigator :theme="backgroundStyle"
+    class="position-fixed top-0 end-0 pe-4"></navigator>
   </main>
 </template>
 
 <style scoped>
 #Sec_text{
   width: 80%;
-  margin-left: auto;
+  margin-right: auto;
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 992px) {
   #Sec_text{
     width: 30vw;
     margin: unset;

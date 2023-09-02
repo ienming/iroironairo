@@ -1,39 +1,16 @@
 .bookmark {
-    --bookmark-padding: 30px;
-    --gap: 8px;
-    // sum of previous three
-    --anim-line: 85px;
-    --bookmark-span-top: 123px;
-    // these two should sumup to be 32
-    --fz: 14px;
-    --bookmark-span-right: 18px;
-
-    position: fixed;
-    padding-top: var(--bookmark-padding);
-    top: -20px;
-    transform: rotate(-90deg);
-    @media screen and (min-width: map-get($grid-breakpoints, "md")){
-        right: 0;
-        top: 0;
-        transform: unset;
+    .anim-line{
+        width: 100px;
+        height: 1px;
+        display: inline-block;
+        @media screen and (min-width: map-get($grid-breakpoints, "lg")) {
+            width: 1px;
+            height: 100px;
+        }
     }
-}
-
-.bookmark::before{
-    content: '';
-    display: block;
-    width: 1px;
-    height: var(--anim-line);
-    position: absolute;
-    right: var(--bookmark-padding);
-}
-
-.bookmark span{
-    transform-origin: left top;
-    transform: rotate(90deg);
-    display: inline-block;
-    position: absolute;
-    top: calc(var(--bookmark-span-top));
-    padding-top: var(--bookmark-span-right);
-    font-size: var(--fz);
+    .text{
+        @media screen and (min-width: map-get($grid-breakpoints, "lg")) {
+            writing-mode: vertical-rl;
+        }
+    }
 }

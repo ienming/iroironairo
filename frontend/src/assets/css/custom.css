@@ -10323,7 +10323,7 @@ textarea.form-control-lg {
   padding: 10px;
   width: 100%;
 }
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 992px) {
   .polaroid.hero {
     padding: 20px;
     width: 40vw;
@@ -10386,43 +10386,46 @@ textarea.form-control-lg {
   opacity: 1;
 }
 
-.bookmark {
-  --bookmark-padding: 30px;
-  --gap: 8px;
-  --anim-line: 85px;
-  --bookmark-span-top: 123px;
-  --fz: 14px;
-  --bookmark-span-right: 18px;
-  position: fixed;
-  padding-top: var(--bookmark-padding);
-  top: -20px;
-  transform: rotate(-90deg);
+.bookmark .anim-line {
+  width: 100px;
+  height: 1px;
+  display: inline-block;
 }
-@media screen and (min-width: 768px) {
-  .bookmark {
-    right: 0;
-    top: 0;
-    transform: unset;
+@media screen and (min-width: 992px) {
+  .bookmark .anim-line {
+    width: 1px;
+    height: 100px;
+  }
+}
+@media screen and (min-width: 992px) {
+  .bookmark .text {
+    writing-mode: vertical-rl;
   }
 }
 
-.bookmark::before {
-  content: "";
-  display: block;
-  width: 1px;
-  height: var(--anim-line);
-  position: absolute;
-  right: var(--bookmark-padding);
-}
-
-.bookmark span {
-  transform-origin: left top;
-  transform: rotate(90deg);
+.txt-lang-hover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow-y: hidden;
   display: inline-block;
+  text-align: center;
+  padding: 0 10px;
+}
+.txt-lang-hover span:nth-child(2) {
   position: absolute;
-  top: calc(var(--bookmark-span-top));
-  padding-top: var(--bookmark-span-right);
-  font-size: var(--fz);
+  left: 50%;
+  transform: translateX(-50%);
+  top: 100%;
+  width: max-content;
+  text-decoration: underline;
+}
+.txt-lang-hover > div {
+  transition: 0.2s ease-in-out;
+}
+.txt-lang-hover:hover > div {
+  transform: translateY(-100%);
 }
 
 /*# sourceMappingURL=custom.css.map */
