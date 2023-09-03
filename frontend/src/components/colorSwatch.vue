@@ -1,7 +1,13 @@
 <script setup>
-import { ref, computed, onMounted, inject } from 'vue'
-const hsl2Hex = inject('hsl2Hex')
-const props = defineProps(['colorHsl'])
+import { ref, computed, onMounted } from 'vue'
+import { hsl2Hex } from '@/composable/common';
+const props = defineProps({
+  colorHsl: String,
+  label: {
+    type: String,
+    default: "Default string",
+  },
+});
 const color = computed(()=>{
     return hsl2Hex(props.colorHsl.h, props.colorHsl.s, props.colorHsl.l)
 })
@@ -30,7 +36,7 @@ onMounted(()=>{
         @click="copyColor"
         @mouseout="resetCopyText"></div>
         <p class="w-100 m-0 d-flex justify-content-between align-items-center">
-            <span>{{ color }}</span>
+            <span>{{ label }}</span>
             <i class="fa-solid fa-magnifying-glass"
             data-bs-placement="bottom"
             data-bs-toggle="tooltip"

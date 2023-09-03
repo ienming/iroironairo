@@ -1,5 +1,13 @@
 <script setup>
-const props = defineProps(['theme'])
+const props = defineProps({
+    theme: {
+        type: Object,
+        default: {
+            "color": "#232323",
+            "backgroundColor": "#F6F6F6"
+        }
+    }
+})
 </script>
 
 <template>
