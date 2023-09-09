@@ -1,0 +1,22 @@
+.iro-selection-button{
+    cursor: pointer;
+    transition: .25s ease-in-out;
+    &::after{
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 1px;
+        background-color: $black;
+        left: 0;
+        bottom: 0;
+        transform-origin: left 50%;
+        transition: .25s ease-in-out;
+    }
+    &:hover{
+        background-color: shade-color($silver, 10%);
+        &::after{
+            width: 100%;
+            transform-origin: right 50%;
+        }
+    }
+}

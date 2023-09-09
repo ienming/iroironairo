@@ -4,14 +4,23 @@ import axios from 'axios'
 import ColorSwatch from '@/components/ColorSwatch.vue';
 import Bookmark from '@/components/Bookmark.vue';
 import Navigator from '@/components/Navigator.vue';
+import Selection from '../../components/Selection.vue';
 
 const data = ref([])
-const dataReordered = computed(()=>{
+const dataReordered = computed(() => {
   return data.value.filter(d => d['main_color']).sort(
-      (a, b) => {
-        return new Date(a.iso_date.slice(0, -1)) - new Date(b.iso_date.slice(0, -1))
+    (a, b) => {
+      return new Date(a.iso_date.slice(0, -1)) - new Date(b.iso_date.slice(0, -1))
     })
 })
+
+
+const months = ['全部', '九月', '十月', '十一月', '十二月', '一月', '二月', '三月']
+const filterByMonth = ref('全部')
+function filterBy(value){
+  console.log('filter by month: '+value)
+  filterByMonth.value = value
+}
 
 const CSV_URL = "/src/assets/data.csv"
 function readFromCSV() {
@@ -77,7 +86,7 @@ onMounted(() => {
 
 <template>
   <div class="bg-silver">
-    <main class="container py-5 py-lg-8">
+    <section class="container py-5 py-lg-8 position-relative">
       <div class="row justify-content-center mb-lg-6">
         <div class="ff-serif text-dark col-lg-5">
           <h2 class="fs-4">iroironairo</h2>
@@ -95,16 +104,23 @@ onMounted(() => {
       <section class="row justify-content-center mb-lg-5">
         <div class="col-lg-11 d-flex justify-content-between">
           <span>{{ dataReordered.length }} 張 / {{ data.length }} 張照片</span>
-          <div>Input *2</div>
+          <div class="d-flex gap-4">
+            <selection label="拍攝地點"></selection>
+            <selection label="拍攝月份" :options="months"
+            :current-value="filterByMonth"
+            @change-value="filterBy"></selection>
+          </div>
         </div>
       </section>
-      <section class="row justify-content-center">
-        <div class="col-lg-11 d-flex flex-wrap gap-1">
-          <color-swatch :color-hsl="d.main_color" :label="d.date+' '+d.time"
-            v-for="d of dataReordered"></color-swatch>
+      <main class="row justify-content-center">
+        <div class="col-lg-11 d-flex flex-wrap justify-content-start gap-2">
+          <color-swatch class="flex-grow-1"
+          :view-photo="true" :color-hsl="d.main_color" v-for="d of dataReordered"></color-swatch>
         </div>
-      </section>
-    </main>
+      </main>
+      <!-- Fade out clip -->
+      <div class="fade-clip fixed-bottom"></div>
+    </section>
     <!-- Bookmark -->
     <bookmark class="position-fixed top-0 d-flex align-items-center gap-1"></bookmark>
     <!-- Nav -->
@@ -113,11 +129,11 @@ onMounted(() => {
 </template>
 
 <style scoped>
-h1{
+h1 {
   font-size: 86px;
 }
 
-.anim-line-h{
+.anim-line-h {
   display: block;
   width: 80%;
   height: 1px;

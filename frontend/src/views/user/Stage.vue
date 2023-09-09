@@ -221,6 +221,7 @@ onBeforeUnmount(() => {
         <p class="mb-0 mt-3">{{ heroData.description }}</p>
         <div class="d-flex flex-wrap gap-2 mt-5 mt-lg-6 z-1">
             <color-swatch
+            class="w-50"
             :color-hsl="color"
             :label="hsl2Hex(color.h, color.s, color.l)"
             v-for="color of heroData.colors"></color-swatch>

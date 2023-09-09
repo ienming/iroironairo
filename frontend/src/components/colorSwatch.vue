@@ -2,30 +2,35 @@
 import { ref, computed, onMounted } from 'vue'
 import { hsl2Hex } from '@/composable/common';
 const props = defineProps({
-  colorHsl: String,
+  colorHsl: Object,
   label: {
     type: String,
-    default: "Default string",
+    default: "",
   },
+  viewPhoto: {
+    type: Boolean,
+    default: false
+  }
 });
 const color = computed(()=>{
     return hsl2Hex(props.colorHsl.h, props.colorHsl.s, props.colorHsl.l)
 })
-const copyText = ref("複製 コピー")
-const toolTipEl = ref(null)
+const copyText = ref("複製顏色")
+const toolTips = ref(null)
 
 // Copy color to clipboard
 function copyColor(){
     navigator.clipboard.writeText(color.value)
-    copyText.value = "已複製 コピーされました！"
+    copyText.value = "已複製！"
 }
 
 function resetCopyText(){
-    copyText.value = "複製 コピー"
+    copyText.value = "複製顏色"
 }
 
 onMounted(()=>{
-    const tooltip = new bootstrap.Tooltip(toolTipEl.value)
+    const tooltipTriggerList = toolTips.value.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 })
 </script>
 
@@ -37,11 +42,17 @@ onMounted(()=>{
         @mouseout="resetCopyText"></div>
         <p class="w-100 m-0 d-flex justify-content-between align-items-center">
             <span>{{ label }}</span>
-            <i class="fa-solid fa-magnifying-glass"
-            data-bs-placement="bottom"
-            data-bs-toggle="tooltip"
-            data-bs-title="搜尋顏色"
-            ref="toolTipEl"></i>
+            <div class="d-flex gap-3 gap-lg-2" ref="toolTips">
+                <i v-if="viewPhoto"
+                class="fa-solid fa-image"
+                data-bs-title="查看照片"
+                data-bs-toggle="tooltip"></i>
+                <i class="fa-solid fa-magnifying-glass"
+                data-bs-placement="bottom"
+                data-bs-toggle="tooltip"
+                data-bs-title="搜尋顏色"
+                ref="toolTips"></i>
+            </div>
         </p>
     </div>
 </template>
