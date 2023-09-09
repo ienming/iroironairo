@@ -17,18 +17,85 @@ const dataFiltered = computed(() => {
     arr = arr.filter(d => d.date.split(":")[1] == filterByMonth.value.key)
   }
   // 根據地點篩選
-  if (filterByPlace.value.key !== "全部"){
+  if (filterByPlace.value.key !== "全部") {
     arr = arr.filter(d => d.places.includes(filterByPlace.value.key))
   }
-  return arr
+  // 插入月份標誌
+  let newArr = []
+  for (let i = 0; i < arr.length; i++) {
+    const currentMonth = arr[i].date.split(":")[1]
+    // 第一個資料前先塞
+    if (i == 0){
+      let obj = {
+          type: "monthTag",
+          value: currentMonth,
+        }
+        const monthTxtObj = month2Txt(currentMonth)
+        obj['zh'] = monthTxtObj.zh
+        obj['jp'] = monthTxtObj.jp
+        newArr.push(obj)
+    }
+    newArr.push(arr[i])
+    // 判斷是否換月份
+    if (i < arr.length - 1) {
+      const nextDateMonth = arr[i + 1].date.split(":")[1]
+      if (currentMonth !== nextDateMonth) {
+        let obj = {
+          type: "monthTag",
+          value: nextDateMonth,
+        }
+        const monthTxtObj = month2Txt(nextDateMonth)
+        obj['zh'] = monthTxtObj.zh
+        obj['jp'] = monthTxtObj.jp
+        newArr.push(obj)
+      }
+    }
+  }
+  return newArr
 })
 
+// 月份中日文對照表
+function month2Txt(month) {
+  let obj = {}
+  switch (month) {
+    case '09':
+      obj['zh'] = '九月',
+        obj['jp'] = 'Kugatsu'
+      break;
+    case '10':
+      obj['zh'] = '十月',
+        obj['jp'] = 'Jyuugatsu'
+      break;
+    case '11':
+      obj['zh'] = '十一月',
+        obj['jp'] = 'Jyuuichigatsu'
+      break;
+    case '12':
+      obj['zh'] = '十二月',
+        obj['jp'] = 'Jyuunigatsu'
+      break;
+    case '01':
+      obj['zh'] = '一月',
+        obj['jp'] = 'Ichigatsu'
+      break;
+    case '02':
+      obj['zh'] = '二月',
+        obj['jp'] = 'Nigatsu'
+      break;
+    case '03':
+      obj['zh'] = '三月',
+        obj['jp'] = 'Sangatsu'
+      break;
+  }
+  return obj
+}
+
 // 地點篩選
-const places = computed(()=>{
+const places = computed(() => {
   let arr = data.value.map(d => d.places).filter(d => Array.isArray(d))
   let temp = ['全部']
-  for (let i=0; i<arr.length; i++){
-    for (let j=0; j<arr[i].length; j++){
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = 0; j < arr[i].length; j++) {
       temp.push(arr[i][j])
     }
   }
@@ -154,7 +221,7 @@ onMounted(() => {
 <template>
   <div class="min-vh-100 bg-silver">
     <section class="container py-5 py-lg-8 position-relative">
-      <div class="row justify-content-center mb-lg-6">
+      <div class="row justify-content-center my-6">
         <div class="ff-serif text-dark col-lg-5">
           <h2 class="fs-4">iroironairo</h2>
           <h1 class="fw-semibold mt-2 mt-md-4 mb-4">色々な色</h1>
@@ -168,11 +235,12 @@ onMounted(() => {
           <a href="">下載海報</a>
         </div>
       </div>
-      <section class="row justify-content-center mb-lg-5">
-        <div class="col-lg-11 d-flex justify-content-between">
-          <span>{{ dataFiltered.length }} 張 / {{ data.length }} 張照片</span>
-          <div class="d-flex gap-4">
-            <selection label="拍攝地點" :options="places" :current-value="filterByPlace.label" @change-value="filterPlace"></selection>
+      <section class="row justify-content-center mb-5">
+        <div class="col-lg-11 d-flex gap-3 flex-wrap justify-content-between">
+          <span>{{ dataFiltered.filter(d => d['_id']).length }} 張 / {{ data.length }} 張照片</span>
+          <div class="d-flex flex-wrap gap-3">
+            <selection label="拍攝地點" :options="places" :current-value="filterByPlace.label" @change-value="filterPlace">
+            </selection>
             <selection label="拍攝月份" :options="months" :current-value="filterByMonth.label" @change-value="filterMonth">
             </selection>
           </div>
@@ -180,10 +248,15 @@ onMounted(() => {
       </section>
       <main class="row justify-content-center">
         <div class="col-lg-11 d-flex flex-wrap justify-content-start gap-2">
-          <color-swatch class="flex-grow-1"
-          :label="d.date+' '+d.places"
-          :view-photo="true" :color-hsl="d.main_color"
-            v-for="d of dataFiltered"></color-swatch>
+          <div v-for="d of dataFiltered" style="min-width: 160px;">
+            <div v-if="d.type == 'monthTag'" class="flex-grow-1 ff-serif p-2">
+              <p class="mb-1">{{ d.zh }}</p>
+              <p>{{ d.jp }}</p>
+            </div>
+            <color-swatch v-else class="flex-grow-1"
+            :view-photo="true"
+              :color-hsl="d.main_color"></color-swatch>
+          </div>
         </div>
       </main>
       <!-- Fade out clip -->

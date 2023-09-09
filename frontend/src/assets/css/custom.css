@@ -10662,7 +10662,7 @@ textarea.form-control-lg {
 }
 
 .transition {
-  transition: background-color 1.5s ease, color 1.5s ease;
+  transition: all 1.5s ease;
 }
 
 .polaroid {
@@ -10785,6 +10785,9 @@ textarea.form-control-lg {
   cursor: pointer;
   transition: 0.25s ease-in-out;
 }
+.iro-selection-button i {
+  transition: 0.05s ease-in-out;
+}
 .iro-selection-button::after {
   content: "";
   position: absolute;
@@ -10796,8 +10799,8 @@ textarea.form-control-lg {
   transform-origin: left 50%;
   transition: 0.25s ease-in-out;
 }
-.iro-selection-button:hover {
-  background-color: #dddddd;
+.iro-selection-button:hover i {
+  transform: translateY(3px);
 }
 .iro-selection-button:hover::after {
   width: 100%;

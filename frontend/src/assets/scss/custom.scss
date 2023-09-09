@@ -120,7 +120,7 @@ $utilities: map-merge($utilities, $custom_utilities);
 
 // Custom transition
 .transition{
-    transition: background-color 1.5s ease, color 1.5s ease;
+    transition: all 1.5s ease;
 }
 
 @import "./polaroid";

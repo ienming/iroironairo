@@ -41,7 +41,7 @@ onMounted(()=>{
         @click="copyColor"
         @mouseout="resetCopyText"></div>
         <p class="w-100 m-0 d-flex justify-content-between align-items-center">
-            <span>{{ label }}</span>
+            <span class="me-3">{{ label }}</span>
             <div class="d-flex gap-3 gap-lg-2" ref="toolTips">
                 <i v-if="viewPhoto"
                 class="fa-solid fa-image"

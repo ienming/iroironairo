@@ -1,6 +1,9 @@
 .iro-selection-button{
     cursor: pointer;
     transition: .25s ease-in-out;
+    i {
+        transition: .05s ease-in-out;
+    }
     &::after{
         content: "";
         position: absolute;
@@ -13,7 +16,9 @@
         transition: .25s ease-in-out;
     }
     &:hover{
-        background-color: shade-color($silver, 10%);
+        i {
+            transform: translateY(3px);
+        }
         &::after{
             width: 100%;
             transform-origin: right 50%;
