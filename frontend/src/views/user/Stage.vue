@@ -1,11 +1,11 @@
 <script setup>
 import { onMounted, ref, computed, onBeforeUnmount } from 'vue'
-import { hsl2Hex } from '@/composable/common';
 import axios from 'axios'
-import ColorSwatch from '@/components/ColorSwatch.vue';
 import Controller from '@/components/Controller.vue';
 import Bookmark from '@/components/Bookmark.vue';
 import Navigator from '@/components/Navigator.vue';
+import Polaroid from '../../components/Polaroid.vue';
+import PolaroidText from '../../components/PolaroidText.vue';
 
 const imgLoaded = ref(false)
 const data = ref([])
@@ -194,39 +194,8 @@ onBeforeUnmount(() => {
 <template>
   <main v-if="heroData" :style="backgroundStyle" class="transition">
     <section class="container min-vh-100 d-flex flex-column flex-lg-row align-items-center justify-content-start justify-content-lg-center gap-5 position-relative py-5">
-      <div class="polaroid hero d-flex flex-column text-dark shadow-lg">
-        <div class="ratio ratio-1x1">
-          <img :src="heroData.url_google" alt="" class="d-none" @load="imgLoaded = true">
-          <div v-if="imgLoaded" class="overflow-hidden">
-            <img :src="heroData.url_google" alt="" class="w-100 h-100 object-fit-cover"
-            style="object-position: center;">
-          </div>
-          <div v-else class="d-flex justify-content-center align-items-center">
-            <div class="spinner-border" role="status"></div>
-          </div>
-        </div>
-        <div>
-          <p class="d-flex justify-content-between align-items-center border-bottom p-2 ff-serif transition mb-0"
-            :style="backgroundStyle">
-            <i class="fa-solid fa-camera fa-xl"></i>
-            <span class="ps-2">{{ heroData.date + ' ' + heroData.time }}</span>
-          </p>
-        </div>
-      </div>
-      <div id="Sec_text">
-        <p class="d-flex gap-2 flex-wrap">
-          <span v-for="place of heroData.places" class="rounded-pill p-2 transition" :style="backgroundStyleReverse">#{{
-            place }}</span>
-        </p>
-        <p class="mb-0 mt-3">{{ heroData.description }}</p>
-        <div class="d-flex flex-wrap gap-2 mt-5 mt-lg-6 z-1">
-            <color-swatch
-            class="w-50"
-            :color-hsl="color"
-            :label="hsl2Hex(color.h, color.s, color.l)"
-            v-for="color of heroData.colors"></color-swatch>
-        </div>
-      </div>
+      <polaroid :photo="heroData" :photo-loaded="imgLoaded" :bg-style="backgroundStyle"></polaroid>
+      <polaroid-text :photo="heroData" :bg-style="backgroundStyleReverse"></polaroid-text>
     </section>
     <!-- Controller -->
     <controller :theme="backgroundStyle"
@@ -245,17 +214,3 @@ onBeforeUnmount(() => {
     class="position-fixed top-0 end-0 pe-4"></navigator>
   </main>
 </template>
-
-<style scoped>
-#Sec_text{
-  width: 80%;
-  margin-right: auto;
-}
-
-@media screen and (min-width: 992px) {
-  #Sec_text{
-    width: 30vw;
-    margin: unset;
-  }
-}
-</style>

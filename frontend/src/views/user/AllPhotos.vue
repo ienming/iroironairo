@@ -5,6 +5,8 @@ import ColorSwatch from '@/components/ColorSwatch.vue';
 import Bookmark from '@/components/Bookmark.vue';
 import Navigator from '@/components/Navigator.vue';
 import Selection from '../../components/Selection.vue';
+import Polaroid from '../../components/Polaroid.vue';
+import PolaroidText from '../../components/PolaroidText.vue';
 
 const data = ref([])
 const dataFiltered = computed(() => {
@@ -12,14 +14,18 @@ const dataFiltered = computed(() => {
     (a, b) => {
       return new Date(a.iso_date.slice(0, -1)) - new Date(b.iso_date.slice(0, -1))
     })
-  // 根據月份篩選  
-  if (filterByMonth.value.key !== "0") {
-    arr = arr.filter(d => d.date.split(":")[1] == filterByMonth.value.key)
-  }
-  // 根據地點篩選
-  if (filterByPlace.value.key !== "全部") {
-    arr = arr.filter(d => d.places.includes(filterByPlace.value.key))
-  }
+    // 根據地點篩選
+    if (filterByPlace.value.key !== "全部") {
+      arr = arr.filter(d => d.places.includes(filterByPlace.value.key))
+    }
+    // 根據月份篩選  
+    if (filterByMonth.value.key !== "0") {
+      arr = arr.filter(d => d.date.split(":")[1] == filterByMonth.value.key)
+    }
+    // 根據時間篩選
+    if (filterByHour.value.key !== "全部") {
+      arr = arr.filter(d => d.time.split(":")[0] == filterByHour.value.key)
+    }
   // 插入月份標誌
   let newArr = []
   for (let i = 0; i < arr.length; i++) {
@@ -111,7 +117,6 @@ const places = computed(() => {
 })
 const filterByPlace = ref(places.value[0])
 function filterPlace(key) {
-  console.log('filter by place: ' + key)
   filterByPlace.value = places.value.find(place => place.key == key)
 }
 
@@ -152,8 +157,56 @@ const months = [
 ]
 const filterByMonth = ref(months[0])
 function filterMonth(key) {
-  console.log('filter by month: ' + key)
   filterByMonth.value = months.find(month => month.key == key)
+}
+
+// 時間篩選
+const hours = computed(()=>{
+  let arr = data.value.map(d => d.time).filter(d => d)
+  let temp = []
+  for (let i = 0; i < arr.length; i++) {
+      temp.push(arr[i].split(":")[0])
+  }
+  temp.sort((a,b) => {return a - b})
+  temp.unshift("全部")
+  temp = new Set(temp)
+  let output = [...temp].map(d => {
+    let obj = {
+      key: d,
+      label: d
+    }
+    if (d !== '全部'){
+      if (d < 10){
+        obj['label'] = "早上"+d.slice(-1)+"點"
+      }
+      if (d >= 10 && d < 12){
+        obj['label'] = "早上"+d+"點"
+      }
+      if (d == 12){
+        obj['label'] = "中午12點"
+      }
+      if (d > 12 && d < 18){
+        obj['label'] = "下午"+(d*1-12)+"點"
+      }
+      if (d >= 18){
+        obj['label'] = "晚上"+(d*1-12)+"點"
+      }
+    }
+    return obj
+  })
+  return output
+})
+const filterByHour = ref(hours.value[0])
+function filterHour(key) {
+  filterByHour.value = hours.value.find(hour => hour.key == key)
+}
+
+// Polaroid
+const polaroidShown = ref(false)
+const nowPolaroid = ref(null)
+function showPolaroid(data){
+  nowPolaroid.value = data
+  polaroidShown.value = true
 }
 
 const CSV_URL = "/src/assets/data.csv"
@@ -220,8 +273,8 @@ onMounted(() => {
 
 <template>
   <div class="min-vh-100 bg-silver">
-    <section class="container py-5 py-lg-8 position-relative">
-      <div class="row justify-content-center my-6">
+    <section class="container pt-5 pb-8 pt-lg-8 position-relative">
+      <div class="row justify-content-center mt-6 mb-4 mb-lg-6">
         <div class="ff-serif text-dark col-lg-5">
           <h2 class="fs-4">iroironairo</h2>
           <h1 class="fw-semibold mt-2 mt-md-4 mb-4">色々な色</h1>
@@ -231,8 +284,11 @@ onMounted(() => {
             <span>2023.03.24</span>
           </h3>
         </div>
-        <div class="col-lg-6 d-flex align-items-end justify-content-end">
-          <a href="">下載海報</a>
+        <div class="col-lg-6 mt-4 mt-lg-0 d-flex align-items-end justify-content-end">
+          <a href="" class="text-dark link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover">
+            <i class="fa-solid fa-arrow-down fa-lg"></i>
+            <span class="ms-1">下載海報</span>
+          </a>
         </div>
       </div>
       <section class="row justify-content-center mb-5">
@@ -243,25 +299,41 @@ onMounted(() => {
             </selection>
             <selection label="拍攝月份" :options="months" :current-value="filterByMonth.label" @change-value="filterMonth">
             </selection>
+            <selection label="拍攝時間" :options="hours" :current-value="filterByHour.label" @change-value="filterHour">
+            </selection>
           </div>
         </div>
       </section>
       <main class="row justify-content-center">
         <div class="col-lg-11 d-flex flex-wrap justify-content-start gap-2">
-          <div v-for="d of dataFiltered" style="min-width: 160px;">
-            <div v-if="d.type == 'monthTag'" class="flex-grow-1 ff-serif p-2">
-              <p class="mb-1">{{ d.zh }}</p>
-              <p>{{ d.jp }}</p>
+          <transition-group name="fade">
+            <div v-for="(d,id) of dataFiltered" style="min-width: 160px;"
+            :key="id">
+              <div v-if="d.type == 'monthTag'" class="flex-grow-1 ff-serif p-2">
+                <p class="mb-1 fw-bold">{{ d.zh }}</p>
+                <p>{{ d.jp }}</p>
+              </div>
+              <color-swatch v-else class="flex-grow-1"
+              :label="'#'+d.places[0]"
+              :view-photo="true"
+              :color-hsl="d.main_color"
+              @show-polaroid="showPolaroid(d)"></color-swatch>
             </div>
-            <color-swatch v-else class="flex-grow-1"
-            :view-photo="true"
-              :color-hsl="d.main_color"></color-swatch>
-          </div>
+          </transition-group>
         </div>
       </main>
       <!-- Fade out clip -->
       <div class="fade-clip fixed-bottom"></div>
     </section>
+    <!-- Polaroid -->
+    <transition name="fade" mode="out-in">
+      <section class="vh-100 bg-silver fixed-top d-flex justify-content-center align-items-center gap-5"
+      v-if="polaroidShown">
+        <polaroid :photo="nowPolaroid"></polaroid>
+        <polaroid-text :photo="nowPolaroid"></polaroid-text>
+        <i class="fa-solid fa-xmark" role="button" @click="polaroidShown = false"></i>
+      </section>
+    </transition>
     <!-- Bookmark -->
     <bookmark class="position-fixed top-0 d-flex align-items-center gap-1"></bookmark>
     <!-- Nav -->
@@ -271,7 +343,13 @@ onMounted(() => {
 
 <style scoped>
 h1 {
-  font-size: 86px;
+  font-size: 52px;
+}
+
+@media screen and (min-width: 992px) {
+  h1{
+    font-size: 86px;
+  }
 }
 
 .anim-line-h {

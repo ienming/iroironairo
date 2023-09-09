@@ -17,3 +17,9 @@ const props = defineProps({
         <span class="text">iroironairo</span>
     </div>
 </template>
+
+<style scoped>
+.bookmark {
+    z-index: 1030;
+}
+</style>

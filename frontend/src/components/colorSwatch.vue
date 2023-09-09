@@ -12,6 +12,8 @@ const props = defineProps({
     default: false
   }
 });
+const emit = defineEmits(['show-polaroid'])
+
 const color = computed(()=>{
     return hsl2Hex(props.colorHsl.h, props.colorHsl.s, props.colorHsl.l)
 })
@@ -46,7 +48,8 @@ onMounted(()=>{
                 <i v-if="viewPhoto"
                 class="fa-solid fa-image"
                 data-bs-title="查看照片"
-                data-bs-toggle="tooltip"></i>
+                data-bs-toggle="tooltip"
+                @click="emit('show-polaroid')"></i>
                 <i class="fa-solid fa-magnifying-glass"
                 data-bs-placement="bottom"
                 data-bs-toggle="tooltip"

@@ -10713,7 +10713,7 @@ textarea.form-control-lg {
   width: 100%;
   height: 100%;
   color: rgba(255, 255, 255, 0.9);
-  font-size: 12px;
+  font-size: 14px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10784,6 +10784,7 @@ textarea.form-control-lg {
 .iro-selection-button {
   cursor: pointer;
   transition: 0.25s ease-in-out;
+  background-color: #e5e5e5;
 }
 .iro-selection-button i {
   transition: 0.05s ease-in-out;
@@ -10810,6 +10811,10 @@ textarea.form-control-lg {
 .iro-selection-list {
   max-height: 250px;
   overflow-y: scroll;
+  z-index: 1040;
+}
+.iro-selection-list .active {
+  background-color: #000;
 }
 
 /*# sourceMappingURL=custom.css.map */

@@ -1,6 +1,7 @@
 .iro-selection-button{
     cursor: pointer;
     transition: .25s ease-in-out;
+    background-color: shade-color($silver, 7%);
     i {
         transition: .05s ease-in-out;
     }
@@ -29,4 +30,8 @@
 .iro-selection-list{
     max-height: 250px;
     overflow-y: scroll;
+    z-index: 1040;
+    .active{
+        background-color: $black;
+    }
 }
