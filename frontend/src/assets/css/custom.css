@@ -10804,4 +10804,9 @@ textarea.form-control-lg {
   transform-origin: right 50%;
 }
 
+.iro-selection-list {
+  max-height: 250px;
+  overflow-y: scroll;
+}
+
 /*# sourceMappingURL=custom.css.map */

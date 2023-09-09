@@ -25,13 +25,13 @@ function switchList(){
                 <i class="fa-solid fa-chevron-down"></i>
             </span>
         </div>
-        <ul class="list-group list-group-flush shadow-lg rounded position-absolute z-1 w-100"
+        <ul class="list-group list-group-flush shadow-lg rounded position-absolute z-1 w-100 iro-selection-list"
         v-show="listShown">
             <li type="button" class="list-group-item list-group-item-action"
             aria-current="true"
             v-for="opt of options"
-            @click="changeValue(opt)">
-                {{ opt }}
+            @click="changeValue(opt.key)">
+                {{ opt.label }}
             </li>
         </ul>
     </div>
