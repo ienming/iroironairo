@@ -124,7 +124,7 @@ function shuffle() {
 }
 
 // Test reading from CSV without backend
-const CSV_URL = "/src/assets/data.csv"
+const CSV_URL = "/data.csv"
 function readFromCSV() {
   axios.get(CSV_URL)
     .then((response) => {

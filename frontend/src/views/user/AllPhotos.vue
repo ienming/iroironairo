@@ -209,7 +209,7 @@ function showPolaroid(data){
   polaroidShown.value = true
 }
 
-const CSV_URL = "/src/assets/data.csv"
+const CSV_URL = "/data.csv"
 function readFromCSV() {
   axios.get(CSV_URL)
     .then((response) => {
@@ -309,10 +309,14 @@ onMounted(() => {
           <transition-group name="fade">
             <div v-for="(d,id) of dataFiltered" style="min-width: 160px;"
             :key="id">
+            <!-- Month Tag -->
               <div v-if="d.type == 'monthTag'" class="flex-grow-1 ff-serif p-2">
-                <p class="mb-1 fw-bold">{{ d.zh }}</p>
-                <p>{{ d.jp }}</p>
+                <p class="mb-0">
+                  <span class="mb-1 fw-bold d-block">{{ d.zh }}</span>
+                  <span>{{ d.jp }}</span>
+                </p>
               </div>
+              <!-- Color Swatch -->
               <color-swatch v-else class="flex-grow-1"
               :label="'#'+d.places[0]"
               :view-photo="true"
@@ -331,7 +335,8 @@ onMounted(() => {
       v-if="polaroidShown">
         <polaroid :photo="nowPolaroid"></polaroid>
         <polaroid-text :photo="nowPolaroid"></polaroid-text>
-        <i class="fa-solid fa-xmark" role="button" @click="polaroidShown = false"></i>
+        <i class="fa-solid fa-xmark fa-xl position-absolute end-0 p-5 opacity-50-hover"
+        role="button" @click="polaroidShown = false"></i>
       </section>
     </transition>
     <!-- Bookmark -->

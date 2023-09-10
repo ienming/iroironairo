@@ -11,10 +11,10 @@ $custom_utilities: (
             responsive: true
         )
     ),
-    // "text-opacity": map-merge(
-    //     map-get($utilities, "text-opacity"),
-    //     (
-    //         state: hover
-    //     )
-    // )
+    "opacity": map-merge(
+        map-get($utilities, "opacity"),
+        (
+            state: hover
+        )
+    )
 )
