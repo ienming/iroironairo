@@ -56,28 +56,34 @@ function showPolaroid(data){
 </script>
 
 <template>
-    <div class="z-1">
-        <h1>Color Search</h1>
-        <div>
-            <p>{{ colorHsl }}</p>
-            <p>{{ colorHex }}</p>
-            <p>{{ colorRgb }}</p>
-            <p style="height: 50px" :style="{'background-color':colorHex}"></p>
-        </div>
-        <main>
-            <h2>Results:</h2>
-            <p>{{ dataFiltered.size+'張照片' }}</p>
-            <div v-for="d of dataFiltered" class="d-flex">
-                <!-- <p>{{ d.name }}</p>
-                <div class="main-cs" v-for="c of d.colors"
-                :style="{'background-color': hsl2Hex(c.h, c.s, c.l) }"></div> -->
-
-                <!-- Color Swatch -->
-                <color-swatch class="flex-grow-1"
-                  :label="'#'+d.places[0]"
-                  :view-photo="true"
-                  :color-hsl="d.main_color"
-                  @show-polaroid="showPolaroid(d)"></color-swatch>
+    <div class="z-1 min-vh-100 bg-silver">
+        <main class="container pt-5 pb-8 pt-lg-8">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="sticky-top">
+                        <h1 class="fs-2 fw-bolder mb-4">搜尋顏色</h1>
+                        <div class="bg-white rounded-3 p-3 shadow-lg w-75">
+                            <p style="height: 50px" :style="{'background-color':colorHex}" class="rounded-3"></p>
+                            <p class="mb-1">{{ colorHex }}</p>
+                            <p class="mb-1">{{ 'RGB: '+colorRgb.r+', '+colorRgb.g+', '+colorRgb.b }}</p>
+                            <p class="mb-0">{{ 'HSL: '+colorHsl.h+'o, '+colorHsl.s+'%, '+colorHsl.l+'%' }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="mb-5">
+                        <span>{{ dataFiltered.size+'張 / '+data.length+'張照片' }}</span>  
+                    </div>
+                    <section class="d-flex gap-3 flex-wrap">
+                        <!-- Color Swatch -->
+                        <color-swatch class="col-2 flex-grow-1"
+                            v-for="d of dataFiltered"
+                          :label="'#'+d.places[0]"
+                          :view-photo="true"
+                          :color-hsl="d.main_color"
+                          @show-polaroid="showPolaroid(d)"></color-swatch>
+                    </section>
+                </div>
             </div>
         </main>
         <!-- Polaroid -->
