@@ -9,3 +9,16 @@ export function hsl2Hex(h, s, l) {
     let result = `#${f(0)}${f(8)}${f(4)}`
     return result.toUpperCase();
   }
+
+export function hex2Rgb(hex) {
+  // 移除Hex顏色值中的#字符（如果存在）
+  hex = hex.replace(/^#/, '');
+
+  // 將Hex值拆分成RR、GG和BB部分
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+
+  // 返回RGB數值作為對象
+  return { r, g, b };
+}
