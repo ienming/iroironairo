@@ -285,9 +285,12 @@ onMounted(() => {
           </h3>
         </div>
         <div class="col-lg-6 mt-4 mt-lg-0 d-flex align-items-end justify-content-end">
-          <a href="" class="text-dark link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover">
+          <a href="" class="text-dark link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover txt-lang-hover">
             <i class="fa-solid fa-arrow-down fa-lg"></i>
-            <span class="ms-1">下載海報</span>
+            <div class="ms-1 d-inline-block">
+              <span>下載海報</span>
+              <span>下載海報</span>
+            </div>
           </a>
         </div>
       </div>
