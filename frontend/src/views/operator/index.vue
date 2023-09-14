@@ -32,7 +32,7 @@
 </script>
 
 <template>
-  <main class="main mx-auto">
+  <main class="container">
     <div class="mt-5 mb-4">
       <h1 class="fs-4">色々な色 照片資料管理</h1>
       <h2 class="fs-5">iroironairo</h2>
@@ -50,16 +50,25 @@
       <table v-else class="table table-hover table-striped">
         <thead>
           <th>照片</th>
+          <th>編輯</th>
           <th>拍攝時間</th>
           <th>拍攝地點</th>
           <th>代表顏色</th>
           <th>說明</th>
-          <th>編輯</th>
           <th>URL</th>
         </thead>
         <tbody>
           <tr v-for="d of data" :key="d.id">
             <td>{{ d.name.slice(0, 8) }}</td>
+            <td>
+              <router-link :to="{
+                path: '/operator_edit',
+                query: {
+                  name: d.name
+                }}"
+                target="_blank"
+              class="text-teal-lighten-1">編輯</router-link>
+            </td>
             <td>{{ d.date }}</td>
             <!-- Places -->
             <td v-if="d.places">
@@ -79,15 +88,6 @@
             <!-- Description -->
             <td v-if="d.description">{{ d.description.slice(0, 10)+'...' }}</td>
             <td v-else>尚無說明</td>
-            <td>
-              <router-link :to="{
-                path: '/operator_edit',
-                query: {
-                  name: d.name
-                }}"
-                target="_blank"
-              class="text-teal-lighten-1">編輯</router-link>
-            </td>
             <td><a :href="d.url_google" target="_blank">連結</a></td>
           </tr>
         </tbody>

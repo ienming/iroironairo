@@ -171,7 +171,7 @@ const script = function (p5) {
         //     Math.abs(el.color[1] - s) <= threshold * 3 &&
         //     Math.abs(el.color[2] - l) <= threshold * 4;
         // });
-        let threshold = 31;
+        let threshold = 20;
         let temp = mainCs.find((el) => {
           return colorDifference(colorRGB, el.color_rgb) <= threshold;
         })
