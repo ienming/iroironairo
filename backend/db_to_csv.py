@@ -6,9 +6,9 @@ from get_database import get_database
 db = get_database('exchange_japan')
 collection = db.photos
 
-amount = 100
-data = collection.find().limit(amount)
-# data = collection.find()
+# amount = 100
+# data = collection.find().limit(amount)
+data = collection.find()
 
 output_folder_path = "../frontend/src/assets"
 csv_file_name = "data.csv"

@@ -1,8 +1,8 @@
 node_modules/
 .DS_Store
 key/
-data-process/origin/
-data-process/output/
+data-process/googleDrive/
+data-process/compressed/
 frontend/src/assets/photos
 frontend/dist
 .vscode
