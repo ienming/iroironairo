@@ -3,6 +3,8 @@ node_modules/
 key/
 data-process/googleDrive/
 data-process/compressed/
+data-process/env/
 frontend/src/assets/photos
 frontend/dist
+backend/env/
 .vscode

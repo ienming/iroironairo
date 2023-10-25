@@ -239,6 +239,27 @@ function showPolaroid(data){
   nowPolaroid.value = data
   polaroidShown.value = true
 }
+function showPrev(){
+  const findingFunction = (d) => d.name === nowPolaroid.value.name
+  const currentPhotoIndex = dataFiltered.value.findIndex(findingFunction)
+  if (dataFiltered.value[currentPhotoIndex-1]['main_color']){
+    nowPolaroid.value = dataFiltered.value[currentPhotoIndex-1]
+  }
+  if (currentPhotoIndex == 1){
+    nowPolaroid.value = dataFiltered.value[dataFiltered.value.length-1]
+  }
+}
+function showNext(){
+  const findingFunction = (d) => d.name === nowPolaroid.value.name
+  const currentPhotoIndex = dataFiltered.value.findIndex(findingFunction)
+  if (currentPhotoIndex == dataFiltered.value.length-1){
+    nowPolaroid.value = dataFiltered.value[1]
+  }else{
+    if (dataFiltered.value[currentPhotoIndex+1]['main_color']){
+      nowPolaroid.value = dataFiltered.value[currentPhotoIndex+1]
+    }
+  }
+}
 </script>
 
 <template>
@@ -306,8 +327,16 @@ function showPolaroid(data){
       v-if="polaroidShown">
         <polaroid :photo="nowPolaroid"></polaroid>
         <polaroid-text :photo="nowPolaroid"></polaroid-text>
-        <i class="fa-solid fa-xmark fa-xl position-absolute end-0 p-5 opacity-50-hover"
+        <i class="fa-solid fa-xmark fa-xl position-absolute top-0 end-0 p-5 opacity-50-hover"
         role="button" @click="polaroidShown = false"></i>
+        <div class="position-absolute end-0 d-flex flex-column px-3 pb-3 pb-lg-0 gap-3">
+          <button class="luc-controller" @click="showPrev">
+              <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <button class="luc-controller" @click="showNext">
+              <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
       </section>
     </transition>
     <!-- Bookmark -->

@@ -1,11 +1,27 @@
 <script setup>
+import { watch, onMounted, ref } from 'vue';
 const props = defineProps(['photoLoaded', 'photo', 'bgStyle'])
+const isLoading = ref(true)
+
+watch(() => props.photo, (newPhoto, oldPhoto) => {
+  if (newPhoto !== oldPhoto) {
+    isLoading.value = true;
+  }
+});
+
+const imageElement = ref(null)
+onMounted(() => {
+  imageElement.value.onload = () => {
+    console.log("Image loaded")
+    isLoading.value = false;
+  };
+});
 </script>
 <template>
     <div class="polaroid hero d-flex flex-column text-dark shadow-lg">
         <div class="ratio ratio-1x1">
-          <img :src="photo.url_google" alt="" class="d-none" @load="photoLoaded = true">
-          <div v-if="photoLoaded" class="overflow-hidden">
+          <img :src="photo.url_google" alt="" class="d-none" ref="imageElement">
+          <div v-if="!isLoading" class="overflow-hidden">
             <img :src="photo.url_google" alt="" class="w-100 h-100 object-fit-cover"
             style="object-position: center;">
           </div>
