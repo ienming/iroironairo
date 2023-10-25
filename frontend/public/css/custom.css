@@ -10716,7 +10716,7 @@ textarea.form-control-lg {
   gap: 8px;
   align-items: flex-start;
   justify-content: center;
-  min-width: 160px;
+  max-width: 130px;
 }
 .color-swatch > div {
   border-radius: 8px;

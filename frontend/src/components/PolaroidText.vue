@@ -14,7 +14,6 @@ const props = defineProps(['photo', 'bgStyle'])
         <p class="mb-0 mt-3">{{ photo.description }}</p>
         <div class="d-flex flex-wrap gap-2 mt-5 mt-lg-6 z-1">
             <color-swatch
-            class="w-50"
             :color-hsl="color"
             :label="hsl2Hex(color.h, color.s, color.l)"
             v-for="color of photo.colors"></color-swatch>
