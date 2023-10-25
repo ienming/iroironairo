@@ -1,21 +1,25 @@
 <script setup>
 import { computed, inject, ref } from 'vue';
+import { hsl2Hex } from '@/composable/common';
 import ColorSwatch from '@/components/ColorSwatch.vue';
 import Bookmark from '@/components/Bookmark.vue';
 import Navigator from '@/components/Navigator.vue';
 import Selection from '../../components/Selection.vue';
 import Polaroid from '../../components/Polaroid.vue';
 import PolaroidText from '../../components/PolaroidText.vue';
+import ButtonCheckbox from '@/components/ButtonCheckbox.vue'
 
 const data = inject('csvData', [])
 const dataFiltered = computed(() => {
-  let arr = data.value.filter(d => d['main_color']).sort(
-    (a, b) => {
-      return new Date(a.iso_date.slice(0, -1)) - new Date(b.iso_date.slice(0, -1))
-    })
+  let arr = data.value.filter(d => d['main_color'])
     // 根據地點篩選
-    if (filterByPlace.value.key !== "全部") {
-      arr = arr.filter(d => d.places.includes(filterByPlace.value.key))
+    if (filterByPlaces.value.length < places.value.length){
+      let result = []
+      filterByPlaces.value.forEach(filterPlace => {
+        result = result.concat(arr.filter(d => d.places.includes(filterPlace)))
+      })
+      const set = new Set(result)
+      arr = Array.from(set)
     }
     // 根據月份篩選  
     if (filterByMonth.value.key !== "0") {
@@ -25,6 +29,11 @@ const dataFiltered = computed(() => {
     if (filterByHour.value.key !== "全部") {
       arr = arr.filter(d => d.time.split(":")[0] == filterByHour.value.key)
     }
+  // 篩選完畢後重新排序
+  arr = arr.sort(
+    (a, b) => {
+      return new Date(a.iso_date.slice(0, -1)) - new Date(b.iso_date.slice(0, -1))
+    })
   // 插入月份標誌
   let newArr = []
   for (let i = 0; i < arr.length; i++) {
@@ -114,9 +123,29 @@ const places = computed(() => {
   })
   return output
 })
-const filterByPlace = ref(places.value[0])
-function filterPlace(key) {
-  filterByPlace.value = places.value.find(place => place.key == key)
+const filterByPlaces = ref([])
+for (let i=0; i<places.value.length; i++){
+  filterByPlaces.value.push(places.value[i].key)
+}
+function filterPlace(checkedStatus){
+  console.log(checkedStatus)
+  if (checkedStatus.key === '全部'){
+    if (checkedStatus.value){
+      filterByPlaces.value = []
+      for (let i=0; i<places.value.length; i++){
+        filterByPlaces.value.push(places.value[i].key)
+      }
+    }else{
+      filterByPlaces.value = []
+    }
+  }else{
+    if (checkedStatus.value){
+      filterByPlaces.value.push(checkedStatus.key)
+    }else{
+      filterByPlaces.value = filterByPlaces.value.filter(p => p !== checkedStatus.key)
+    }
+  }
+  console.log(filterByPlaces.value)
 }
 
 // 月份篩選
@@ -200,6 +229,9 @@ function filterHour(key) {
   filterByHour.value = hours.value.find(hour => hour.key == key)
 }
 
+// 資料密度
+const density = ref(7)
+
 // Polaroid
 const polaroidShown = ref(false)
 const nowPolaroid = ref(null)
@@ -211,7 +243,7 @@ function showPolaroid(data){
 
 <template>
   <div class="min-vh-100 bg-silver">
-    <section class="container pt-5 pb-8 pt-lg-8 position-relative">
+    <section class="container pt-5 position-relative">
       <div class="row justify-content-center mt-6 mb-4 mb-lg-6">
         <div class="ff-serif text-dark col-lg-5">
           <h2 class="fs-4">iroironairo</h2>
@@ -236,41 +268,39 @@ function showPolaroid(data){
         <div class="col-lg-11 d-flex gap-3 flex-wrap justify-content-between">
           <span>{{ dataFiltered.filter(d => d['_id']).length }} 張 / {{ data.length }} 張照片</span>
           <div class="d-flex flex-wrap gap-3">
-            <selection label="拍攝地點" :options="places" :current-value="filterByPlace.label" @change-value="filterPlace">
-            </selection>
             <selection label="拍攝月份" :options="months" :current-value="filterByMonth.label" @change-value="filterMonth">
             </selection>
             <selection label="拍攝時間" :options="hours" :current-value="filterByHour.label" @change-value="filterHour">
             </selection>
+            <input type="range" min="3" max="30" v-model="density">
+          </div>
+          <div class="d-flex gap-1 overflow-scroll">
+            <button-checkbox v-for="place of places" :label="place.label" :value="place.key" :checked="filterByPlaces.includes(place.key)"
+            @change-value="filterPlace"></button-checkbox>
           </div>
         </div>
       </section>
-      <main class="row justify-content-center">
-        <div class="col-lg-11 d-flex flex-wrap justify-content-start gap-2">
-          <transition-group name="fade">
-            <div v-for="(d,id) of dataFiltered" style="min-width: 160px;"
-            :key="id">
-            <!-- Month Tag -->
-              <div v-if="d.type == 'monthTag'" class="flex-grow-1 ff-serif p-2">
-                <p class="mb-0">
-                  <span class="mb-1 fw-bold d-block">{{ d.zh }}</span>
-                  <span>{{ d.jp }}</span>
-                </p>
-              </div>
-              <!-- Color Swatch -->
-              <color-swatch v-else class="flex-grow-1"
-              :label="'#'+d.places[0]"
-              :view-photo="true"
-              :color-hsl="d.main_color"
-              @show-polaroid="showPolaroid(d)"></color-swatch>
-            </div>
-          </transition-group>
-        </div>
-      </main>
-      <!-- Fade out clip -->
-      <div class="fade-clip fixed-bottom"></div>
     </section>
-    <!-- Polaroid -->
+    <main class="row justify-content-center">
+      <div class="pt-6 ps-5 d-flex justify-content-start overflow-scroll">
+        <transition-group name="fade">
+          <div v-for="(d,id) of dataFiltered" :key="id">
+            <div v-if="d.type == 'monthTag'" style="height: 40vh;" class="ff-serif position-relative">
+              <p class="bg-silver p-1 m-0 position-absolute" style="top: -60px;">
+                <span class="mb-1 fw-bold d-block">{{ d.zh }}</span>
+                <span>{{ d.jp }}</span>
+              </p>
+            </div>
+            <div v-else style="height: 40vh;"
+            :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': density+'px'}"
+            role="button" class="position-relative color-data"
+            :data-place="d.places"
+            @click="showPolaroid(d)"></div>
+          </div>
+        </transition-group>
+      </div>
+    </main>
+    <!-- Modal Polaroid -->
     <transition name="fade" mode="out-in">
       <section class="vh-100 bg-silver fixed-top d-flex justify-content-center align-items-center gap-5"
       v-if="polaroidShown">
@@ -304,5 +334,27 @@ h1 {
   height: 1px;
   flex: auto;
   margin: 0 4px;
+}
+
+.color-data:hover{
+  width: 90px !important;
+}
+.color-data:hover::after{
+  transform: scale(1);
+}
+.color-data::after {
+  display: block;
+  content: attr(data-place);
+  position: absolute;
+  top: 12px;
+  padding: 8px;
+  border-radius: 25px;
+  font-size: 14px;
+  width: max-content;
+  z-index: 99;
+  transform-origin: center;
+  transform: scale(0);
+  /* transition: .1s ease-in-out; */
+  background-color: #fff;
 }
 </style>
