@@ -1,12 +1,12 @@
 <script setup>
-import { computed, inject, ref } from 'vue';
+import { computed, inject, onBeforeMount, ref } from 'vue';
+import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 import { hsl2Hex } from '@/composable/common';
-import ColorSwatch from '@/components/ColorSwatch.vue';
 import Bookmark from '@/components/Bookmark.vue';
 import Navigator from '@/components/Navigator.vue';
-import Selection from '../../components/Selection.vue';
-import Polaroid from '../../components/Polaroid.vue';
-import PolaroidText from '../../components/PolaroidText.vue';
+import Selection from '@/components/Selection.vue';
+import Polaroid from '@/components/Polaroid.vue';
+import PolaroidText from '@/components/PolaroidText.vue';
 import ButtonCheckbox from '@/components/ButtonCheckbox.vue'
 
 const data = inject('csvData', [])
@@ -147,6 +147,24 @@ function filterPlace(checkedStatus){
   }
   console.log(filterByPlaces.value)
 }
+
+// 從其他頁面點選地點過來
+onBeforeMount(()=>{
+  const route = useRoute()
+  if (JSON.stringify(route.query) !== '{}'){
+    const placeArg = JSON.parse(route.query.place);
+    filterByPlaces.value = []
+    filterByPlaces.value.push(placeArg)
+  }
+})
+
+// 同一頁點選地點時也要觸發 filter
+onBeforeRouteUpdate((to, form) =>{
+  const placeArg = JSON.parse(to.query.place);
+  filterByPlaces.value = []
+  filterByPlaces.value.push(placeArg)
+  polaroidShown.value = false
+})
 
 // 月份篩選
 const months = [
@@ -326,7 +344,7 @@ function showNext(){
       <section class="vh-100 bg-silver fixed-top d-flex justify-content-center align-items-center gap-5"
       v-if="polaroidShown">
         <polaroid :photo="nowPolaroid"></polaroid>
-        <polaroid-text :photo="nowPolaroid"></polaroid-text>
+        <polaroid-text :photo="nowPolaroid" :bg-style="{'background-color': '#232323', 'color': '#f6f6f6'}"></polaroid-text>
         <i class="fa-solid fa-xmark fa-xl position-absolute top-0 end-0 p-5 opacity-50-hover"
         role="button" @click="polaroidShown = false"></i>
         <div class="position-absolute end-0 d-flex flex-column px-3 pb-3 pb-lg-0 gap-3">

@@ -113,7 +113,7 @@ function showNext(){
         <section class="vh-100 bg-silver fixed-top d-flex justify-content-center align-items-center gap-5"
         v-if="polaroidShown">
             <polaroid :photo="nowPolaroid"></polaroid>
-            <polaroid-text :photo="nowPolaroid"></polaroid-text>
+            <polaroid-text :photo="nowPolaroid" :bg-style="{'background-color': '#232323', 'color': '#f6f6f6'}"></polaroid-text>
             <i class="fa-solid fa-xmark fa-xl position-absolute top-0 end-0 p-5 opacity-50-hover"
             role="button" @click="polaroidShown = false"></i>
             <div class="position-absolute end-0 d-flex flex-column px-3 pb-3 pb-lg-0 gap-3">

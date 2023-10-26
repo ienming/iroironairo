@@ -33,7 +33,7 @@ onMounted(() => {
           <p class="d-flex justify-content-between align-items-center border-bottom p-2 ff-serif transition mb-0"
             :style="bgStyle">
             <i class="fa-solid fa-camera fa-xl"></i>
-            <span class="ps-2">{{ photo.date + ' ' + photo.time }}</span>
+            <span class="ps-2">{{ photo.date.replace(/:/g, '/') + ' ' + photo.time }}</span>
           </p>
         </div>
     </div>

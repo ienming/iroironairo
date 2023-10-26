@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { hsl2Hex } from '@/composable/common';
-import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
+import { useRouter, onBeforeRouteLeave } from 'vue-router'
 const props = defineProps({
     colorHsl: Object,
     label: {
@@ -33,7 +33,6 @@ function resetCopyText() {
 
 // Router
 const router = useRouter()
-const route = useRoute()
 function navigateTo() {
     router.push({
         path: '/color_search',
