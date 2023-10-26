@@ -67,7 +67,7 @@ onMounted(() => {
         <div class="d-flex gap-3 gap-lg-2" ref="toolTips">
             <i v-if="viewPhoto" class="fa-solid fa-image" data-bs-title="查看照片" data-bs-toggle="tooltip"
                 @click="emit('show-polaroid')"></i>
-            <i class="fa-solid fa-magnifying-glass" data-bs-placement="bottom" data-bs-toggle="tooltip" data-bs-title="搜尋顏色"
+            <i class="fa-solid fa-magnifying-glass" data-bs-placement="bottom" data-bs-toggle="tooltip" data-bs-title="相近的顏色"
                 ref="toolTips" @click="navigateTo"></i>
         </div>
         </p>

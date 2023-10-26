@@ -19,7 +19,7 @@ const bodyBgColor = computed(()=>{
   return {}
 })
 const bodyTextColor = computed(()=>{
-  if (33 < bodyBgColor.value.l && bodyBgColor.value.l < 67) {
+  if (25 < bodyBgColor.value.l && bodyBgColor.value.l < 75) {
     return {
       'h': 360,
       's': 0,

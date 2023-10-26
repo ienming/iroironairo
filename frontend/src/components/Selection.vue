@@ -7,11 +7,6 @@ const listShown = ref(false)
 
 function changeValue(value) {
     emits('change-value', value)
-    switchList()
-}
-
-function openList() {
-
 }
 </script>
 

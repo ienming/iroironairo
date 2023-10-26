@@ -23,7 +23,7 @@ const dataFiltered = computed(() => {
     }
     // 根據月份篩選  
     if (filterByMonth.value.key !== "0") {
-      arr = arr.filter(d => d.date.split(":")[1] == filterByMonth.value.key)
+      arr = arr.filter(d => d.date.split("/")[1] == filterByMonth.value.key)
     }
     // 根據時間篩選
     if (filterByHour.value.key !== "全部") {
@@ -37,7 +37,7 @@ const dataFiltered = computed(() => {
   // 插入月份標誌
   let newArr = []
   for (let i = 0; i < arr.length; i++) {
-    const currentMonth = arr[i].date.split(":")[1]
+    const currentMonth = arr[i].date.split("/")[1]
     // 第一個資料前先塞
     if (i == 0){
       let obj = {
@@ -52,7 +52,7 @@ const dataFiltered = computed(() => {
     newArr.push(arr[i])
     // 判斷是否換月份
     if (i < arr.length - 1) {
-      const nextDateMonth = arr[i + 1].date.split(":")[1]
+      const nextDateMonth = arr[i + 1].date.split("/")[1]
       if (currentMonth !== nextDateMonth) {
         let obj = {
           type: "monthTag",
@@ -203,6 +203,7 @@ const months = [
 ]
 const filterByMonth = ref(months[0])
 function filterMonth(key) {
+  console.log(key)
   filterByMonth.value = months.find(month => month.key == key)
 }
 
@@ -248,7 +249,7 @@ function filterHour(key) {
 }
 
 // 資料密度
-const density = ref(7)
+const density = ref(10)
 
 // Polaroid
 const polaroidShown = ref(false)
@@ -287,20 +288,20 @@ function showNext(){
         <div class="ff-serif text-dark col-lg-5">
           <h2 class="fs-4">iroironairo</h2>
           <h1 class="fw-semibold mt-2 mt-md-4 mb-4">色々な色</h1>
-          <h3 class="fs-5 d-flex flex-grow align-items-center">
+          <h3 class="fs-6 d-flex flex-grow align-items-center opacity-50">
             <span>2022.09.28</span>
             <div style="height: 1px;" class="w-100 bg-dark mx-2"></div>
             <span>2023.03.24</span>
           </h3>
         </div>
         <div class="col-lg-6 mt-4 mt-lg-0 d-flex align-items-end justify-content-end">
-          <a href="" class="text-dark link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover txt-lang-hover">
+          <!-- <a href="" class="text-dark link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover txt-lang-hover">
             <i class="fa-solid fa-arrow-down fa-lg"></i>
             <div class="ms-1 d-inline-block">
               <span>下載海報</span>
               <span>下載海報</span>
             </div>
-          </a>
+          </a> -->
         </div>
       </div>
       <section class="row justify-content-center mb-5">
@@ -311,7 +312,10 @@ function showNext(){
             </selection>
             <selection label="拍攝時間" :options="hours" :current-value="filterByHour.label" @change-value="filterHour">
             </selection>
-            <input type="range" min="3" max="30" v-model="density">
+            <div>
+              <label for="dataDensity" class="form-label">Example range</label>
+              <input type="range" min="3" max="30" class="form-range" id="dataDensity" v-model="density">
+            </div>
           </div>
           <div class="d-flex gap-1 overflow-scroll">
             <button-checkbox v-for="place of places" :label="place.label" :value="place.key" :checked="filterByPlaces.includes(place.key)"
@@ -324,13 +328,13 @@ function showNext(){
       <div class="pt-6 ps-5 d-flex justify-content-start overflow-scroll">
         <transition-group name="fade">
           <div v-for="(d,id) of dataFiltered" :key="id">
-            <div v-if="d.type == 'monthTag'" style="height: 40vh;" class="ff-serif position-relative">
+            <div v-if="d.type == 'monthTag'" style="height: 30vh;" class="ff-serif position-relative">
               <p class="bg-silver p-1 m-0 position-absolute" style="top: -60px;">
                 <span class="mb-1 fw-bold d-block">{{ d.zh }}</span>
                 <span>{{ d.jp }}</span>
               </p>
             </div>
-            <div v-else style="height: 40vh;"
+            <div v-else style="height: 30vh;"
             :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': density+'px'}"
             role="button" class="position-relative color-data"
             :data-place="d.places"
@@ -371,7 +375,7 @@ h1 {
 
 @media screen and (min-width: 992px) {
   h1{
-    font-size: 86px;
+    font-size: 66px;
   }
 }
 

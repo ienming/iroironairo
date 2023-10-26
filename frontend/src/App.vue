@@ -64,11 +64,16 @@ export default {
           }
           data.value.push(obj)
         })
+        data.value.forEach(d => {
+          d.date = d.date.replace(/:/g, '/')
+          d.time = d.time.replace(/:[^:]*$/, '')
+        })
         console.log("讀取本地 CSV 成功")
       })
       .catch((error) => {
         console.error(error);
       });
+
       
     provide('csvData', data);
     return {

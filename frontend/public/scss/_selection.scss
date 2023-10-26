@@ -5,24 +5,9 @@
     i {
         transition: .05s ease-in-out;
     }
-    &::after{
-        content: "";
-        position: absolute;
-        width: 0;
-        height: 1px;
-        background-color: $black;
-        left: 0;
-        bottom: 0;
-        transform-origin: left 50%;
-        transition: .25s ease-in-out;
-    }
     &:hover{
         i {
             transform: translateY(3px);
-        }
-        &::after{
-            width: 100%;
-            transform-origin: right 50%;
         }
     }
 }

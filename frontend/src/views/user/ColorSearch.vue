@@ -33,15 +33,24 @@ const dataFiltered = computed(()=>{
     arr = arr.filter(d => d['main_color'])
     let output = []
     for (let i=0; i<arr.length; i++){
-        for (let j=0; j<arr[i].colors.length; j++){
-            const currentHsl = arr[i].colors[j]
-            const currentHex = hsl2Hex(currentHsl.h, currentHsl.s, currentHsl.l)
-            const currentRgb = hex2Rgb(currentHex)
+        // 只找最多的顏色
+        const currentHsl = arr[i].colors[0]
+        const currentHex = hsl2Hex(currentHsl.h, currentHsl.s, currentHsl.l)
+        const currentRgb = hex2Rgb(currentHex)
 
-            if (colorDifference(colorRgb.value, currentRgb) < threshold){
-                output.push(arr[i])
-            }
+        if (colorDifference(colorRgb.value, currentRgb) < threshold){
+            output.push(arr[i])
         }
+        // 用所有顏色下去找
+        // for (let j=0; j<arr[i].colors.length; j++){
+        //     const currentHsl = arr[i].colors[j]
+        //     const currentHex = hsl2Hex(currentHsl.h, currentHsl.s, currentHsl.l)
+        //     const currentRgb = hex2Rgb(currentHex)
+
+        //     if (colorDifference(colorRgb.value, currentRgb) < threshold){
+        //         output.push(arr[i])
+        //     }
+        // }
     }
     return Array.from(new Set(output))
 })
@@ -82,8 +91,8 @@ function showNext(){
         <main class="container pt-5 pb-8 pt-lg-8">
             <div class="row">
                 <div class="col-lg-4">
-                    <div class="sticky-top">
-                        <h1 class="fs-2 fw-bolder mb-4">搜尋顏色</h1>
+                    <div class="sticky-top" style="top: 30px;">
+                        <h1 class="fs-2 fw-bolder mb-4">相近的顏色</h1>
                         <div class="bg-white rounded-3 p-3 shadow-lg w-75">
                             <p style="height: 50px" :style="{'background-color':colorHex}" class="rounded-3"></p>
                             <p class="mb-1">{{ colorHex }}</p>

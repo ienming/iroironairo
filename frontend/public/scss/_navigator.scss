@@ -22,5 +22,8 @@
         >div{
             transform: translateY(-100%);
         }
+        span:nth-child(1){
+            opacity: 0;
+        }
     }
 }
