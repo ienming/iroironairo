@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject, onBeforeMount, ref } from 'vue';
+import { computed, inject, onBeforeMount, onMounted, watch, ref } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 import { hsl2Hex } from '@/composable/common';
 import Bookmark from '@/components/Bookmark.vue';
@@ -251,6 +251,9 @@ function filterHour(key) {
 // 資料密度
 const density = ref(10)
 
+// 控制項
+const controllerShown = ref(false)
+
 // Polaroid
 const polaroidShown = ref(false)
 const nowPolaroid = ref(null)
@@ -279,62 +282,77 @@ function showNext(){
     }
   }
 }
+
+// Random photo
+const randomIndexes = ref([])
+const randomPhotos = computed(()=>{
+  let photos = []
+  randomIndexes.value.forEach(idx => {
+    photos.push(dataFiltered.value[idx])
+  })
+  return photos
+})
+
+function lotteryPhoto(){
+  randomIndexes.value = []
+  const cleanData = JSON.parse(JSON.stringify(dataFiltered.value)).filter(d => d.type !== 'monthTag')
+  const maxIndex = cleanData.length - 1;
+  if (cleanData.length > 3){
+    while (randomIndexes.value.length < 3) {
+      const randomIndex = Math.floor(Math.random() * (maxIndex + 1));
+      
+      if (!randomIndexes.value.includes(randomIndex)) {
+        randomIndexes.value.push(randomIndex);
+      }
+    }
+  }else{
+    while (randomIndexes.value.length < cleanData.length - 1){
+      const randomIndex = Math.floor(Math.random() * (maxIndex + 1));
+      
+      if (!randomIndexes.value.includes(randomIndex)) {
+        randomIndexes.value.push(randomIndex);
+      }
+    }
+  }
+  console.log("Get new random photos: "+randomIndexes.value)
+}
+
+onMounted(()=>{
+  window.setInterval(()=>{
+    lotteryPhoto()
+  }, 15000)
+
+  watch(dataFiltered, () => {
+    lotteryPhoto();
+  });
+
+  lotteryPhoto()
+})
 </script>
 
 <template>
   <div class="min-vh-100 bg-silver">
-    <section class="container pt-5 position-relative">
-      <div class="row justify-content-center mt-6 mb-4 mb-lg-6">
-        <div class="ff-serif text-dark col-lg-5">
-          <h2 class="fs-4">iroironairo</h2>
-          <h1 class="fw-semibold mt-2 mt-md-4 mb-4">色々な色</h1>
-          <h3 class="fs-6 d-flex flex-grow align-items-center opacity-50">
-            <span>2022.09.28</span>
-            <div style="height: 1px;" class="w-100 bg-dark mx-2"></div>
-            <span>2023.03.24</span>
-          </h3>
+    <section>
+      <div class="d-flex">
+        <div v-if="randomPhotos.length > 2" id="randomPhoto_3">
+          <img :src="randomPhotos[2].url_google" alt="" class="random-photo">
         </div>
-        <div class="col-lg-6 mt-4 mt-lg-0 d-flex align-items-end justify-content-end">
-          <!-- <a href="" class="text-dark link-offset-2 link-offset-3-hover link-underline-dark link-underline-opacity-0 link-underline-opacity-75-hover txt-lang-hover">
-            <i class="fa-solid fa-arrow-down fa-lg"></i>
-            <div class="ms-1 d-inline-block">
-              <span>下載海報</span>
-              <span>下載海報</span>
-            </div>
-          </a> -->
+        <div v-if="randomPhotos.length > 0" id="randomPhoto_1">
+          <img :src="randomPhotos[0].url_google" alt="" style="width: auto; height: 300px;" class="random-photo">
         </div>
       </div>
-      <section class="row justify-content-center mb-5">
-        <div class="col-lg-11 d-flex gap-3 flex-wrap justify-content-between">
-          <span>{{ dataFiltered.filter(d => d['_id']).length }} 張 / {{ data.length }} 張照片</span>
-          <div class="d-flex flex-wrap gap-3">
-            <selection label="拍攝月份" :options="months" :current-value="filterByMonth.label" @change-value="filterMonth">
-            </selection>
-            <selection label="拍攝時間" :options="hours" :current-value="filterByHour.label" @change-value="filterHour">
-            </selection>
-            <div>
-              <label for="dataDensity" class="form-label">Example range</label>
-              <input type="range" min="3" max="30" class="form-range" id="dataDensity" v-model="density">
-            </div>
-          </div>
-          <div class="d-flex gap-1 overflow-scroll">
-            <button-checkbox v-for="place of places" :label="place.label" :value="place.key" :checked="filterByPlaces.includes(place.key)"
-            @change-value="filterPlace"></button-checkbox>
-          </div>
-        </div>
-      </section>
     </section>
     <main class="row justify-content-center">
-      <div class="pt-6 ps-5 d-flex justify-content-start overflow-scroll">
+      <div class="pt-6 ps-6 d-flex justify-content-start overflow-scroll">
         <transition-group name="fade">
           <div v-for="(d,id) of dataFiltered" :key="id">
-            <div v-if="d.type == 'monthTag'" style="height: 30vh;" class="ff-serif position-relative">
+            <div v-if="d.type == 'monthTag'" style="height: 25vh;" class="ff-serif position-relative">
               <p class="bg-silver p-1 m-0 position-absolute" style="top: -60px;">
                 <span class="mb-1 fw-bold d-block">{{ d.zh }}</span>
                 <span>{{ d.jp }}</span>
               </p>
             </div>
-            <div v-else style="height: 30vh;"
+            <div v-else style="height: 25vh;"
             :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': density+'px'}"
             role="button" class="position-relative color-data"
             :data-place="d.places"
@@ -343,6 +361,51 @@ function showNext(){
         </transition-group>
       </div>
     </main>
+    <section class="position-relative">
+      <div class="d-flex mb-4 mb-lg-6">
+        <div class="ff-serif text-dark col-lg-3 me-auto ps-6 pt-3">
+          <h2 class="fs-6">iroironairo</h2>
+          <h1 class="fw-semibold mt-2 mb-3">色々な色</h1>
+          <h3 class="d-flex flex-grow align-items-center opacity-50" style="font-size: 14px;">
+            <span>2022.09.28</span>
+            <div style="height: 1px;" class="w-100 bg-dark mx-2"></div>
+            <span>2023.03.24</span>
+          </h3>
+        </div>
+        <div v-if="randomPhotos.length > 1" class="ms-auto pe-8 pt-3" id="randomPhoto_2">
+          <transition name="fade" mode="out-in">
+            <img :src="randomPhotos[1].url_google" alt="" class="random-photo">
+          </transition>
+        </div>
+      </div>
+    </section>
+    <!-- 控制項 -->
+    <div class="position-fixed end-0 pe-5" style="top: 80px;" role="button"
+    @click="controllerShown = !controllerShown">
+      Toggle
+    </div>
+    <transition name="fade" mode="out-in">
+      <section class="row px-6 pt-3 position-fixed bottom-0 bg-silver"
+      v-show="controllerShown">
+      <div class="d-flex flex-wrap gap-3">
+        <selection label="拍攝月份" :options="months" :current-label="filterByMonth.label" @change-value="filterMonth">
+        </selection>
+        <selection label="拍攝時間" :options="hours" :current-label="filterByHour.label" @change-value="filterHour">
+        </selection>
+        <div>
+          <label for="dataDensity" class="form-label">Example range</label>
+          <input type="range" min="3" max="30" class="form-range" id="dataDensity" v-model="density">
+        </div>
+      </div>
+        <div class="pb-3">
+          <span>{{ dataFiltered.filter(d => d['_id']).length }} 張 / {{ data.length }} 張照片</span>
+          <div class="mt-2 d-flex gap-1 overflow-scroll ">
+            <button-checkbox v-for="place of places" :label="place.label" :value="place.key" :checked="filterByPlaces.includes(place.key)"
+            @change-value="filterPlace"></button-checkbox>
+          </div>
+        </div>
+      </section>
+    </transition>
     <!-- Modal Polaroid -->
     <transition name="fade" mode="out-in">
       <section class="vh-100 bg-silver fixed-top d-flex justify-content-center align-items-center gap-5"
@@ -370,13 +433,7 @@ function showNext(){
 
 <style scoped>
 h1 {
-  font-size: 52px;
-}
-
-@media screen and (min-width: 992px) {
-  h1{
-    font-size: 66px;
-  }
+  font-size: 36px;
 }
 
 .anim-line-h {
@@ -407,5 +464,19 @@ h1 {
   transform: scale(0);
   /* transition: .1s ease-in-out; */
   background-color: #fff;
+}
+
+.random-photo{
+  width: 105px;
+  overflow: hidden;
+}
+
+#randomPhoto_1{
+  padding-left: 30vw;
+}
+
+#randomPhoto_3{
+  padding: 50px;
+  padding-left: 100px;
 }
 </style>

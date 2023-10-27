@@ -28,7 +28,7 @@ const props = defineProps({
             :style="{'color': theme.color}"
             class="txt-lang-hover">
             <div>
-                <span>瀏覽全部相片</span>
+                <span>全部相片</span>
                 <span>全ての写真</span>
             </div>
         </router-link>
