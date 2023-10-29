@@ -12,14 +12,14 @@ function changeValue(value) {
 
 <template>
     <div class="iro-selection position-relative" @mouseenter="listShown = true" @mouseleave="listShown = false">
-        <div class="iro-selection-button p-2 rounded position-relative" type="button">
-            <span>{{ label + '：' }}</span>
-            <span>
+        <div class="iro-selection-button p-2 rounded position-relative d-flex" type="button">
+            <span class="flex-shrink-0">{{ label + '：' }}</span>
+            <span class="w-100 d-flex justify-content-between align-items-center">
                 <span class="me-5">{{ currentLabel }}</span>
                 <i class="fa-solid fa-chevron-down"></i>
             </span>
         </div>
-        <ul class="list-group list-group-flush shadow-lg rounded position-absolute bottom-0 w-100 iro-selection-list"
+        <ul class="list-group list-group-flush shadow-lg rounded position-absolute top-0 w-100 iro-selection-list"
             v-show="listShown">
             <li type="button" class="list-group-item list-group-item-action"
             :class="currentLabel == opt.label ? 'active':''"

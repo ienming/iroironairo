@@ -296,8 +296,9 @@ const randomPhotoEls = [randomPhoto_1, randomPhoto_2, randomPhoto_3]
 
 const randomPhotos = computed(()=>{
   let photos = []
+  const cleanData = JSON.parse(JSON.stringify(dataFiltered.value)).filter(d => d.type !== 'monthTag')
   randomIndexes.value.forEach(idx => {
-    photos.push(dataFiltered.value[idx])
+    photos.push(cleanData[idx])
   })
   return photos
 })
@@ -319,7 +320,7 @@ function lotteryPhoto(){
       }
     }
   }else{
-    while (randomIndexes.value.length < cleanData.length - 1){
+    while (randomIndexes.value.length <= cleanData.length - 1){
       const randomIndex = Math.floor(Math.random() * (maxIndex + 1));
       
       if (!randomIndexes.value.includes(randomIndex)) {
@@ -328,18 +329,54 @@ function lotteryPhoto(){
     }
   }
 
-  nextTick(()=>{
-    randomPhotoEls.forEach(el => {
-      const imgEl = el.value
-      const num = imgEl.parentNode.id.split("_")[1]
-      imgEl.onload = () => {
-        // console.log("Image loaded: "+num)
-        randomPhotoStatus[num] = true
-        console.log(randomPhotoStatus)
-      };
-    })
-  })
+  // nextTick(()=>{
+  //   randomPhotoEls.forEach(el => {
+  //     const imgEl = el.value
+  //     console.log(imgEl)
+  //     console.log(imgEl.parentNode)
+  //     const num = imgEl.parentNode.id.split("_")[1]
+  //     imgEl.onload = () => {
+  //       randomPhotoStatus[num] = true
+  //       // console.log(randomPhotoStatus)
+  //     };
+  //   })
+  // })
   console.log("Get new random photos: "+randomIndexes.value)
+}
+
+function randomPhotoLoaded(num){
+  randomPhotoStatus[num] = true
+}
+
+
+// 滾動 Show Case（for 滑鼠）
+const showCaseDiv = ref(null)
+function scrollShowCase(type){
+  const dom = showCaseDiv.value
+  const currentChild = Array.from( dom.children ).find(child => {
+    return child.offsetLeft >= dom.scrollLeft + window.innerWidth / 2;
+  });
+  switch (type){
+    case 'next':
+      dom.scrollTo({
+        left: currentChild.offsetLeft,
+        behavior: "smooth"
+      })
+    break;
+    case 'prev':
+      dom.scrollTo({
+        left: dom.scrollLeft - window.innerWidth/2,
+        behavior: "smooth"
+      })
+  }
+}
+
+const controllerContainer = ref(null)
+function initTooltip(){
+  nextTick(()=>{
+    const tooltipTriggerList = controllerContainer.value.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+  })
 }
 
 onMounted(()=>{
@@ -352,6 +389,7 @@ onMounted(()=>{
   });
 
   lotteryPhoto()
+  initTooltip()
 })
 </script>
 
@@ -360,14 +398,14 @@ onMounted(()=>{
     <section>
       <div class="d-flex">
         <div v-if="randomPhotos.length > 2" id="randomPhoto_3">
-          <img ref="randomPhoto_3" :src="randomPhotos[2].url_google" class="d-none" />
+          <img ref="randomPhoto_3" :src="randomPhotos[2].url_google" class="d-none" @load="randomPhotoLoaded('3')"/>
           <transition name="fade" mode="out-in">
             <img v-if="randomPhotoStatus['3']" :src="randomPhotos[2].url_google" alt="" style="width: auto; height: 25vh;" class="random-photo">
             <div v-else style="height: 25vh; width: 18.75vh;" :style="{'background-color': hsl2Hex(randomPhotos[2].colors[0].h, randomPhotos[2].colors[0].s, randomPhotos[2].colors[0].l)}"></div>
           </transition>
         </div>
         <div v-if="randomPhotos.length > 0" id="randomPhoto_1">
-          <img ref="randomPhoto_1" :src="randomPhotos[0].url_google" class="d-none" />
+          <img ref="randomPhoto_1" :src="randomPhotos[0].url_google" class="d-none" @load="randomPhotoLoaded('1')"/>
           <transition name="fade" mode="out-in">
             <img v-if="randomPhotoStatus['1']" :src="randomPhotos[0].url_google" alt="" style="width: auto; height: 25vh;" class="random-photo">
             <div v-else style="height: 25vh; width: 18.75vh;" :style="{'background-color': hsl2Hex(randomPhotos[0].colors[0].h, randomPhotos[0].colors[0].s, randomPhotos[0].colors[0].l)}"></div>
@@ -376,7 +414,7 @@ onMounted(()=>{
       </div>
     </section>
     <main class="row justify-content-center">
-      <div class="pt-6 ps-6 d-flex justify-content-start overflow-scroll">
+      <div class="pt-6 ps-6 d-flex justify-content-start overflow-scroll" ref="showCaseDiv">
         <transition-group name="fade">
           <div v-for="(d,id) of dataFiltered" :key="id">
             <div v-if="d.type == 'monthTag'" style="height: 25vh;" class="ff-serif position-relative">
@@ -396,17 +434,30 @@ onMounted(()=>{
     </main>
     <section class="position-relative">
       <div class="d-flex">
-        <div class="ff-serif text-dark col-lg-3 me-auto ps-6 pt-3">
-          <h2 class="fs-6">iroironairo</h2>
-          <h1 class="fw-semibold mt-2 mb-3">色々な色</h1>
-          <h3 class="d-flex flex-grow align-items-center opacity-50" style="font-size: 14px;">
-            <span>2022.09.28</span>
-            <div style="height: 1px;" class="w-100 bg-dark mx-2"></div>
-            <span>2023.03.24</span>
-          </h3>
+        <div class="row ff-serif text-dark col-lg-5 me-auto ps-6 pt-3 d-flex">
+          <div class="col-lg-8">
+            <h2 class="fs-6">iroironairo</h2>
+            <h1 class="fw-semibold mt-2 mb-3">色々な色</h1>
+            <h3 class="d-flex flex-grow align-items-center opacity-50" style="font-size: 14px;">
+              <span>2022.09.28</span>
+              <div style="height: 1px;" class="w-100 bg-dark mx-2"></div>
+              <span>2023.03.24</span>
+            </h3>
+          </div>
+          <div class="col-lg-4 d-flex align-items-start gap-2" ref="controllerContainer">
+            <div class="luc-controller opacity-50 opacity-100-hover" role="button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="篩選照片" @click="controllerShown = !controllerShown">
+              <i class="fa-solid fa-sliders"></i>
+            </div>
+            <div class="luc-controller opacity-50 opacity-100-hover" role="button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="往前移動" @click="scrollShowCase('prev')">
+              <i class="fa-solid fa-arrow-left"></i>
+            </div>
+            <div class="luc-controller opacity-50 opacity-100-hover" role="button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="往後移動" @click="scrollShowCase('next')">
+                <i class="fa-solid fa-arrow-right"></i>
+            </div>
+          </div>
         </div>
         <div v-if="randomPhotos.length > 1" class="ms-auto pe-8 pt-3" id="randomPhoto_2">
-          <img ref="randomPhoto_2" :src="randomPhotos[1].url_google" class="d-none" />
+          <img ref="randomPhoto_2" :src="randomPhotos[1].url_google" class="d-none" @load="randomPhotoLoaded('2')"/>
           <transition name="fade" mode="out-in">
             <img v-if="randomPhotoStatus['2']" :src="randomPhotos[1].url_google" alt="" style="width: auto; height: 25vh;" class="random-photo">
             <div v-else style="height: 25vh; width: 18.75vh;" :style="{'background-color': hsl2Hex(randomPhotos[1].colors[0].h, randomPhotos[1].colors[0].s, randomPhotos[1].colors[0].l)}"></div>
@@ -415,26 +466,22 @@ onMounted(()=>{
       </div>
     </section>
     <!-- 控制項 -->
-    <div class="position-fixed end-0 pe-5" style="top: 80px;" role="button"
-    @click="controllerShown = !controllerShown">
-      Toggle
-    </div>
     <transition name="fade" mode="out-in">
-      <section class="row px-6 pt-3 position-fixed bottom-0 bg-silver"
+      <section class="p-4 position-fixed top-0 end-0 w-25 bg-silver h-100 overflow-scroll z-1 shadow-lg"
       v-show="controllerShown">
-      <div class="d-flex flex-wrap gap-3">
-        <selection label="拍攝月份" :options="months" :current-label="filterByMonth.label" @change-value="filterMonth">
-        </selection>
-        <selection label="拍攝時間" :options="hours" :current-label="filterByHour.label" @change-value="filterHour">
-        </selection>
-        <div>
-          <label for="dataDensity" class="form-label">Example range</label>
-          <input type="range" min="3" max="30" class="form-range" id="dataDensity" v-model="density">
+        <span class="pb-2 d-block">{{ dataFiltered.filter(d => d['_id']).length }} 張 / {{ data.length }} 張照片</span>
+        <div class="d-flex flex-wrap gap-3">
+          <selection class="w-100" label="拍攝月份" :options="months" :current-label="filterByMonth.label" @change-value="filterMonth">
+          </selection>
+          <selection class="w-100" label="拍攝時間" :options="hours" :current-label="filterByHour.label" @change-value="filterHour">
+          </selection>
+          <div>
+            <label for="dataDensity" class="form-label">Example range</label>
+            <input type="range" min="3" max="30" class="form-range" id="dataDensity" v-model="density">
+          </div>
         </div>
-      </div>
         <div class="pb-3">
-          <span>{{ dataFiltered.filter(d => d['_id']).length }} 張 / {{ data.length }} 張照片</span>
-          <div class="mt-2 d-flex gap-1 overflow-scroll ">
+          <div class="mt-2 d-flex gap-2 flex-wrap">
             <button-checkbox v-for="place of places" :label="place.label" :value="place.key" :checked="filterByPlaces.includes(place.key)"
             @change-value="filterPlace"></button-checkbox>
           </div>
