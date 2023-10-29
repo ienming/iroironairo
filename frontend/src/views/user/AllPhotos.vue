@@ -328,26 +328,12 @@ function lotteryPhoto(){
       }
     }
   }
-
-  // nextTick(()=>{
-  //   randomPhotoEls.forEach(el => {
-  //     const imgEl = el.value
-  //     console.log(imgEl)
-  //     console.log(imgEl.parentNode)
-  //     const num = imgEl.parentNode.id.split("_")[1]
-  //     imgEl.onload = () => {
-  //       randomPhotoStatus[num] = true
-  //       // console.log(randomPhotoStatus)
-  //     };
-  //   })
-  // })
   console.log("Get new random photos: "+randomIndexes.value)
 }
 
 function randomPhotoLoaded(num){
   randomPhotoStatus[num] = true
 }
-
 
 // 滾動 Show Case（for 滑鼠）
 const showCaseDiv = ref(null)
@@ -426,7 +412,7 @@ onMounted(()=>{
             <div v-else style="height: 25vh;"
             :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': density+'px'}"
             role="button" class="position-relative color-data"
-            :data-place="d.places"
+            :data-place="d.places.length > 0 ? d.places : '無'"
             @click="showPolaroid(d)"></div>
           </div>
         </transition-group>

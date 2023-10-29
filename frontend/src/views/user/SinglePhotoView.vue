@@ -26,7 +26,7 @@ onBeforeMount(()=>{
 </script>
 <template>
     <div>
-        <section class="vh-100 bg-silver fixed-top d-flex justify-content-center align-items-center gap-5"
+        <section class="vh-100 bg-silver d-flex justify-content-center align-items-center gap-5"
         v-if="nowPhoto">
             <polaroid :photo="nowPhoto"></polaroid>
             <polaroid-text :photo="nowPhoto" :bg-style="{'background-color': '#232323', 'color': '#f6f6f6'}"></polaroid-text>
