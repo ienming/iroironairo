@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject, onBeforeMount, onMounted, watch, ref } from 'vue';
+import { computed, inject, onBeforeMount, onMounted, watch, ref, reactive, nextTick } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 import { hsl2Hex } from '@/composable/common';
 import Bookmark from '@/components/Bookmark.vue';
@@ -266,9 +266,12 @@ function showPrev(){
   const currentPhotoIndex = dataFiltered.value.findIndex(findingFunction)
   if (dataFiltered.value[currentPhotoIndex-1]['main_color']){
     nowPolaroid.value = dataFiltered.value[currentPhotoIndex-1]
-  }
-  if (currentPhotoIndex == 1){
-    nowPolaroid.value = dataFiltered.value[dataFiltered.value.length-1]
+  }else{
+    if (currentPhotoIndex == 1){
+      nowPolaroid.value = dataFiltered.value[dataFiltered.value.length-1]
+    }else{
+      nowPolaroid.value = dataFiltered.value[currentPhotoIndex-2]
+    }
   }
 }
 function showNext(){
@@ -279,12 +282,18 @@ function showNext(){
   }else{
     if (dataFiltered.value[currentPhotoIndex+1]['main_color']){
       nowPolaroid.value = dataFiltered.value[currentPhotoIndex+1]
+    }else{
+      nowPolaroid.value = dataFiltered.value[currentPhotoIndex+2]
     }
   }
 }
 
 // Random photo
 const randomIndexes = ref([])
+const randomPhotoStatus = reactive({})
+const [randomPhoto_1, randomPhoto_2, randomPhoto_3] = [ref(null), ref(null), ref(null)]
+const randomPhotoEls = [randomPhoto_1, randomPhoto_2, randomPhoto_3]
+
 const randomPhotos = computed(()=>{
   let photos = []
   randomIndexes.value.forEach(idx => {
@@ -295,6 +304,10 @@ const randomPhotos = computed(()=>{
 
 function lotteryPhoto(){
   randomIndexes.value = []
+  for (const key in randomPhotoStatus){
+    randomPhotoStatus[key] = false
+  }
+
   const cleanData = JSON.parse(JSON.stringify(dataFiltered.value)).filter(d => d.type !== 'monthTag')
   const maxIndex = cleanData.length - 1;
   if (cleanData.length > 3){
@@ -314,6 +327,18 @@ function lotteryPhoto(){
       }
     }
   }
+
+  nextTick(()=>{
+    randomPhotoEls.forEach(el => {
+      const imgEl = el.value
+      const num = imgEl.parentNode.id.split("_")[1]
+      imgEl.onload = () => {
+        // console.log("Image loaded: "+num)
+        randomPhotoStatus[num] = true
+        console.log(randomPhotoStatus)
+      };
+    })
+  })
   console.log("Get new random photos: "+randomIndexes.value)
 }
 
@@ -335,10 +360,18 @@ onMounted(()=>{
     <section>
       <div class="d-flex">
         <div v-if="randomPhotos.length > 2" id="randomPhoto_3">
-          <img :src="randomPhotos[2].url_google" alt="" class="random-photo">
+          <img ref="randomPhoto_3" :src="randomPhotos[2].url_google" class="d-none" />
+          <transition name="fade" mode="out-in">
+            <img v-if="randomPhotoStatus['3']" :src="randomPhotos[2].url_google" alt="" style="width: auto; height: 25vh;" class="random-photo">
+            <div v-else style="height: 25vh; width: 18.75vh;" :style="{'background-color': hsl2Hex(randomPhotos[2].colors[0].h, randomPhotos[2].colors[0].s, randomPhotos[2].colors[0].l)}"></div>
+          </transition>
         </div>
         <div v-if="randomPhotos.length > 0" id="randomPhoto_1">
-          <img :src="randomPhotos[0].url_google" alt="" style="width: auto; height: 300px;" class="random-photo">
+          <img ref="randomPhoto_1" :src="randomPhotos[0].url_google" class="d-none" />
+          <transition name="fade" mode="out-in">
+            <img v-if="randomPhotoStatus['1']" :src="randomPhotos[0].url_google" alt="" style="width: auto; height: 25vh;" class="random-photo">
+            <div v-else style="height: 25vh; width: 18.75vh;" :style="{'background-color': hsl2Hex(randomPhotos[0].colors[0].h, randomPhotos[0].colors[0].s, randomPhotos[0].colors[0].l)}"></div>
+          </transition>
         </div>
       </div>
     </section>
@@ -362,7 +395,7 @@ onMounted(()=>{
       </div>
     </main>
     <section class="position-relative">
-      <div class="d-flex mb-4 mb-lg-6">
+      <div class="d-flex">
         <div class="ff-serif text-dark col-lg-3 me-auto ps-6 pt-3">
           <h2 class="fs-6">iroironairo</h2>
           <h1 class="fw-semibold mt-2 mb-3">色々な色</h1>
@@ -373,8 +406,10 @@ onMounted(()=>{
           </h3>
         </div>
         <div v-if="randomPhotos.length > 1" class="ms-auto pe-8 pt-3" id="randomPhoto_2">
+          <img ref="randomPhoto_2" :src="randomPhotos[1].url_google" class="d-none" />
           <transition name="fade" mode="out-in">
-            <img :src="randomPhotos[1].url_google" alt="" class="random-photo">
+            <img v-if="randomPhotoStatus['2']" :src="randomPhotos[1].url_google" alt="" style="width: auto; height: 25vh;" class="random-photo">
+            <div v-else style="height: 25vh; width: 18.75vh;" :style="{'background-color': hsl2Hex(randomPhotos[1].colors[0].h, randomPhotos[1].colors[0].s, randomPhotos[1].colors[0].l)}"></div>
           </transition>
         </div>
       </div>
