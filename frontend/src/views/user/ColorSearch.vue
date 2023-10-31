@@ -147,14 +147,18 @@ onBeforeRouteUpdate((to, form) =>{
                         <span>{{ dataFiltered.length+'張 / '+data.length+'張照片' }}</span>  
                     </div>
                     <section v-for="month of months" class="mb-3">
-                        <p class="mb-2 ff-serif" :class="dataFiltered.filter(d => d.date.split('/')[1] == month.key).length > 0 ? '':'opacity-50'">{{month.label}}</p>
+                        <p class="mb-2 ff-serif" :class="dataFiltered.filter(d => d.date.split('/')[1] == month.key).length > 0 ? '':'opacity-50'">
+                          <strong>{{month.label.split(" ")[0]}}</strong>
+                          {{month.label.split(" ")[1]}}
+                        </p>
                         <div class="d-flex">
                             <div style="height: 10vh;"
-                            :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': density+'px'}"
+                            :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': 15+'px'}"
                             v-for="d of dataFiltered.filter(d => d.date.split('/')[1] == month.key)"
                             role="button" class="position-relative color-data"
                             :data-place="d.places.length > 0 ? d.places : '無'"
-                            @click="showPolaroid(d)"></div>
+                            @click="showPolaroid(d)"
+                            @mouseover="changeBgPhoto(d)"></div>
                         </div>
                     </section>
                 </div>
