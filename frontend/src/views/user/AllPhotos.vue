@@ -446,6 +446,7 @@ onMounted(() => {
 
   watch(dataFiltered, () => {
     lotteryPhoto();
+    calculateQuants();
   });
 
   lotteryPhoto();

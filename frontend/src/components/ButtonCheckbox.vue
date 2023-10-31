@@ -13,6 +13,10 @@ const props = defineProps({
     checked: {
         type: Boolean,
         default: false
+    },
+    quant: {
+        type: Object,
+        default: {}
     }
 });
 </script>
@@ -27,5 +31,6 @@ const props = defineProps({
         {{ props.label }}
         <i class="fa-solid fa-plus" v-if="!props.checked"></i>
         <i class="fa-solid fa-check" v-else></i>
+        ({{ props.quant['quant'] }})
     </label>
 </template>
