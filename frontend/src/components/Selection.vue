@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-const props = defineProps(['label', 'options', 'currentLabel'])
+const props = defineProps(['label', 'options', 'optionsQuants', 'currentLabel'])
 const emits = defineEmits(['change-value'])
 
 const listShown = ref(false)
@@ -26,6 +26,7 @@ function changeValue(value) {
             aria-current="true" v-for="opt of options"
                 @click="changeValue(opt.key)">
                 {{ opt.label }}
+                <span v-if="optionsQuants">({{ optionsQuants.find(q => q.key == opt.key)['quant'] }})</span>
             </li>
         </ul>
     </div>

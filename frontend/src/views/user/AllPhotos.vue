@@ -233,6 +233,23 @@ function filterMonth(key) {
   filterByMonth.value = months.find((month) => month.key == key);
 }
 
+const monthQuantities = computed(()=>{
+  let arr = []
+  for (let i=0; i<months.length; i++){
+    let quant = {}
+    quant['key'] = months[i].key
+    if (i == 0){
+      quant['quant'] = dataFiltered.value.filter(d => d.type !== 'monthTag').length
+    }else{
+      const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
+      quant['quant'] = clearData.filter(d => d.date.split("/")[1] == months[i].key).length
+    }
+    arr.push(quant)
+  }
+  // console.log(arr)
+  return arr
+})
+
 // 時間篩選
 const hours = computed(() => {
   let arr = data.value.map((d) => d.time).filter((d) => d);
@@ -275,6 +292,23 @@ const filterByHour = ref(hours.value[0]);
 function filterHour(key) {
   filterByHour.value = hours.value.find((hour) => hour.key == key);
 }
+
+const hourQuantities = computed(()=>{
+  let arr = []
+  for (let i=0; i<hours.value.length; i++){
+    let quant = {}
+    quant['key'] = hours.value[i].key
+    if (i == 0){
+      quant['quant'] = dataFiltered.value.filter(d => d.type !== 'monthTag').length
+    }else{
+      const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
+      quant['quant'] = clearData.filter(d => d.time.split(":")[0] == hours.value[i].key).length
+    }
+    arr.push(quant)
+  }
+  // console.log(arr)
+  return arr
+})
 
 // 資料密度
 const density = ref(10);
@@ -677,6 +711,7 @@ onMounted(() => {
             class="w-100"
             label="拍攝月份"
             :options="months"
+            :options-quants = "monthQuantities"
             :current-label="filterByMonth.label"
             @change-value="filterMonth"
           >
@@ -685,6 +720,7 @@ onMounted(() => {
             class="w-100"
             label="拍攝時間"
             :options="hours"
+            :options-quants = "hourQuantities"
             :current-label="filterByHour.label"
             @change-value="filterHour"
           >
