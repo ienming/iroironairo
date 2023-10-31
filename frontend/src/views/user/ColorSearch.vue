@@ -1,13 +1,12 @@
 <script setup>
 import { computed, inject, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 import { hsl2Hex, hex2Rgb } from '@/composable/common';
 import { diff } from 'color-diff';
 import Bookmark from '@/components/Bookmark.vue';
 import Navigator from '@/components/Navigator.vue';
-import ColorSwatch from '@/components/ColorSwatch.vue';
-import Polaroid from '../../components/Polaroid.vue';
-import PolaroidText from '../../components/PolaroidText.vue';
+import Polaroid from '@/components/Polaroid.vue';
+import PolaroidText from '@/components/PolaroidText.vue';
 
 const route = useRoute();
 const data = inject('csvData', [])
@@ -52,8 +51,45 @@ const dataFiltered = computed(()=>{
         //     }
         // }
     }
-    return Array.from(new Set(output))
+    output = Array.from(new Set(output))
+    output = output.sort(
+    (a, b) => {
+      return new Date(a.iso_date.slice(0, -1)) - new Date(b.iso_date.slice(0, -1))
+    })
+    return output
 })
+
+// 月份分群
+const months = [
+  {
+    label: '九月 Kugatsu',
+    key: '09'
+  },
+  {
+    label: '十月 Jyuugatsu',
+    key: '10'
+  },
+  {
+    label: '十一月 Jyuuichigatsu',
+    key: '11'
+  },
+  {
+    label: '十二月 Jyuunigatsu',
+    key: '12'
+  },
+  {
+    label: '一月 Ichigatsu',
+    key: '01'
+  },
+  {
+    label: '二月 Nigatsu',
+    key: '02'
+  },
+  {
+    label: '三月 Sangatsu',
+    key: '03'
+  }
+]
 
 // Polaroid
 const polaroidShown = ref(false)
@@ -84,6 +120,11 @@ function showNext(){
     }
   }
 }
+
+// 同一頁點選顏色時也要觸發 filter
+onBeforeRouteUpdate((to, form) =>{
+  polaroidShown.value = false
+})
 </script>
 
 <template>
@@ -105,14 +146,16 @@ function showNext(){
                     <div class="mb-5">
                         <span>{{ dataFiltered.length+'張 / '+data.length+'張照片' }}</span>  
                     </div>
-                    <section class="d-flex gap-3 flex-wrap">
-                        <!-- Color Swatch -->
-                        <color-swatch class="col-2 flex-grow-1"
-                            v-for="d of dataFiltered"
-                          :label="'#'+d.places[0]"
-                          :view-photo="true"
-                          :color-hsl="d.main_color"
-                          @show-polaroid="showPolaroid(d)"></color-swatch>
+                    <section v-for="month of months" class="mb-3">
+                        <p class="mb-2 ff-serif" :class="dataFiltered.filter(d => d.date.split('/')[1] == month.key).length > 0 ? '':'opacity-50'">{{month.label}}</p>
+                        <div class="d-flex">
+                            <div style="height: 10vh;"
+                            :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': density+'px'}"
+                            v-for="d of dataFiltered.filter(d => d.date.split('/')[1] == month.key)"
+                            role="button" class="position-relative color-data"
+                            :data-place="d.places.length > 0 ? d.places : '無'"
+                            @click="showPolaroid(d)"></div>
+                        </div>
                     </section>
                 </div>
             </div>
@@ -141,3 +184,9 @@ function showNext(){
         <navigator class="position-fixed top-0 end-0 pe-4"></navigator>
     </div>
 </template>
+
+<style scoped>
+.color-data{
+    width: 10px;
+}
+</style>

@@ -68,6 +68,9 @@ const dataFiltered = computed(() => {
   return newArr
 })
 
+// 顯示模式
+const displayMode = ref(false)
+
 // 月份中日文對照表
 function month2Txt(month) {
   let obj = {}
@@ -400,7 +403,7 @@ onMounted(()=>{
       </div>
     </section>
     <main class="row justify-content-center">
-      <div class="pt-6 ps-6 d-flex justify-content-start overflow-scroll" ref="showCaseDiv">
+      <section v-if="!displayMode" class="pt-6 ps-6 d-flex justify-content-start overflow-scroll" ref="showCaseDiv">
         <transition-group name="fade">
           <div v-for="(d,id) of dataFiltered" :key="id">
             <div v-if="d.type == 'monthTag'" style="height: 25vh;" class="ff-serif position-relative">
@@ -416,7 +419,31 @@ onMounted(()=>{
             @click="showPolaroid(d)"></div>
           </div>
         </transition-group>
-      </div>
+      </section>
+      <section v-else class="ps-6">
+        <section v-for="month of months.filter(m => m.label !== '全部')" class="mb-3">
+          <div class="mb-1 d-flex align-items-center">
+            <p class="ff-serif mb-0"><strong>{{ month.label }}</strong> {{ month2Txt(month.key).jp }}</p>
+            <div class="d-flex align-items-center">
+              <div class="luc-controller opacity-50 opacity-100-hover" role="button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="往前移動">
+                  <i class="fa-solid fa-arrow-left"></i>
+              </div>
+              <div class="luc-controller opacity-50 opacity-100-hover" role="button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="往後移動">
+                  <i class="fa-solid fa-arrow-right"></i>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex overflow-scroll">
+            <div v-for="(d,id) of dataFiltered.filter(d => d.type !== 'monthTag').filter(d => d.date.split('/')[1] == month.key)">
+              <div style="height: 25vh;"
+                  :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': density+'px'}"
+                  role="button" class="position-relative color-data"
+                  :data-place="d.places.length > 0 ? d.places : '無'"
+                  @click="showPolaroid(d)"></div>
+            </div>
+          </div>
+        </section>
+      </section>
     </main>
     <section class="position-relative">
       <div class="d-flex">
@@ -431,13 +458,16 @@ onMounted(()=>{
             </h3>
           </div>
           <div class="col-lg-4 d-flex align-items-start gap-2" ref="controllerContainer">
+            <div class="luc-controller opacity-50 opacity-100-hover" role="button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="切換顯示模式" @click="displayMode = !displayMode">
+              Switch mode
+            </div>
             <div class="luc-controller opacity-50 opacity-100-hover" role="button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="篩選照片" @click="controllerShown = !controllerShown">
               <i class="fa-solid fa-sliders"></i>
             </div>
-            <div class="luc-controller opacity-50 opacity-100-hover" role="button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="往前移動" @click="scrollShowCase('prev')">
+            <div v-if="!displayMode" class="luc-controller opacity-50 opacity-100-hover" role="button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="往前移動" @click="scrollShowCase('prev')">
               <i class="fa-solid fa-arrow-left"></i>
             </div>
-            <div class="luc-controller opacity-50 opacity-100-hover" role="button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="往後移動" @click="scrollShowCase('next')">
+            <div v-if="!displayMode" class="luc-controller opacity-50 opacity-100-hover" role="button" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="往後移動" @click="scrollShowCase('next')">
                 <i class="fa-solid fa-arrow-right"></i>
             </div>
           </div>
@@ -510,28 +540,6 @@ h1 {
   height: 1px;
   flex: auto;
   margin: 0 4px;
-}
-
-.color-data:hover{
-  width: 90px !important;
-}
-.color-data:hover::after{
-  transform: scale(1);
-}
-.color-data::after {
-  display: block;
-  content: attr(data-place);
-  position: absolute;
-  top: 12px;
-  padding: 8px;
-  border-radius: 25px;
-  font-size: 14px;
-  width: max-content;
-  z-index: 99;
-  transform-origin: center;
-  transform: scale(0);
-  /* transition: .1s ease-in-out; */
-  background-color: #fff;
 }
 
 .random-photo{

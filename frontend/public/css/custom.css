@@ -10825,4 +10825,27 @@ textarea.form-control-lg {
   background-color: #000;
 }
 
+.color-data:hover {
+  width: 90px !important;
+}
+
+.color-data:hover::after {
+  transform: scale(1);
+}
+
+.color-data::after {
+  display: block;
+  content: attr(data-place);
+  position: absolute;
+  top: 12px;
+  padding: 8px;
+  border-radius: 25px;
+  font-size: 14px;
+  width: max-content;
+  z-index: 99;
+  transform-origin: center;
+  transform: scale(0);
+  background-color: #fff;
+}
+
 /*# sourceMappingURL=custom.css.map */
