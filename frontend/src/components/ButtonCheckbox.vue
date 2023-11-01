@@ -30,6 +30,6 @@ const props = defineProps({
         {{ props.label }}
         <i class="fa-solid fa-plus" v-if="!props.checked"></i>
         <i class="fa-solid fa-check" v-else></i>
-        ({{ props.quant['quant'] }})
+        <span v-if="props.value !== '全部'">({{ props.quant['quant'] }})</span>
     </label>
 </template>

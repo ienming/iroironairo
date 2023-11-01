@@ -172,7 +172,7 @@ function filterPlace(checkedStatus) {
     }
   }
   console.log(filterByPlaces.value);
-  getQuantitiesBase('place')
+  getQuantities()
 }
 const placeQuantities = ref([])
 function initPlaceQuantities(){
@@ -249,7 +249,7 @@ const filterByMonth = ref(months[0]);
 function filterMonth(key) {
   console.log(key);
   filterByMonth.value = months.find((month) => month.key == key);
-  getQuantitiesBase('month')
+  getQuantities()
 }
 const monthQuantities = ref([])
 function initMonthQuantities(){
@@ -310,7 +310,7 @@ const hours = computed(() => {
 const filterByHour = ref(hours.value[0]);
 function filterHour(key) {
   filterByHour.value = hours.value.find((hour) => hour.key == key);
-  getQuantitiesBase('hour')
+  getQuantities()
 }
 const hourQuantities = ref([])
 function initHourQuantities(){
@@ -335,6 +335,11 @@ const density = ref(10);
 
 // 控制項
 const controllerShown = ref(false);
+const filterActivating = computed(()=>{
+  if (filterByHour.value.label !== '全部' || filterByMonth.value.label !== '全部' || !filterByPlaces.value.includes('全部')){
+    return true
+  }else return false
+})
 
 // Polaroid
 const polaroidShown = ref(false);
@@ -426,47 +431,40 @@ function randomPhotoLoaded(num) {
 }
 
 // 計算 filter 當前的數量
-function getQuantitiesBase(nowFilter){
-  const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
-  switch (nowFilter){
-    case 'month':
-      for (let i=0; i<hourQuantities.value.length; i++){
-        if (i !== 0){
-          hourQuantities.value[i]['quant'] = clearData.filter(d => d.time.split(":")[0] == hourQuantities.value[i]['key']).length
-        }
+function getQuantities(){
+  let clearData = data.value.filter(d => d['main_color'])
+  if (dataFiltered.value.length == 0){
+    if (filterByPlaces.value.length == 0){
+      if (filterByMonth.value.label !== '全部'){
+        clearData = clearData.filter(d => d.date.split("/")[1] == filterByMonth.value.key)
       }
-      for (let i=0; i<placeQuantities.value.length; i++){
-        if (i !== 0){
-          placeQuantities.value[i]['quant'] = clearData.filter(d => d.places.includes(placeQuantities.value[i]['key'])).length
-        }
+      if (filterByHour.value.label !== '全部'){
+        clearData = clearData.filter(d => d.time.split(":")[0] == filterByHour.value.key)
       }
-      break;
-    case 'hour':
-      for (let i=0; i<monthQuantities.value.length; i++){
-        if (i !== 0){
-          monthQuantities.value[i]['quant'] = clearData.filter(d => d.date.split("/")[1] == monthQuantities.value[i]['key']).length
-        }
+    }
+    for (let i=0; i<placeQuantities.value.length; i++){
+      if (i !== 0){
+        placeQuantities.value[i]['quant'] = clearData.filter(d => d.places.includes(placeQuantities.value[i]['key'])).length
       }
-      for (let i=0; i<placeQuantities.value.length; i++){
-        if (i !== 0){
-          placeQuantities.value[i]['quant'] = clearData.filter(d => d.places.includes(placeQuantities.value[i]['key'])).length
+    }
+  }else{
+    clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
+    for (let i=0; i<hourQuantities.value.length; i++){
+          if (i !== 0){
+            hourQuantities.value[i]['quant'] = clearData.filter(d => d.time.split(":")[0] == hourQuantities.value[i]['key']).length
+          }
         }
+    for (let i=0; i<monthQuantities.value.length; i++){
+      if (i !== 0){
+        monthQuantities.value[i]['quant'] = clearData.filter(d => d.date.split("/")[1] == monthQuantities.value[i]['key']).length
       }
-      break;
-    case 'place':
-      for (let i=0; i<hourQuantities.value.length; i++){
-        if (i !== 0){
-          hourQuantities.value[i]['quant'] = clearData.filter(d => d.time.split(":")[0] == hourQuantities.value[i]['key']).length
-        }
+    }
+    for (let i=0; i<placeQuantities.value.length; i++){
+      if (i !== 0){
+        placeQuantities.value[i]['quant'] = clearData.filter(d => d.places.includes(placeQuantities.value[i]['key'])).length
       }
-      for (let i=0; i<monthQuantities.value.length; i++){
-        if (i !== 0){
-          monthQuantities.value[i]['quant'] = clearData.filter(d => d.date.split("/")[1] == monthQuantities.value[i]['key']).length
-        }
-      }
-      break;
+    }
   }
-  console.log("Calculate quantites because of: "+nowFilter)
 }
 
 // 滾動 Show Case（for 滑鼠）
@@ -620,7 +618,7 @@ onMounted(() => {
         </transition-group>
       </section>
       <!-- 依照月份分群 -->
-      <section v-else class="ps-6">
+      <!-- <section v-else class="ps-6">
         <section
           v-for="month of months.filter((m) => m.label !== '全部')"
           class="mb-3"
@@ -654,7 +652,7 @@ onMounted(() => {
             </div>
           </div>
         </section>
-      </section>
+      </section> -->
     </main>
     <section class="position-relative">
       <div class="d-flex">
@@ -672,10 +670,10 @@ onMounted(() => {
             </h3>
           </div>
           <div
-            class="col-lg-4 d-flex align-items-start gap-2"
+            class="col-lg-4 d-flex flex-column gap-2 align-items-start"
             ref="controllerContainer"
           >
-            <div
+            <!-- <div
               class="luc-controller opacity-50 opacity-100-hover"
               role="button"
               data-bs-toggle="tooltip"
@@ -684,9 +682,33 @@ onMounted(() => {
               @click="switchMode"
             >
               Switch mode
+            </div> -->
+            <div class="d-flex align-items-center">
+              <div
+                v-if="!displayMode"
+                class="luc-controller opacity-50 opacity-100-hover"
+                role="button"
+                data-bs-toggle="tooltip"
+                data-bs-placement="bottom"
+                data-bs-title="往前移動"
+                @click="scrollShowCase('prev')"
+              >
+                <i class="fa-solid fa-arrow-left"></i>
+              </div>
+              <div
+                v-if="!displayMode"
+                class="luc-controller opacity-50 opacity-100-hover"
+                role="button"
+                data-bs-toggle="tooltip"
+                data-bs-placement="bottom"
+                data-bs-title="往後移動"
+                @click="scrollShowCase('next')"
+              >
+                <i class="fa-solid fa-arrow-right"></i>
+              </div>
             </div>
             <div
-              class="luc-controller opacity-50 opacity-100-hover"
+              class="luc-controller opacity-50 opacity-100-hover rounded-pill"
               role="button"
               data-bs-toggle="tooltip"
               data-bs-placement="bottom"
@@ -694,28 +716,9 @@ onMounted(() => {
               @click="controllerShown = !controllerShown"
             >
               <i class="fa-solid fa-sliders"></i>
-            </div>
-            <div
-              v-if="!displayMode"
-              class="luc-controller opacity-50 opacity-100-hover"
-              role="button"
-              data-bs-toggle="tooltip"
-              data-bs-placement="bottom"
-              data-bs-title="往前移動"
-              @click="scrollShowCase('prev')"
-            >
-              <i class="fa-solid fa-arrow-left"></i>
-            </div>
-            <div
-              v-if="!displayMode"
-              class="luc-controller opacity-50 opacity-100-hover"
-              role="button"
-              data-bs-toggle="tooltip"
-              data-bs-placement="bottom"
-              data-bs-title="往後移動"
-              @click="scrollShowCase('next')"
-            >
-              <i class="fa-solid fa-arrow-right"></i>
+              <span class="ff-sans" v-if="filterActivating">
+                照片已篩選
+              </span>
             </div>
             <!-- <a
               class="luc-controller link-dark opacity-50 opacity-100-hover link-underline link-underline-opacity-0"
