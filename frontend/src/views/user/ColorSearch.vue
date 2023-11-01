@@ -50,6 +50,16 @@ const dataFiltered = computed(()=>{
         //         output.push(arr[i])
         //     }
         // }
+
+        // 加上區域標記
+        arr[i]['area'] = "other"
+        for (let j=0; j<arr[i].places.length; j++){
+          let p = arr[i].places[j]
+          if (Kansai.includes(p)){
+            arr[i]['area'] = "kansai"
+            break;
+          }
+        }
     }
     output = Array.from(new Set(output))
     output = output.sort(
@@ -61,6 +71,9 @@ const dataFiltered = computed(()=>{
 
 // 分群規則
 const groupBy = ref("month")
+
+// 地點分群
+const Kansai = ['神戶', '京都', '大阪', '港島', '神戶港', '三宮', '六甲', '摩耶山', 'ポートアイランド', '兵庫', '和歌山']
 
 // 月份分群
 const months = [
@@ -200,9 +213,10 @@ onBeforeRouteUpdate((to, form) =>{
                             {{month.label.split(" ")[1]}}
                           </p>
                           <div class="d-flex">
-                              <div style="height: 10vh;"
-                              :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': 15+'px'}"
+                              <div style="height: 15px;"
                               v-for="d of dataFiltered.filter(d => d.date.split('/')[1] == month.key)"
+                              :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': 15+'px'}"
+                              :class="d.area == 'kansai' ? 'rounded-pill':''"
                               role="button" class="position-relative color-data"
                               :data-place="d.places.length > 0 ? d.places : '無'"
                               @click="showPolaroid(d)"
@@ -217,7 +231,7 @@ onBeforeRouteUpdate((to, form) =>{
                             {{hour.label.split(" ")[1]}}
                           </p>
                           <div class="d-flex">
-                              <div style="height: 10vh;"
+                              <div style="height: 15px;"
                               :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': 15+'px'}"
                               v-for="d of dataFiltered.filter(d => d.time.split(':')[0] == hour.key)"
                               role="button" class="position-relative color-data"
