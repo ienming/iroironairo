@@ -287,7 +287,10 @@ const hours = computed(() => {
       label: d,
     };
     if (d !== "全部") {
-      if (d < 10) {
+      if (d < 6) {
+        obj["label"] = "凌晨" + d.slice(-1) + "點";
+      }
+      if (d >= 6 && d < 10) {
         obj["label"] = "早上" + d.slice(-1) + "點";
       }
       if (d >= 10 && d < 12) {
@@ -690,7 +693,7 @@ onMounted(() => {
                 role="button"
                 data-bs-toggle="tooltip"
                 data-bs-placement="bottom"
-                data-bs-title="往前移動"
+                data-bs-title="往前捲動"
                 @click="scrollShowCase('prev')"
               >
                 <i class="fa-solid fa-arrow-left"></i>
@@ -701,7 +704,7 @@ onMounted(() => {
                 role="button"
                 data-bs-toggle="tooltip"
                 data-bs-placement="bottom"
-                data-bs-title="往後移動"
+                data-bs-title="往後捲動"
                 @click="scrollShowCase('next')"
               >
                 <i class="fa-solid fa-arrow-right"></i>

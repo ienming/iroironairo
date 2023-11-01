@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject, ref } from 'vue';
+import { computed, inject, ref, reactive } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 import { hsl2Hex, hex2Rgb } from '@/composable/common';
 import { diff } from 'color-diff';
@@ -59,6 +59,9 @@ const dataFiltered = computed(()=>{
     return output
 })
 
+// 分群規則
+const groupBy = ref("month")
+
 // 月份分群
 const months = [
   {
@@ -90,6 +93,45 @@ const months = [
     key: '03'
   }
 ]
+
+// 時間分群
+const hours = computed(() => {
+  let arr = data.value.map((d) => d.time).filter((d) => d);
+  let temp = [];
+  for (let i = 0; i < arr.length; i++) {
+    temp.push(arr[i].split(":")[0]);
+  }
+  temp.sort((a, b) => {
+    return a - b;
+  });
+  temp = new Set(temp);
+  let output = [...temp].map((d) => {
+    let obj = {
+      key: d,
+      label: d,
+    };
+    if (d < 6) {
+      obj["label"] = "凌晨" + d.slice(-1) + "點";
+    }
+    if (d >= 6 && d < 10) {
+      obj["label"] = "早上" + d.slice(-1) + "點";
+    }
+    if (d >= 10 && d < 12) {
+      obj["label"] = "早上" + d + "點";
+    }
+    if (d == 12) {
+      obj["label"] = "中午12點";
+    }
+    if (d > 12 && d < 18) {
+      obj["label"] = "下午" + (d * 1 - 12) + "點";
+    }
+    if (d >= 18) {
+      obj["label"] = "晚上" + (d * 1 - 12) + "點";
+    }
+    return obj;
+  });
+  return output;
+});
 
 // Polaroid
 const polaroidShown = ref(false)
@@ -133,12 +175,16 @@ onBeforeRouteUpdate((to, form) =>{
             <div class="row">
                 <div class="col-lg-4">
                     <div class="sticky-top" style="top: 30px;">
-                        <h1 class="fs-2 fw-bolder mb-4">相近的顏色</h1>
+                        <h1 class="fs-4 ff-serif fw-bolder mb-4">相近的顏色</h1>
                         <div class="bg-white rounded-3 p-3 shadow-lg w-75">
                             <p style="height: 50px" :style="{'background-color':colorHex}" class="rounded-3"></p>
                             <p class="mb-1">{{ colorHex }}</p>
                             <p class="mb-1">{{ 'RGB: '+colorRgb.r+', '+colorRgb.g+', '+colorRgb.b }}</p>
                             <p class="mb-0">{{ 'HSL: '+colorHsl.h+'o, '+colorHsl.s+'%, '+colorHsl.l+'%' }}</p>
+                        </div>
+                        <div>
+                          <button @click="groupBy = 'month'">Month</button>
+                          <button @click="groupBy = 'hour'">Hours</button>
                         </div>
                     </div>
                 </div>
@@ -146,20 +192,40 @@ onBeforeRouteUpdate((to, form) =>{
                     <div class="mb-5">
                         <span>{{ dataFiltered.length+'張 / '+data.length+'張照片' }}</span>  
                     </div>
-                    <section v-for="month of months" class="mb-3">
-                        <p class="mb-2 ff-serif" :class="dataFiltered.filter(d => d.date.split('/')[1] == month.key).length > 0 ? '':'opacity-50'">
-                          <strong>{{month.label.split(" ")[0]}}</strong>
-                          {{month.label.split(" ")[1]}}
-                        </p>
-                        <div class="d-flex">
-                            <div style="height: 10vh;"
-                            :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': 15+'px'}"
-                            v-for="d of dataFiltered.filter(d => d.date.split('/')[1] == month.key)"
-                            role="button" class="position-relative color-data"
-                            :data-place="d.places.length > 0 ? d.places : '無'"
-                            @click="showPolaroid(d)"
-                            @mouseover="changeBgPhoto(d)"></div>
-                        </div>
+                    <!-- TODO tab -->
+                    <section v-if="groupBy == 'month'">
+                      <section v-for="month of months" class="mb-3">
+                          <p class="mb-2 ff-serif" :class="dataFiltered.filter(d => d.date.split('/')[1] == month.key).length > 0 ? '':'opacity-50'">
+                            <strong>{{month.label.split(" ")[0]}}</strong>
+                            {{month.label.split(" ")[1]}}
+                          </p>
+                          <div class="d-flex">
+                              <div style="height: 10vh;"
+                              :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': 15+'px'}"
+                              v-for="d of dataFiltered.filter(d => d.date.split('/')[1] == month.key)"
+                              role="button" class="position-relative color-data"
+                              :data-place="d.places.length > 0 ? d.places : '無'"
+                              @click="showPolaroid(d)"
+                              @mouseover="changeBgPhoto(d)"></div>
+                          </div>
+                      </section>
+                    </section>
+                    <section v-if="groupBy == 'hour'">
+                      <section v-for="hour of hours" class="mb-3">
+                          <p class="mb-2 ff-serif" :class="dataFiltered.filter(d => d.time.split(':')[0] == hour.key).length > 0 ? '':'opacity-50'">
+                            <strong>{{hour.label.split(" ")[0]}}</strong>
+                            {{hour.label.split(" ")[1]}}
+                          </p>
+                          <div class="d-flex">
+                              <div style="height: 10vh;"
+                              :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': 15+'px'}"
+                              v-for="d of dataFiltered.filter(d => d.time.split(':')[0] == hour.key)"
+                              role="button" class="position-relative color-data"
+                              :data-place="d.places.length > 0 ? d.places : '無'"
+                              @click="showPolaroid(d)"
+                              @mouseover="changeBgPhoto(d)"></div>
+                          </div>
+                      </section>
                     </section>
                 </div>
             </div>
