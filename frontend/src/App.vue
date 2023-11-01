@@ -9,7 +9,7 @@
 <script>
 import { ref, provide } from 'vue';
 import axios from 'axios';
-const CSV_URL = "/data.csv";
+const CSV_URL = "/iroironairo/data.csv";
 
 export default {
   name: "App",

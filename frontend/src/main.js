@@ -1,9 +1,9 @@
-import { createApp, defineAsyncComponent } from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 
 // Setting routers
 // import router from './router';
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHashHistory, createWebHistory } from "vue-router";
 import UserStage from "./views/user/Stage.vue";
 import AllPhotos from "./views/user/AllPhotos.vue";
 import ColorSearch from "./views/user/ColorSearch.vue";
@@ -23,7 +23,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHashHistory("/iroironairo/"),
+  history: createWebHistory("/iroironairo/"),
   routes,
 });
 
