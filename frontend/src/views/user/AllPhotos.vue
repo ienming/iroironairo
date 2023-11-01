@@ -172,6 +172,24 @@ function filterPlace(checkedStatus) {
     }
   }
   console.log(filterByPlaces.value);
+  getQuantitiesBase('place')
+}
+const placeQuantities = ref([])
+function initPlaceQuantities(){
+  const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
+  console.log("initialize place quantites")
+  let arr = []
+  for (let i=0; i<places.value.length; i++){
+    let quant = {}
+    quant['key'] = places.value[i].key
+    if (i == 0){
+      quant['quant'] = dataFiltered.value.filter(d => d.type !== 'monthTag').length
+    }else{
+      quant['quant'] = clearData.filter(d => d.places.includes(places.value[i].key)).length
+    }
+    arr.push(quant)
+  }
+  placeQuantities.value = arr
 }
 
 // 從其他頁面點選地點過來
@@ -231,9 +249,12 @@ const filterByMonth = ref(months[0]);
 function filterMonth(key) {
   console.log(key);
   filterByMonth.value = months.find((month) => month.key == key);
+  getQuantitiesBase('month')
 }
-
-const monthQuantities = computed(()=>{
+const monthQuantities = ref([])
+function initMonthQuantities(){
+  console.log("initialize month quantites")
+  const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
   let arr = []
   for (let i=0; i<months.length; i++){
     let quant = {}
@@ -241,14 +262,12 @@ const monthQuantities = computed(()=>{
     if (i == 0){
       quant['quant'] = dataFiltered.value.filter(d => d.type !== 'monthTag').length
     }else{
-      const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
       quant['quant'] = clearData.filter(d => d.date.split("/")[1] == months[i].key).length
     }
     arr.push(quant)
   }
-  // console.log(arr)
-  return arr
-})
+  monthQuantities.value = arr
+}
 
 // 時間篩選
 const hours = computed(() => {
@@ -291,9 +310,12 @@ const hours = computed(() => {
 const filterByHour = ref(hours.value[0]);
 function filterHour(key) {
   filterByHour.value = hours.value.find((hour) => hour.key == key);
+  getQuantitiesBase('hour')
 }
-
-const hourQuantities = computed(()=>{
+const hourQuantities = ref([])
+function initHourQuantities(){
+  console.log("initialize hour quantites")
+  const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
   let arr = []
   for (let i=0; i<hours.value.length; i++){
     let quant = {}
@@ -301,14 +323,12 @@ const hourQuantities = computed(()=>{
     if (i == 0){
       quant['quant'] = dataFiltered.value.filter(d => d.type !== 'monthTag').length
     }else{
-      const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
       quant['quant'] = clearData.filter(d => d.time.split(":")[0] == hours.value[i].key).length
     }
     arr.push(quant)
   }
-  // console.log(arr)
-  return arr
-})
+  hourQuantities.value = arr
+}
 
 // 資料密度
 const density = ref(10);
@@ -405,6 +425,50 @@ function randomPhotoLoaded(num) {
   randomPhotoStatus[num] = true;
 }
 
+// 計算 filter 當前的數量
+function getQuantitiesBase(nowFilter){
+  const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
+  switch (nowFilter){
+    case 'month':
+      for (let i=0; i<hourQuantities.value.length; i++){
+        if (i !== 0){
+          hourQuantities.value[i]['quant'] = clearData.filter(d => d.time.split(":")[0] == hourQuantities.value[i]['key']).length
+        }
+      }
+      for (let i=0; i<placeQuantities.value.length; i++){
+        if (i !== 0){
+          placeQuantities.value[i]['quant'] = clearData.filter(d => d.places.includes(placeQuantities.value[i]['key'])).length
+        }
+      }
+      break;
+    case 'hour':
+      for (let i=0; i<monthQuantities.value.length; i++){
+        if (i !== 0){
+          monthQuantities.value[i]['quant'] = clearData.filter(d => d.date.split("/")[1] == monthQuantities.value[i]['key']).length
+        }
+      }
+      for (let i=0; i<placeQuantities.value.length; i++){
+        if (i !== 0){
+          placeQuantities.value[i]['quant'] = clearData.filter(d => d.places.includes(placeQuantities.value[i]['key'])).length
+        }
+      }
+      break;
+    case 'place':
+      for (let i=0; i<hourQuantities.value.length; i++){
+        if (i !== 0){
+          hourQuantities.value[i]['quant'] = clearData.filter(d => d.time.split(":")[0] == hourQuantities.value[i]['key']).length
+        }
+      }
+      for (let i=0; i<monthQuantities.value.length; i++){
+        if (i !== 0){
+          monthQuantities.value[i]['quant'] = clearData.filter(d => d.date.split("/")[1] == monthQuantities.value[i]['key']).length
+        }
+      }
+      break;
+  }
+  console.log("Calculate quantites because of: "+nowFilter)
+}
+
 // 滾動 Show Case（for 滑鼠）
 const showCaseDiv = ref(null);
 function scrollShowCase(type) {
@@ -446,11 +510,13 @@ onMounted(() => {
 
   watch(dataFiltered, () => {
     lotteryPhoto();
-    calculateQuants();
   });
 
   lotteryPhoto();
   initTooltip();
+  initHourQuantities();
+  initMonthQuantities();
+  initPlaceQuantities();
 });
 </script>
 
@@ -554,7 +620,7 @@ onMounted(() => {
         </transition-group>
       </section>
       <!-- 依照月份分群 -->
-      <!-- <section v-else class="ps-6">
+      <section v-else class="ps-6">
         <section
           v-for="month of months.filter((m) => m.label !== '全部')"
           class="mb-3"
@@ -588,7 +654,7 @@ onMounted(() => {
             </div>
           </div>
         </section>
-      </section> -->
+      </section>
     </main>
     <section class="position-relative">
       <div class="d-flex">
@@ -609,7 +675,7 @@ onMounted(() => {
             class="col-lg-4 d-flex align-items-start gap-2"
             ref="controllerContainer"
           >
-            <!-- <div
+            <div
               class="luc-controller opacity-50 opacity-100-hover"
               role="button"
               data-bs-toggle="tooltip"
@@ -618,7 +684,7 @@ onMounted(() => {
               @click="switchMode"
             >
               Switch mode
-            </div> -->
+            </div>
             <div
               class="luc-controller opacity-50 opacity-100-hover"
               role="button"
@@ -651,7 +717,7 @@ onMounted(() => {
             >
               <i class="fa-solid fa-arrow-right"></i>
             </div>
-            <a
+            <!-- <a
               class="luc-controller link-dark opacity-50 opacity-100-hover link-underline link-underline-opacity-0"
               target="blank"
               data-bs-toggle="tooltip"
@@ -660,7 +726,7 @@ onMounted(() => {
               :href="PosterLink"
             >
               <i class="fa-solid fa-print"></i>
-            </a>
+            </a> -->
           </div>
         </div>
         <div
@@ -709,6 +775,7 @@ onMounted(() => {
         >
         <div class="d-flex flex-wrap gap-3">
           <selection
+          v-if="monthQuantities.length > 0"
             class="w-100"
             label="拍攝月份"
             :options="months"
@@ -718,6 +785,7 @@ onMounted(() => {
           >
           </selection>
           <selection
+            v-if="hourQuantities.length > 0"
             class="w-100"
             label="拍攝時間"
             :options="hours"
@@ -745,6 +813,7 @@ onMounted(() => {
               :label="place.label"
               :value="place.key"
               :checked="filterByPlaces.includes(place.key)"
+              :quant="placeQuantities.find(q => q.key == place.key)"
               @change-value="filterPlace"
             ></button-checkbox>
           </div>

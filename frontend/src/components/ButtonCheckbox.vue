@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from 'vue';
 const emit = defineEmits(['change-value'])
 const props = defineProps({
     label: {
@@ -26,7 +25,7 @@ const props = defineProps({
     @change="emit('change-value', {'key': props.value, 'value': !props.checked})">
     <label :for="props.value"
     class="m-0 p-2 rounded-pill border border-dark flex-shrink-0 opacity-75-hover"
-    :class="props.checked ? '':'opacity-25'"
+    :class="props.quant.quant > 0 && props.checked ? ['bg-dark', 'text-white']:'opacity-25'"
     role="button">
         {{ props.label }}
         <i class="fa-solid fa-plus" v-if="!props.checked"></i>

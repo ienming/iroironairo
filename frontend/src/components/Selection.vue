@@ -26,7 +26,7 @@ function changeValue(value) {
             aria-current="true" v-for="opt of options"
                 @click="changeValue(opt.key)">
                 {{ opt.label }}
-                <span v-if="optionsQuants">({{ optionsQuants.find(q => q.key == opt.key)['quant'] }})</span>
+                <span v-if="optionsQuants && opt.label !== '全部'">({{ optionsQuants.find(q => q.key == opt.key)['quant'] }})</span>
             </li>
         </ul>
     </div>
