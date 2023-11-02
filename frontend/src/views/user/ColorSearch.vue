@@ -1,111 +1,122 @@
 <script setup>
-import { computed, inject, ref, reactive } from 'vue';
-import { onBeforeRouteUpdate, useRoute } from 'vue-router';
-import { hsl2Hex, hex2Rgb } from '@/composable/common';
-import { diff } from 'color-diff';
-import Bookmark from '@/components/Bookmark.vue';
-import Navigator from '@/components/Navigator.vue';
-import Polaroid from '@/components/Polaroid.vue';
-import PolaroidText from '@/components/PolaroidText.vue';
+import { computed, inject, ref, reactive, onMounted, nextTick } from "vue";
+import { onBeforeRouteUpdate, useRoute } from "vue-router";
+import { hsl2Hex, hex2Rgb } from "@/composable/common";
+import { diff } from "color-diff";
+import Bookmark from "@/components/Bookmark.vue";
+import Navigator from "@/components/Navigator.vue";
+import Polaroid from "@/components/Polaroid.vue";
+import PolaroidText from "@/components/PolaroidText.vue";
 
 const route = useRoute();
-const data = inject('csvData', [])
+const data = inject("csvData", []);
 
-const colorHsl = computed(()=>{
-    return JSON.parse(route.query.color)
-})
-const colorHex = computed(()=>{
-    return hsl2Hex(colorHsl.value.h, colorHsl.value.s, colorHsl.value.l)
-})
-const colorRgb = computed(()=>{
-    return hex2Rgb(colorHex.value)
-})
+const colorHsl = computed(() => {
+  return JSON.parse(route.query.color);
+});
+const colorHex = computed(() => {
+  return hsl2Hex(colorHsl.value.h, colorHsl.value.s, colorHsl.value.l);
+});
+const colorRgb = computed(() => {
+  return hex2Rgb(colorHex.value);
+});
 
 function colorDifference(color1, color2) {
-  let result = diff(color1, color2)
+  let result = diff(color1, color2);
   return result;
 }
 
-const threshold = 10
-const dataFiltered = computed(()=>{
-    let arr = [...data.value]
-    arr = arr.filter(d => d['main_color'])
-    let output = []
-    for (let i=0; i<arr.length; i++){
-        // 只找最多的顏色
-        const currentHsl = arr[i].colors[0]
-        const currentHex = hsl2Hex(currentHsl.h, currentHsl.s, currentHsl.l)
-        const currentRgb = hex2Rgb(currentHex)
+const threshold = 10;
+const dataFiltered = computed(() => {
+  let arr = [...data.value];
+  arr = arr.filter((d) => d["main_color"]);
+  let output = [];
+  for (let i = 0; i < arr.length; i++) {
+    // 只找最多的顏色
+    const currentHsl = arr[i].colors[0];
+    const currentHex = hsl2Hex(currentHsl.h, currentHsl.s, currentHsl.l);
+    const currentRgb = hex2Rgb(currentHex);
 
-        if (colorDifference(colorRgb.value, currentRgb) < threshold){
-            output.push(arr[i])
-        }
-        // 用所有顏色下去找
-        // for (let j=0; j<arr[i].colors.length; j++){
-        //     const currentHsl = arr[i].colors[j]
-        //     const currentHex = hsl2Hex(currentHsl.h, currentHsl.s, currentHsl.l)
-        //     const currentRgb = hex2Rgb(currentHex)
-
-        //     if (colorDifference(colorRgb.value, currentRgb) < threshold){
-        //         output.push(arr[i])
-        //     }
-        // }
-
-        // 加上區域標記
-        arr[i]['area'] = "other"
-        for (let j=0; j<arr[i].places.length; j++){
-          let p = arr[i].places[j]
-          if (Kansai.includes(p)){
-            arr[i]['area'] = "kansai"
-            break;
-          }
-        }
+    if (colorDifference(colorRgb.value, currentRgb) < threshold) {
+      output.push(arr[i]);
     }
-    output = Array.from(new Set(output))
-    output = output.sort(
-    (a, b) => {
-      return new Date(a.iso_date.slice(0, -1)) - new Date(b.iso_date.slice(0, -1))
-    })
-    return output
-})
+    // 用所有顏色下去找
+    // for (let j=0; j<arr[i].colors.length; j++){
+    //     const currentHsl = arr[i].colors[j]
+    //     const currentHex = hsl2Hex(currentHsl.h, currentHsl.s, currentHsl.l)
+    //     const currentRgb = hex2Rgb(currentHex)
+
+    //     if (colorDifference(colorRgb.value, currentRgb) < threshold){
+    //         output.push(arr[i])
+    //     }
+    // }
+  }
+  output = Array.from(new Set(output));
+  output = output.sort((a, b) => {
+    return (
+      new Date(a.iso_date.slice(0, -1)) - new Date(b.iso_date.slice(0, -1))
+    );
+  });
+  return output;
+});
 
 // 分群規則
-const groupBy = ref("month")
+const groupBy = ref("month");
 
-// 地點分群
-const Kansai = ['神戶', '京都', '大阪', '港島', '神戶港', '三宮', '六甲', '摩耶山', 'ポートアイランド', '兵庫', '和歌山']
+// Random photo
+const randomPhotoLoaded = ref(false)
+const randomIndex = ref(0)
+const randomPhoto = computed(()=>{
+  return dataFiltered.value[randomIndex.value]
+})
+const randomPhotoColor = computed(()=>{
+  return hsl2Hex(
+                    randomPhoto.value.colors[0].h,
+                    randomPhoto.value.colors[0].s,
+                    randomPhoto.value.colors[0].l
+                  )
+})
+function lotteryPhoto(){
+  randomPhotoLoaded.value = false
+  const maxIndex = dataFiltered.value.length - 1;
+  randomIndex.value = Math.floor(Math.random() * (maxIndex + 1));
+}
+const randomPhotoEl = ref(null)
+function loadRandomPhoto(){
+  randomPhotoLoaded.value = true
+}
 
 // 月份分群
 const months = [
   {
-    label: '九月 Kugatsu',
-    key: '09'
+    label: "九月 Kugatsu",
+    key: "09",
   },
   {
-    label: '十月 Jyuugatsu',
-    key: '10'
+    label: "十月 Jyuugatsu",
+    key: "10",
   },
   {
-    label: '十一月 Jyuuichigatsu',
-    key: '11'
+    label: "十一月 Jyuuichigatsu",
+    key: "11",
   },
   {
-    label: '十二月 Jyuunigatsu',
-    key: '12'
+    label: "十二月 Jyuunigatsu",
+    key: "12",
   },
   {
-    label: '一月 Ichigatsu',
-    key: '01'
+    label: "一月 Ichigatsu",
+    key: "01",
   },
   {
-    label: '二月 Nigatsu',
-    key: '02'
+    label: "二月 Nigatsu",
+    key: "02",
   },
   {
-    label: '三月 Sangatsu',
-    key: '03'
-  }
-]
+    label: "三月 Sangatsu",
+    key: "03",
+  },
+];
 
 // 時間分群
 const hours = computed(() => {
@@ -147,130 +158,245 @@ const hours = computed(() => {
 });
 
 // Polaroid
-const polaroidShown = ref(false)
-const nowPolaroid = ref(null)
-function showPolaroid(data){
-  nowPolaroid.value = data
-  polaroidShown.value = true
+const polaroidShown = ref(false);
+const nowPolaroid = ref(null);
+function showPolaroid(data) {
+  nowPolaroid.value = data;
+  polaroidShown.value = true;
 }
-function showPrev(){
-  const findingFunction = (d) => d.name === nowPolaroid.value.name
-  const currentPhotoIndex = dataFiltered.value.findIndex(findingFunction)
-  if (currentPhotoIndex > 0){
-      if (dataFiltered.value[currentPhotoIndex-1]['main_color']){
-        nowPolaroid.value = dataFiltered.value[currentPhotoIndex-1]
-      }
-}else{
-    nowPolaroid.value = dataFiltered.value[dataFiltered.value.length-1]
+function showPrev() {
+  const findingFunction = (d) => d.name === nowPolaroid.value.name;
+  const currentPhotoIndex = dataFiltered.value.findIndex(findingFunction);
+  if (currentPhotoIndex > 0) {
+    if (dataFiltered.value[currentPhotoIndex - 1]["main_color"]) {
+      nowPolaroid.value = dataFiltered.value[currentPhotoIndex - 1];
+    }
+  } else {
+    nowPolaroid.value = dataFiltered.value[dataFiltered.value.length - 1];
   }
 }
-function showNext(){
-  const findingFunction = (d) => d.name === nowPolaroid.value.name
-  const currentPhotoIndex = dataFiltered.value.findIndex(findingFunction)
-  if (currentPhotoIndex == dataFiltered.value.length-1){
-    nowPolaroid.value = dataFiltered.value[0]
-  }else{
-    if (dataFiltered.value[currentPhotoIndex+1]['main_color']){
-      nowPolaroid.value = dataFiltered.value[currentPhotoIndex+1]
+function showNext() {
+  const findingFunction = (d) => d.name === nowPolaroid.value.name;
+  const currentPhotoIndex = dataFiltered.value.findIndex(findingFunction);
+  if (currentPhotoIndex == dataFiltered.value.length - 1) {
+    nowPolaroid.value = dataFiltered.value[0];
+  } else {
+    if (dataFiltered.value[currentPhotoIndex + 1]["main_color"]) {
+      nowPolaroid.value = dataFiltered.value[currentPhotoIndex + 1];
     }
   }
 }
 
 // 同一頁點選顏色時也要觸發 filter
-onBeforeRouteUpdate((to, form) =>{
-  polaroidShown.value = false
+onBeforeRouteUpdate((to, form) => {
+  polaroidShown.value = false;
+});
+
+// 定時觸發抽選照片
+onMounted(()=>{
+  window.setInterval(() => {
+    lotteryPhoto();
+  }, 15000);
+
+  lotteryPhoto()
 })
 </script>
 
 <template>
-    <div class="z-1 min-vh-100 bg-silver">
-        <main class="container pt-5 pb-8 pt-lg-8">
-            <div class="row">
-                <div class="col-lg-4">
-                    <div class="sticky-top" style="top: 30px;">
-                        <h1 class="fs-4 ff-serif fw-bolder mb-4">相近的顏色</h1>
-                        <div class="bg-white rounded-3 p-3 shadow-lg w-75">
-                            <p style="height: 50px" :style="{'background-color':colorHex}" class="rounded-3"></p>
-                            <p class="mb-1">{{ colorHex }}</p>
-                            <p class="mb-1">{{ 'RGB: '+colorRgb.r+', '+colorRgb.g+', '+colorRgb.b }}</p>
-                            <p class="mb-0">{{ 'HSL: '+colorHsl.h+'o, '+colorHsl.s+'%, '+colorHsl.l+'%' }}</p>
-                        </div>
-                        <div>
-                          <button @click="groupBy = 'month'">Month</button>
-                          <button @click="groupBy = 'hour'">Hours</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-8">
-                    <div class="mb-5">
-                        <span>{{ dataFiltered.length+'張 / '+data.length+'張照片' }}</span>  
-                    </div>
-                    <!-- TODO tab -->
-                    <section v-if="groupBy == 'month'">
-                      <section v-for="month of months" class="mb-3">
-                          <p class="mb-2 ff-serif" :class="dataFiltered.filter(d => d.date.split('/')[1] == month.key).length > 0 ? '':'opacity-50'">
-                            <strong>{{month.label.split(" ")[0]}}</strong>
-                            {{month.label.split(" ")[1]}}
-                          </p>
-                          <div class="d-flex">
-                              <div style="height: 15px;"
-                              v-for="d of dataFiltered.filter(d => d.date.split('/')[1] == month.key)"
-                              :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': 15+'px'}"
-                              :class="d.area == 'kansai' ? 'rounded-pill':''"
-                              role="button" class="position-relative color-data"
-                              :data-place="d.places.length > 0 ? d.places : '無'"
-                              @click="showPolaroid(d)"
-                              @mouseover="changeBgPhoto(d)"></div>
-                          </div>
-                      </section>
-                    </section>
-                    <section v-if="groupBy == 'hour'">
-                      <section v-for="hour of hours" class="mb-3">
-                          <p class="mb-2 ff-serif" :class="dataFiltered.filter(d => d.time.split(':')[0] == hour.key).length > 0 ? '':'opacity-50'">
-                            <strong>{{hour.label.split(" ")[0]}}</strong>
-                            {{hour.label.split(" ")[1]}}
-                          </p>
-                          <div class="d-flex">
-                              <div style="height: 15px;"
-                              :style="{'background-color': hsl2Hex(d.main_color.h, d.main_color.s, d.main_color.l), 'width': 15+'px'}"
-                              v-for="d of dataFiltered.filter(d => d.time.split(':')[0] == hour.key)"
-                              role="button" class="position-relative color-data"
-                              :data-place="d.places.length > 0 ? d.places : '無'"
-                              @click="showPolaroid(d)"
-                              @mouseover="changeBgPhoto(d)"></div>
-                          </div>
-                      </section>
-                    </section>
-                </div>
+  <div class="z-1 min-vh-100 bg-silver">
+    <main class="container pt-5 pb-8 pt-lg-8">
+      <div class="row">
+        <div
+          class="sticky-top d-flex justify-content-between"
+          style="top: 30px"
+        >
+          <div>
+            <h1 class="fs-4 ff-serif fw-bolder mb-4">相近的顏色</h1>
+            <div class="mb-2">
+              <span>{{
+                dataFiltered.length + "張 / " + data.length + "張照片"
+              }}</span>
             </div>
-        </main>
-        <!-- Polaroid -->
+            <div class="d-flex gap-2">
+              <div class="d-flex gap-1 align-items-center">
+                <div style="width: 15px; height: 15px;" class="rounded-pill bg-dark opacity-25"></div>
+                <span>關西地區</span>
+              </div>
+              <div class="d-flex gap-1 align-items-center">
+                <div style="width: 15px; height: 15px;" class="bg-dark opacity-25"></div>
+                <span>非關西地區</span>
+              </div>
+            </div>
+          </div>  
+          <div class="bg-white rounded-3 p-3 shadow-lg row col-5">
+            <p
+              :style="{ 'background-color': colorHex }"
+              class="rounded-3 mb-0 col-5"
+            ></p>
+            <div class="col-7">
+              <p class="mb-1">{{ colorHex }}</p>
+              <p class="mb-1">
+                {{ "RGB: " + colorRgb.r + ", " + colorRgb.g + ", " + colorRgb.b }}
+              </p>
+              <p class="mb-0">
+                {{
+                  "HSL: " +
+                  colorHsl.h +
+                  "o, " +
+                  colorHsl.s +
+                  "%, " +
+                  colorHsl.l +
+                  "%"
+                }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-3 random-photo-container ms-auto" :style="{'border-bottom': '20px solid '+randomPhotoColor}">
+        <img :src="randomPhoto.url_google" alt="" class="d-none" @load="loadRandomPhoto">
         <transition name="fade" mode="out-in">
-        <section class="vh-100 bg-silver fixed-top d-flex justify-content-center align-items-center gap-5"
-        v-if="polaroidShown">
-            <polaroid :photo="nowPolaroid"></polaroid>
-            <polaroid-text :photo="nowPolaroid" :bg-style="{'background-color': '#232323', 'color': '#f6f6f6'}"></polaroid-text>
-            <i class="fa-solid fa-xmark fa-xl position-absolute top-0 end-0 p-5 opacity-50-hover"
-            role="button" @click="polaroidShown = false"></i>
-            <div class="position-absolute end-0 d-flex flex-column px-3 pb-3 pb-lg-0 gap-3">
-                <button class="luc-controller" @click="showPrev">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </button>
-                <button class="luc-controller" @click="showNext">
-                    <i class="fa-solid fa-arrow-right"></i>
-                </button>
-            </div>
-        </section>
+          <img v-if="randomPhotoLoaded" :src="randomPhoto.url_google" class="img-fluid w-100 position-relative opacity-75-hover"
+          style="top: -200%;" ref="randomPhotoEl" id="randomPhotoEl"
+          @click="showPolaroid(randomPhoto)" role="button"/>
+          <div v-else class="h-100" :style="{'background-color':randomPhotoColor}">
+            <p class="opacity-0">{{randomPhoto}}</p>
+          </div>
         </transition>
-        <!-- Bookmark -->
-        <bookmark class="position-fixed top-0 d-flex align-items-center gap-1"></bookmark>
-        <!-- Nav -->
-        <navigator class="position-fixed top-0 end-0 pe-4"></navigator>
-    </div>
+      </div>
+      <transition name="fade" mode="out-in">
+        <section v-if="randomPhotoLoaded">
+          <div class="d-flex gap-2 my-2">
+            <p v-for="p of randomPhoto.places" class="fw-semibold mb-1">#{{p}}</p>
+          </div>
+          <p>{{ randomPhoto.description }}</p>
+        </section>
+      </transition>
+      <div class="row">
+        <!-- <div class="my-4">
+          <button @click="groupBy = 'month'">Month</button>
+          <button @click="groupBy = 'hour'">Hours</button>
+        </div> -->
+        <section v-if="groupBy == 'month'">
+          <section v-for="month of months" class="mb-3">
+            <p
+              class="mb-2 ff-serif"
+              :class="
+                dataFiltered.filter((d) => d.date.split('/')[1] == month.key)
+                  .length > 0
+                  ? ''
+                  : 'opacity-50'
+              "
+            >
+              <strong>{{ month.label.split(" ")[0] }}</strong>
+              {{ month.label.split(" ")[1] }}
+            </p>
+            <div class="d-flex">
+              <div
+                style="height: 15px"
+                v-for="d of dataFiltered.filter(
+                  (d) => d.date.split('/')[1] == month.key
+                )"
+                :style="{
+                  'background-color': hsl2Hex(
+                    d.main_color.h,
+                    d.main_color.s,
+                    d.main_color.l
+                  ),
+                  width: 15 + 'px',
+                }"
+                :class="d.area == 'kansai' ? 'rounded-pill' : ''"
+                role="button"
+                class="position-relative color-data"
+                :data-place="d.places.length > 0 ? d.places : '無'"
+                @click="showPolaroid(d)"
+              ></div>
+            </div>
+          </section>
+        </section>
+        <section v-if="groupBy == 'hour'">
+          <section v-for="hour of hours" class="mb-3">
+            <p
+              class="mb-2 ff-serif"
+              :class="
+                dataFiltered.filter((d) => d.time.split(':')[0] == hour.key)
+                  .length > 0
+                  ? ''
+                  : 'opacity-50'
+              "
+            >
+              <strong>{{ hour.label.split(" ")[0] }}</strong>
+              {{ hour.label.split(" ")[1] }}
+            </p>
+            <div class="d-flex">
+              <div
+                style="height: 15px"
+                :style="{
+                  'background-color': hsl2Hex(
+                    d.main_color.h,
+                    d.main_color.s,
+                    d.main_color.l
+                  ),
+                  width: 15 + 'px',
+                }"
+                v-for="d of dataFiltered.filter(
+                  (d) => d.time.split(':')[0] == hour.key
+                )"
+                role="button"
+                class="position-relative color-data"
+                :data-place="d.places.length > 0 ? d.places : '無'"
+                @click="showPolaroid(d)"
+              ></div>
+            </div>
+          </section>
+        </section>
+      </div>
+    </main>
+    <!-- Polaroid -->
+    <transition name="fade" mode="out-in">
+      <section
+        class="vh-100 bg-silver fixed-top d-flex justify-content-center align-items-center gap-5"
+        v-if="polaroidShown"
+      >
+        <polaroid :photo="nowPolaroid"></polaroid>
+        <polaroid-text
+          :photo="nowPolaroid"
+          :bg-style="{ 'background-color': '#232323', color: '#f6f6f6' }"
+        ></polaroid-text>
+        <i
+          class="fa-solid fa-xmark fa-xl position-absolute top-0 end-0 p-5 opacity-50-hover"
+          role="button"
+          @click="polaroidShown = false"
+        ></i>
+        <div
+          class="position-absolute end-0 d-flex flex-column px-3 pb-3 pb-lg-0 gap-3"
+        >
+          <button class="luc-controller" @click="showPrev">
+            <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <button class="luc-controller" @click="showNext">
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      </section>
+    </transition>
+    <!-- Bookmark -->
+    <bookmark
+      class="position-fixed top-0 d-flex align-items-center gap-1"
+    ></bookmark>
+    <!-- Nav -->
+    <navigator class="position-fixed top-0 end-0 pe-4"></navigator>
+  </div>
 </template>
 
 <style scoped>
-.color-data{
-    width: 10px;
+.color-data {
+  width: 10px;
+}
+
+.random-photo-container{
+  height: 300px;
+  /* max-width: 450px; */
+  overflow: hidden;
 }
 </style>

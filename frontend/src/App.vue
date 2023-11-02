@@ -14,6 +14,21 @@ const CSV_URL = "/iroironairo/data.csv";
 export default {
   name: "App",
   setup() {
+    // 地點分群
+    const Kansai = [
+      "神戶",
+      "京都",
+      "大阪",
+      "港島",
+      "神戶港",
+      "三宮",
+      "六甲",
+      "摩耶山",
+      "ポートアイランド",
+      "兵庫",
+      "和歌山",
+    ];
+    
     const data = ref([]);
 
     axios.get(CSV_URL)
@@ -67,6 +82,14 @@ export default {
         data.value.forEach(d => {
           d.date = d.date.replace(/:/g, '/')
           d.time = d.time.replace(/:[^:]*$/, '')
+          d["area"] = "other"
+          for (let i = 0; i<d.places.length; i++){
+            let p = d.places[i];
+            if (Kansai.includes(p)) {
+              d["area"] = "kansai";
+              break;
+            }
+          }
         })
         console.log("讀取本地 CSV 成功")
       })
