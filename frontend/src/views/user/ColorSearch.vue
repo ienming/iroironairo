@@ -197,7 +197,7 @@ onMounted(()=>{
 
 <template>
   <div class="z-1 min-vh-100 bg-silver">
-    <main class="container pt-5 pb-8 pt-lg-8">
+    <main class="container pt-5 pt-lg-8">
       <div class="row">
         <div
           class="sticky-top d-flex justify-content-between"
@@ -209,16 +209,6 @@ onMounted(()=>{
               <span>{{
                 dataFiltered.length + "張 / " + data.length + "張照片"
               }}</span>
-            </div>
-            <div v-if="hasData" class="d-flex gap-2">
-              <div class="d-flex gap-1 align-items-center">
-                <div style="width: 15px; height: 15px;" class="rounded-pill bg-dark opacity-25"></div>
-                <span>關西地區</span>
-              </div>
-              <div class="d-flex gap-1 align-items-center">
-                <div style="width: 15px; height: 15px;" class="bg-dark opacity-25"></div>
-                <span>非關西地區</span>
-              </div>
             </div>
           </div>  
           <div class="bg-white rounded-3 p-3 shadow-lg row col-5">
@@ -246,6 +236,9 @@ onMounted(()=>{
           </div>
         </div>
       </div>
+    </main>
+    <!-- 隨機照片 -->
+    <section class="my-5">
       <div v-if="randomPhoto" class="mt-3 random-photo-container ms-auto" :style="{'border-bottom': '20px solid '+randomPhotoColor}">
         <img :src="randomPhoto.url_google" alt="" class="d-none" @load="loadRandomPhoto">
         <transition name="fade" mode="out-in">
@@ -258,14 +251,28 @@ onMounted(()=>{
         </transition>
       </div>
       <transition name="fade" mode="out-in">
-        <section v-if="randomPhotoLoaded">
-          <div class="d-flex gap-2 my-2">
-            <p v-for="p of randomPhoto.places" class="fw-semibold mb-1">#{{p}}</p>
+        <section v-if="randomPhotoLoaded" class="container">
+          <div>
+            <div class="d-flex gap-2 my-2">
+              <p v-for="p of randomPhoto.places" class="fw-semibold mb-0 rounded-pill p-2 bg-dark text-white">#{{p}}</p>
+            </div>
+            <p>{{ randomPhoto.description }}</p>
           </div>
-          <p>{{ randomPhoto.description }}</p>
         </section>
       </transition>
+    </section>
+    <section class="container pb-8">
       <div v-if="hasData" class="row">
+          <div class="d-flex gap-2 py-4 border-top border-bottom mb-3">
+              <div class="d-flex gap-1 align-items-center">
+                <div style="width: 15px; height: 15px;" class="rounded-pill bg-dark opacity-25"></div>
+                <span>關西地區</span>
+              </div>
+              <div class="d-flex gap-1 align-items-center">
+                <div style="width: 15px; height: 15px;" class="bg-dark opacity-25"></div>
+                <span>非關西地區</span>
+              </div>
+          </div>
           <section v-for="month of months" class="mb-3">
             <p
               class="mb-2 ff-serif"
@@ -281,7 +288,6 @@ onMounted(()=>{
             </p>
             <div class="d-flex">
               <div
-                style="height: 15px"
                 v-for="d of dataFiltered.filter(
                   (d) => d.date.split('/')[1] == month.key
                 )"
@@ -290,8 +296,7 @@ onMounted(()=>{
                     d.main_color.h,
                     d.main_color.s,
                     d.main_color.l
-                  ),
-                  width: 15 + 'px',
+                  )
                 }"
                 :class="d.area == 'kansai' ? 'rounded-pill' : ''"
                 role="button"
@@ -318,7 +323,7 @@ onMounted(()=>{
           </div>
         </div>
       </div>
-    </main>
+    </section>
     <!-- Polaroid -->
     <transition name="fade" mode="out-in">
       <section
@@ -358,12 +363,15 @@ onMounted(()=>{
 
 <style scoped>
 .color-data {
-  width: 10px;
+  --size: 15px;
+  width: var(--size);
+  height: var(--size);
 }
 
 .color-circle{
-  height: 60px;
-  width: 60px;
+  --size: 60px;
+  height: var(--size);
+  width: var(--size);
   transition: .2s ease-out;
 }
 .color-circle:hover{

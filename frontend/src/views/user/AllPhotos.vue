@@ -477,6 +477,7 @@ function scrollShowCase(type) {
   const currentChild = Array.from(dom.children).find((child) => {
     return child.offsetLeft >= dom.scrollLeft + window.innerWidth / 2;
   });
+  hoveringShowCase.value = true
   switch (type) {
     case "next":
       dom.scrollTo({
@@ -491,19 +492,25 @@ function scrollShowCase(type) {
       });
   }
 }
+const hoveringShowCase = ref(false)
+const endBefore = ref(false)
 function animateShowCase(){
   const dom = showCaseDiv.value
   const containerWidth = dom.clientWidth;
   const contentWidth = dom.scrollWidth;
-  if (dom.scrollLeft < (contentWidth - containerWidth)) {
-    console.log("animate to right");
-    console.log(dom.scrollLeft);
-
-    let newPosition = dom.scrollLeft + 1;
-    dom.scrollLeft = newPosition
-
-    requestAnimationFrame(animateShowCase);
+  if (!hoveringShowCase.value && dom.scrollLeft < (contentWidth - containerWidth)) {
+    if (!endBefore.value){
+      let newPosition = dom.scrollLeft + 1;
+      dom.scrollLeft = newPosition
+      requestAnimationFrame(animateShowCase);
+    }
+  }else if (dom.scrollLeft >= (contentWidth - containerWidth)){
+    endBefore.value = true
   }
+}
+function reAnimateShowCase(){
+  hoveringShowCase.value = false
+  animateShowCase()
 }
 
 const controllerContainer = ref(null);
@@ -527,7 +534,9 @@ onMounted(() => {
     lotteryPhoto();
   });
 
-  requestAnimationFrame(animateShowCase)
+  window.setTimeout(()=>{
+    requestAnimationFrame(animateShowCase)
+  }, 500)
 
   lotteryPhoto();
   initTooltip();
@@ -604,6 +613,8 @@ onMounted(() => {
         v-if="!displayMode"
         class="pt-6 ps-6 d-flex justify-content-start overflow-scroll"
         ref="showCaseDiv"
+        @mouseover="hoveringShowCase = true"
+        @mouseleave="reAnimateShowCase"
       >
         <transition-group name="fade">
           <div v-for="(d, id) of dataFiltered" :key="id">
