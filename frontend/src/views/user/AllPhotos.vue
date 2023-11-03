@@ -491,6 +491,20 @@ function scrollShowCase(type) {
       });
   }
 }
+function animateShowCase(){
+  const dom = showCaseDiv.value
+  const containerWidth = dom.clientWidth;
+  const contentWidth = dom.scrollWidth;
+  if (dom.scrollLeft < (contentWidth - containerWidth)) {
+    console.log("animate to right");
+    console.log(dom.scrollLeft);
+
+    let newPosition = dom.scrollLeft + 1;
+    dom.scrollLeft = newPosition
+
+    requestAnimationFrame(animateShowCase);
+  }
+}
 
 const controllerContainer = ref(null);
 function initTooltip() {
@@ -512,6 +526,8 @@ onMounted(() => {
   watch(dataFiltered, () => {
     lotteryPhoto();
   });
+
+  requestAnimationFrame(animateShowCase)
 
   lotteryPhoto();
   initTooltip();

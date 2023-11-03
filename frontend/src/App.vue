@@ -80,14 +80,20 @@ export default {
           data.value.push(obj)
         })
         data.value.forEach(d => {
-          d.date = d.date.replace(/:/g, '/')
-          d.time = d.time.replace(/:[^:]*$/, '')
-          d["area"] = "other"
-          for (let i = 0; i<d.places.length; i++){
-            let p = d.places[i];
-            if (Kansai.includes(p)) {
-              d["area"] = "kansai";
-              break;
+          if (d.date){
+            d.date = d.date.replace(/:/g, '/')
+          }
+          if (d.time){
+            d.time = d.time.replace(/:[^:]*$/, '')
+          }
+          if (d.places){
+            d["area"] = "other"
+            for (let i = 0; i<d.places.length; i++){
+              let p = d.places[i];
+              if (Kansai.includes(p)) {
+                d["area"] = "kansai";
+                break;
+              }
             }
           }
         })

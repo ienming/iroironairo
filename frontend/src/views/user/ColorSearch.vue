@@ -1,6 +1,6 @@
 <script setup>
-import { computed, inject, ref, reactive, onMounted, nextTick } from "vue";
-import { onBeforeRouteUpdate, useRoute } from "vue-router";
+import { computed, inject, ref, reactive, onMounted } from "vue";
+import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import { hsl2Hex, hex2Rgb } from "@/composable/common";
 import { diff } from "color-diff";
 import Bookmark from "@/components/Bookmark.vue";
@@ -60,26 +60,35 @@ const dataFiltered = computed(() => {
   return output;
 });
 
-// 分群規則
-const groupBy = ref("month");
+const hasData = computed(()=>{
+  if (dataFiltered.value.length > 0){
+    return true
+  }else return false
+})
 
 // Random photo
 const randomPhotoLoaded = ref(false)
 const randomIndex = ref(0)
 const randomPhoto = computed(()=>{
-  return dataFiltered.value[randomIndex.value]
+  if (hasData.value){
+    return dataFiltered.value[randomIndex.value]
+  }
 })
 const randomPhotoColor = computed(()=>{
-  return hsl2Hex(
-                    randomPhoto.value.colors[0].h,
-                    randomPhoto.value.colors[0].s,
-                    randomPhoto.value.colors[0].l
-                  )
+  if (randomPhoto.value){
+    return hsl2Hex(
+      randomPhoto.value.colors[0].h,
+      randomPhoto.value.colors[0].s,
+      randomPhoto.value.colors[0].l
+    )
+  }
 })
 function lotteryPhoto(){
-  randomPhotoLoaded.value = false
-  const maxIndex = dataFiltered.value.length - 1;
-  randomIndex.value = Math.floor(Math.random() * (maxIndex + 1));
+  if (hasData.value){
+    randomPhotoLoaded.value = false
+    const maxIndex = dataFiltered.value.length - 1;
+    randomIndex.value = Math.floor(Math.random() * (maxIndex + 1));
+  }
 }
 const randomPhotoEl = ref(null)
 function loadRandomPhoto(){
@@ -118,45 +127,6 @@ const months = [
   },
 ];
 
-// 時間分群
-const hours = computed(() => {
-  let arr = data.value.map((d) => d.time).filter((d) => d);
-  let temp = [];
-  for (let i = 0; i < arr.length; i++) {
-    temp.push(arr[i].split(":")[0]);
-  }
-  temp.sort((a, b) => {
-    return a - b;
-  });
-  temp = new Set(temp);
-  let output = [...temp].map((d) => {
-    let obj = {
-      key: d,
-      label: d,
-    };
-    if (d < 6) {
-      obj["label"] = "凌晨" + d.slice(-1) + "點";
-    }
-    if (d >= 6 && d < 10) {
-      obj["label"] = "早上" + d.slice(-1) + "點";
-    }
-    if (d >= 10 && d < 12) {
-      obj["label"] = "早上" + d + "點";
-    }
-    if (d == 12) {
-      obj["label"] = "中午12點";
-    }
-    if (d > 12 && d < 18) {
-      obj["label"] = "下午" + (d * 1 - 12) + "點";
-    }
-    if (d >= 18) {
-      obj["label"] = "晚上" + (d * 1 - 12) + "點";
-    }
-    return obj;
-  });
-  return output;
-});
-
 // Polaroid
 const polaroidShown = ref(false);
 const nowPolaroid = ref(null);
@@ -185,6 +155,29 @@ function showNext() {
       nowPolaroid.value = dataFiltered.value[currentPhotoIndex + 1];
     }
   }
+}
+
+// 推薦顏色
+const recommends = computed(()=>{
+  let arr = []
+  const clearData = JSON.parse(JSON.stringify(data.value.filter(d => d['main_color'])))
+  if(clearData){
+    const maxIndex = clearData.length - 1;
+    for (let i=0; i<4; i++){
+      let randomIndex = Math.floor(Math.random() * (maxIndex + 1));
+      arr.push(clearData[randomIndex]['main_color'])
+    }
+    return arr
+  }
+})
+const router = useRouter()
+function reSearch(recColor) {
+    router.push({
+        path: '/color_search',
+        query: {
+            color: JSON.stringify(recColor)
+        },
+    })
 }
 
 // 同一頁點選顏色時也要觸發 filter
@@ -217,7 +210,7 @@ onMounted(()=>{
                 dataFiltered.length + "張 / " + data.length + "張照片"
               }}</span>
             </div>
-            <div class="d-flex gap-2">
+            <div v-if="hasData" class="d-flex gap-2">
               <div class="d-flex gap-1 align-items-center">
                 <div style="width: 15px; height: 15px;" class="rounded-pill bg-dark opacity-25"></div>
                 <span>關西地區</span>
@@ -253,7 +246,7 @@ onMounted(()=>{
           </div>
         </div>
       </div>
-      <div class="mt-3 random-photo-container ms-auto" :style="{'border-bottom': '20px solid '+randomPhotoColor}">
+      <div v-if="randomPhoto" class="mt-3 random-photo-container ms-auto" :style="{'border-bottom': '20px solid '+randomPhotoColor}">
         <img :src="randomPhoto.url_google" alt="" class="d-none" @load="loadRandomPhoto">
         <transition name="fade" mode="out-in">
           <img v-if="randomPhotoLoaded" :src="randomPhoto.url_google" class="img-fluid w-100 position-relative opacity-75-hover"
@@ -272,12 +265,7 @@ onMounted(()=>{
           <p>{{ randomPhoto.description }}</p>
         </section>
       </transition>
-      <div class="row">
-        <!-- <div class="my-4">
-          <button @click="groupBy = 'month'">Month</button>
-          <button @click="groupBy = 'hour'">Hours</button>
-        </div> -->
-        <section v-if="groupBy == 'month'">
+      <div v-if="hasData" class="row">
           <section v-for="month of months" class="mb-3">
             <p
               class="mb-2 ff-serif"
@@ -313,43 +301,22 @@ onMounted(()=>{
               ></div>
             </div>
           </section>
-        </section>
-        <section v-if="groupBy == 'hour'">
-          <section v-for="hour of hours" class="mb-3">
-            <p
-              class="mb-2 ff-serif"
-              :class="
-                dataFiltered.filter((d) => d.time.split(':')[0] == hour.key)
-                  .length > 0
-                  ? ''
-                  : 'opacity-50'
-              "
-            >
-              <strong>{{ hour.label.split(" ")[0] }}</strong>
-              {{ hour.label.split(" ")[1] }}
-            </p>
-            <div class="d-flex">
-              <div
-                style="height: 15px"
-                :style="{
-                  'background-color': hsl2Hex(
-                    d.main_color.h,
-                    d.main_color.s,
-                    d.main_color.l
-                  ),
-                  width: 15 + 'px',
-                }"
-                v-for="d of dataFiltered.filter(
-                  (d) => d.time.split(':')[0] == hour.key
-                )"
-                role="button"
-                class="position-relative color-data"
-                :data-place="d.places.length > 0 ? d.places : '無'"
-                @click="showPolaroid(d)"
-              ></div>
-            </div>
-          </section>
-        </section>
+      </div>
+      <div v-else class="row">
+        <div class="col-lg-6 mx-lg-auto mt-6">
+          <p class="text-center mb-5">
+            找不太到相似顏色的照片，試試搜尋這些顏色？
+          </p>
+          <div class="d-flex gap-3 justify-content-center">
+            <transition-group name="fade">
+              <div v-for="rec of recommends" :style="{'background-color': hsl2Hex(rec.h, rec.s, rec.l)}"
+              class="rounded-pill color-circle"
+              role="button"
+              :key="rec.h+rec.s+rec.l"
+              @click="reSearch(rec)"></div>
+            </transition-group>
+          </div>
+        </div>
       </div>
     </main>
     <!-- Polaroid -->
@@ -392,6 +359,15 @@ onMounted(()=>{
 <style scoped>
 .color-data {
   width: 10px;
+}
+
+.color-circle{
+  height: 60px;
+  width: 60px;
+  transition: .2s ease-out;
+}
+.color-circle:hover{
+  transform: translateY(-10px);
 }
 
 .random-photo-container{

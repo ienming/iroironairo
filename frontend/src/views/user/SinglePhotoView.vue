@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject, ref, onBeforeMount } from 'vue';
+import { inject, ref, onBeforeMount } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 import Bookmark from '@/components/Bookmark.vue';
 import Navigator from '@/components/Navigator.vue';
