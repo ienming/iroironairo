@@ -11,7 +11,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <nav class="d-flex gap-3 py-3 py-lg-4 ff-serif">
+    <nav class="d-flex gap-3 py-3 py-lg-4 ff-serif" style="z-index: 1020;">
         <router-link :to="{
                 path: '/'
             }"

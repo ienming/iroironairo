@@ -12,14 +12,14 @@ heic_folder = "origin"
 jpeg_folder = "output"
 
 # Open HEIF or HEIC file
-heic_files = glob.iglob(os.path.join(heic_folder, '*.HEIC'), recursive=True)
+heic_files = glob.iglob(os.path.join(heic_folder, '*.[Hh][Ee][Ii][Cc]*'), recursive=True)
 for heic_file in list(heic_files):
     f = open(heic_file, 'rb')
     pic_data = exifread.process_file(f)
     # 列出所有 key
-    # for d in pic_data.keys():
-    #     if d not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
-    #         print ("Key: %s, value %s" % (d, pic_data[d]))
+    for d in pic_data.keys():
+        if d not in ('JPEGThumbnail', 'TIFFThumbnail', 'Filename', 'EXIF MakerNote'):
+            print ("Key: %s, value %s" % (d, pic_data[d]))
 
     # Get original EXIF data (製作日期 and 修改日期)
     original_exif = {}

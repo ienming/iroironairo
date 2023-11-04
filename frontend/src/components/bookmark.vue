@@ -20,6 +20,6 @@ const props = defineProps({
 
 <style scoped>
 .bookmark {
-    z-index: 1030;
+    z-index: 1020;
 }
 </style>

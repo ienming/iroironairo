@@ -1,7 +1,6 @@
 <script>
 import { ref, provide } from 'vue';
 import gsap from 'gsap';
-import FusumaTransition from '@/components/FusumaTransition.vue';
 import axios from 'axios';
 const CSV_URL = "/iroironairo/data.csv";
 
@@ -103,29 +102,39 @@ export default {
       data
     }
   },
-  components: {
-    FusumaTransition
-  },
   methods: {
-    beforeEnter(){
-      console.log("--------set initial state---------")
-      const el = this.$refs.dom
-      el.style.opacity = 0
-    },
-    enter(){
+    onEnter(){
       console.log("--------Start transition---------")
-      const el = this.$refs.dom
-      gsap.to(el, {
-        duration: 3,
-        x: '100px',
-        opacity: 1
+      const el = this.$refs.container
+      gsap.to(".fusuma", {
+        delay: 2,
+        duration: .5,
+        opacity: 0,
+        x: "100%",
+        stagger: {
+          amount: .2,
+          from: 'end'
+        },
+        onComplete: () => { el.style['z-index'] = '-1' }
       })
     },
-    leave(){
+    onLeave(){
       console.log("--------Leave transition--------")
       console.log("切換分頁時執行")
-      const el = this.$refs.dom
-      el.style.transform = 'translate(0px, 0px)'
+      const el = this.$refs.container
+      gsap.to(el, {
+        duration: .5,
+        opacity: 1,
+      })
+      gsap.set(el, {
+        'z-index': 1030
+      })
+      gsap.to(".fusuma", {
+        duration: .5,
+        opacity: 1,
+        stagger: .2,
+        x: 0
+      })
     }
   }
 };
@@ -133,17 +142,30 @@ export default {
 
 <template>
   <!-- Transition -->
-  <FusumaTransition />
-  <h1 ref="dom">App vue</h1>
+  <section ref="container" class="vw-100 vh-100 position-fixed top-0 fusuma-container">
+      <div class="fusuma"></div>
+      <div class="fusuma"></div>
+      <div class="fusuma"></div>
+  </section>
   <router-view v-slot="{ Component }">
     <!-- <transition name="fade" mode="out-in">
       <component :is="Component" />
     </transition> -->
     <transition
-    @before-enter="beforeEnter"
-    @enter="enter"
-    @leave="leave">
+    @enter="onEnter"
+    @leave="onLeave">
       <component :is="Component" />
     </transition>
   </router-view>
 </template>
+
+<style scoped>
+.fusuma-container{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    z-index: 1030;
+}
+.fusuma{
+    background-color: brown;
+}
+</style>

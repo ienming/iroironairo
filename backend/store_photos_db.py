@@ -1,6 +1,8 @@
 from get_database import get_database
-from read_from_google_drive import get_files_from_google_drive
+# from read_from_google_drive import get_files_from_google_drive
 from read_exif import read_exif
+import os
+import glob
 
 # db = get_database('exchange_japan')
 # collection = db.photos
@@ -35,6 +37,6 @@ if __name__ == "__main__":
     count = 0
     for file in files:
         query = {'id': file['id']}
-        collection.update_one(query, {'$set': {'url_google': file['url_google']}})
+        # collection.update_one(query, {'$set': {'url_google': file['url_google']}})
         print(f"已經更新{count}個檔案")
         count+=1
