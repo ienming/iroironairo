@@ -1,10 +1,12 @@
 <script setup>
 import { onMounted, inject, ref, computed, onBeforeUnmount } from 'vue'
+import { onBeforeRouteUpdate } from 'vue-router';
 import Controller from '@/components/Controller.vue';
 import Bookmark from '@/components/Bookmark.vue';
 import Navigator from '@/components/Navigator.vue';
 import Polaroid from '../../components/Polaroid.vue';
 import PolaroidText from '../../components/PolaroidText.vue';
+// import FusumaTransition from '@/components/FusumaTransition.vue';
 
 const imgLoaded = ref(false)
 const data = inject('csvData', [])
@@ -129,6 +131,10 @@ onMounted(() => {
 onBeforeUnmount(() => {
   clearInterval(timer)
 })
+
+onBeforeRouteUpdate(()=>{
+  console.log("離開 stage")
+})
 </script>
 
 <template>
@@ -152,5 +158,7 @@ onBeforeUnmount(() => {
     <!-- Nav -->
     <navigator :theme="backgroundStyle"
     class="position-fixed top-0 end-0 pe-4"></navigator>
+    <!-- Transition -->
+    <!-- <FusumaTransition /> -->
   </main>
 </template>

@@ -17,7 +17,6 @@ import Selection from "@/components/Selection.vue";
 import Polaroid from "@/components/Polaroid.vue";
 import PolaroidText from "@/components/PolaroidText.vue";
 import ButtonCheckbox from "@/components/ButtonCheckbox.vue";
-import PosterLink from '@/assets/poster.jpg';
 
 // 顯示模式
 const displayMode = ref(false);

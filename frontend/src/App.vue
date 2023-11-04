@@ -1,13 +1,7 @@
-<template>
-  <router-view v-slot="{ Component }">
-    <transition name="fade" mode="out-in">
-      <component :is="Component" />
-    </transition>
-  </router-view>
-</template>
-
 <script>
 import { ref, provide } from 'vue';
+import gsap from 'gsap';
+import FusumaTransition from '@/components/FusumaTransition.vue';
 import axios from 'axios';
 const CSV_URL = "/iroironairo/data.csv";
 
@@ -106,8 +100,50 @@ export default {
       
     provide('csvData', data);
     return {
-      data,
+      data
+    }
+  },
+  components: {
+    FusumaTransition
+  },
+  methods: {
+    beforeEnter(){
+      console.log("--------set initial state---------")
+      const el = this.$refs.dom
+      el.style.opacity = 0
+    },
+    enter(){
+      console.log("--------Start transition---------")
+      const el = this.$refs.dom
+      gsap.to(el, {
+        duration: 3,
+        x: '100px',
+        opacity: 1
+      })
+    },
+    leave(){
+      console.log("--------Leave transition--------")
+      console.log("切換分頁時執行")
+      const el = this.$refs.dom
+      el.style.transform = 'translate(0px, 0px)'
     }
   }
 };
 </script>
+
+<template>
+  <!-- Transition -->
+  <FusumaTransition />
+  <h1 ref="dom">App vue</h1>
+  <router-view v-slot="{ Component }">
+    <!-- <transition name="fade" mode="out-in">
+      <component :is="Component" />
+    </transition> -->
+    <transition
+    @before-enter="beforeEnter"
+    @enter="enter"
+    @leave="leave">
+      <component :is="Component" />
+    </transition>
+  </router-view>
+</template>
