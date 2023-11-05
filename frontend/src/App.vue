@@ -1,5 +1,6 @@
 <script>
-import { ref, provide } from 'vue';
+import { ref, provide, reactive } from 'vue';
+import { hsl2Hex } from "@/composable/common";
 import gsap from 'gsap';
 import axios from 'axios';
 const CSV_URL = "/iroironairo/data.csv";
@@ -98,11 +99,29 @@ export default {
 
       
     provide('csvData', data);
+
     return {
-      data
+      data,
     }
   },
   methods: {
+    onBeforeEnter(){
+      const url = new URL(window.location.href)
+      const containerDom = this.$refs.container
+      const fusumas = containerDom.querySelectorAll(".fusuma")
+      // 如果是透過顏色搜尋
+      const color = url.searchParams.get('color')
+      if (color !== null){
+        const colorObj = JSON.parse(color)
+        Array.from(fusumas).forEach(fusuma => {
+          fusuma.style['background-color'] = hsl2Hex(colorObj.h, colorObj.s, colorObj.l)
+        })
+      }else{
+        Array.from(fusumas).forEach(fusuma => {
+          fusuma.style['background-color'] = '#f6f6f6'
+        })
+      }
+    },
     onEnter(){
       console.log("--------Start transition---------")
       const el = this.$refs.container
@@ -120,7 +139,7 @@ export default {
     },
     onLeave(){
       console.log("--------Leave transition--------")
-      console.log("切換分頁時執行")
+      // console.log("切換分頁時執行")
       const el = this.$refs.container
       gsap.to(el, {
         duration: .5,
@@ -136,11 +155,89 @@ export default {
         x: 0
       })
     }
+  },
+  mounted(){
+    // Get colors for enter animation
+    let timer = window.setInterval(()=>{
+      const randomIndex = Math.floor(Math.random()*this.data.length+1)
+      const color = this.data[randomIndex]['main_color']
+      const el = document.querySelector("#logoContainer")
+      el.style.color = hsl2Hex(color.h, color.s, color.l)
+    }, 100)
+    // GSAP animation
+    const logoTypeJp = this.$refs.logoTypeJp
+    const logoTypes = Array.from(logoTypeJp.querySelectorAll("span"))
+    const first = logoTypes.shift()
+    const rests = logoTypes
+    const master = gsap.timeline({
+      delay: .5,
+      onComplete: ()=>{
+        clearInterval(timer)
+        const el = document.querySelector("#logoContainer")
+      el.style.color = '#333'
+      }
+    })
+    const [offset, kerning] = [30, 6]
+    let tl_intro = gsap.timeline().fromTo(first, {
+      opacity: 0,
+      scale: 10
+    }, {
+      opacity: 1,
+      scale: 1,
+      duration: 2,
+    })
+    .to(first, {
+      x: `-${offset*2+kerning*2}px`,
+      duration: .5
+    })
+
+    let tl_rest = gsap.timeline().fromTo(logoTypes,{
+      opacity: 0,
+      x: i => `${i*offset+kerning*2}px`,
+      y: `${offset}px`
+    }, {
+      opacity: 1,
+      stagger: .2,
+      y: 0
+    })
+
+    const logoEng = this.$refs.logoContainer.querySelector("h2")
+    let tl_eng = gsap.timeline().fromTo(logoEng, {
+      opacity: 0,
+      y: `${offset*2}px`
+    }, {
+      opacity: 1,
+      y: `${offset}px`,
+      duration: .5
+    })
+
+    // 
+    master
+      .add(tl_intro)
+      .add(tl_rest, "-=1")
+      .add(tl_eng, "-=1")
   }
 };
 </script>
 
 <template>
+  <!-- Logo -->
+  <section id="logoContainer" ref="logoContainer" class="ff-serif position-fixed">
+    <div class="d-flex flex-column align-items-center position-absolute top-50 start-50 translate-middle">
+      <h1 class="position-relative" ref="logoTypeJp">
+        <span class="position-absolute">色</span>
+        <span class="position-absolute">々</span>
+        <span class="position-absolute">な</span>
+        <span class="position-absolute">色</span>
+      </h1>
+      <h2 class="fs-4">iroironairo</h2>
+    </div>
+    <section class="vw-100 vh-100 fusuma-container">
+      <div class="fusuma"></div>
+      <div class="fusuma"></div>
+      <div class="fusuma"></div>
+    </section>
+  </section>
   <!-- Transition -->
   <section ref="container" class="vw-100 vh-100 position-fixed top-0 fusuma-container">
       <div class="fusuma"></div>
@@ -152,6 +249,7 @@ export default {
       <component :is="Component" />
     </transition> -->
     <transition
+    @before-enter="onBeforeEnter"
     @enter="onEnter"
     @leave="onLeave">
       <component :is="Component" />
@@ -160,6 +258,10 @@ export default {
 </template>
 
 <style scoped>
+#logoContainer{
+  z-index: 1060;
+  background-color: #f6f6f6;
+}
 .fusuma-container{
     display: grid;
     grid-template-columns: repeat(3, 1fr);

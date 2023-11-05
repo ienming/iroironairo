@@ -184,6 +184,7 @@ const recommends = computed(()=>{
 })
 const router = useRouter()
 function reSearch(recColor) {
+    // randomPhotoLoaded.value = false
     router.push({
         path: '/color_search',
         query: {
