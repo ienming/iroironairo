@@ -91,7 +91,7 @@ export default {
             }
           }
         })
-        console.log("讀取本地 CSV 成功")
+        console.log("讀取 CSV")
       })
       .catch((error) => {
         console.error(error);
@@ -124,8 +124,9 @@ export default {
     },
     onEnter(){
       console.log("--------Start transition---------")
-      const el = this.$refs.container
-      gsap.to(".fusuma", {
+      const containerDom = this.$refs.container
+      const fusumas = containerDom.querySelectorAll(".fusuma")
+      gsap.to(fusumas, {
         delay: 2,
         duration: .5,
         opacity: 0,
@@ -134,26 +135,27 @@ export default {
           amount: .2,
           from: 'end'
         },
-        onComplete: () => { el.style['z-index'] = '-1' }
+        onComplete: () => { containerDom.style['z-index'] = '-1' }
       })
     },
-    onLeave(){
-      console.log("--------Leave transition--------")
+    onBeforeLeave(){
+      console.log("--------Before leave transition--------")
       // console.log("切換分頁時執行")
       const el = this.$refs.container
-      gsap.to(el, {
-        duration: .5,
-        opacity: 1,
-      })
       gsap.set(el, {
         'z-index': 1030
       })
-      gsap.to(".fusuma", {
+      const containerDom = this.$refs.container
+      const fusumas = containerDom.querySelectorAll(".fusuma")
+      gsap.to(fusumas, {
         duration: .5,
         opacity: 1,
         stagger: .2,
         x: 0
       })
+    },
+    onLeave(){
+      console.log("--------Leave transition--------")
     }
   },
   mounted(){
@@ -161,9 +163,13 @@ export default {
     let timer = window.setInterval(()=>{
       const randomIndex = Math.floor(Math.random()*this.data.length+1)
       const color = this.data[randomIndex]['main_color']
-      const el = document.querySelector("#logoContainer")
-      el.style.color = hsl2Hex(color.h, color.s, color.l)
-    }, 100)
+      // const el = document.querySelector("#logoContainer")
+      // el.style.color = hsl2Hex(color.h, color.s, color.l)
+      const el = document.querySelector("#logoContainer").querySelectorAll("span")
+      Array.from(el).forEach(e => {
+        e.style['background-color'] = hsl2Hex(color.h, color.s, color.l)
+      })
+    }, 200)
     // GSAP animation
     const logoTypeJp = this.$refs.logoTypeJp
     const logoTypes = Array.from(logoTypeJp.querySelectorAll("span"))
@@ -171,29 +177,41 @@ export default {
     const rests = logoTypes
     const master = gsap.timeline({
       delay: .5,
-      onComplete: ()=>{
-        clearInterval(timer)
-        const el = document.querySelector("#logoContainer")
-      el.style.color = '#333'
-      }
     })
     const [offset, kerning] = [30, 6]
     let tl_intro = gsap.timeline().fromTo(first, {
       opacity: 0,
-      scale: 10
+      scale: 15
     }, {
       opacity: 1,
       scale: 1,
-      duration: 2,
+      duration: 4,
     })
     .to(first, {
-      x: `-${offset*2+kerning*2}px`,
-      duration: .5
+      x: `-${offset*2+kerning*4}px`,
+      duration: .5,
+      onComplete: ()=>{
+        clearInterval(timer)
+        const el = document.querySelector("#logoContainer")
+        el.style.color = '#333'
+        const els = document.querySelector("#logoContainer").querySelectorAll("span")
+        Array.from(els).forEach(el => {
+          el.style['background-color'] = 'transparent'
+        })
+      }
     })
 
     let tl_rest = gsap.timeline().fromTo(logoTypes,{
       opacity: 0,
-      x: i => `${i*offset+kerning*2}px`,
+      x: i => {
+        if (i == 0){
+          return `-${offset+kerning*2}px`
+        }else if (i == 1){
+          return `0px`
+        }else if (i == 2){
+          return `${offset+kerning*2}px`
+        }
+      },
       y: `${offset}px`
     }, {
       opacity: 1,
@@ -207,8 +225,27 @@ export default {
       y: `${offset*2}px`
     }, {
       opacity: 1,
-      y: `${offset}px`,
+      y: `${offset+kerning*2}px`,
       duration: .5
+    })
+
+    const logoContainer = this.$refs.logoContainer
+    const logoFusumas = logoContainer.querySelectorAll(".fusuma")
+    let tl_fusuma = gsap.to(logoFusumas, {
+        duration: .5,
+        opacity: 0,
+        x: "100%",
+        stagger: {
+          amount: .4,
+          from: 'end'
+        },
+        onComplete: () => { logoContainer.style['z-index'] = '-1' }
+      })
+
+    let tl_text_fade = gsap.to(logoContainer.querySelector("div"), {
+      opacity: 0,
+      duration: .5,
+      x: "100%"
     })
 
     // 
@@ -216,6 +253,8 @@ export default {
       .add(tl_intro)
       .add(tl_rest, "-=1")
       .add(tl_eng, "-=1")
+      .add(tl_fusuma, "+=2")
+      .add(tl_text_fade, "-=1")
   }
 };
 </script>
@@ -225,10 +264,10 @@ export default {
   <section id="logoContainer" ref="logoContainer" class="ff-serif position-fixed">
     <div class="d-flex flex-column align-items-center position-absolute top-50 start-50 translate-middle">
       <h1 class="position-relative" ref="logoTypeJp">
-        <span class="position-absolute">色</span>
-        <span class="position-absolute">々</span>
-        <span class="position-absolute">な</span>
-        <span class="position-absolute">色</span>
+        <span class="position-absolute d-inline-block">色</span>
+        <span class="position-absolute d-inline-block">々</span>
+        <span class="position-absolute d-inline-block">な</span>
+        <span class="position-absolute d-inline-block">色</span>
       </h1>
       <h2 class="fs-4">iroironairo</h2>
     </div>
@@ -251,6 +290,7 @@ export default {
     <transition
     @before-enter="onBeforeEnter"
     @enter="onEnter"
+    @before-leave="onBeforeLeave"
     @leave="onLeave">
       <component :is="Component" />
     </transition>
@@ -260,7 +300,6 @@ export default {
 <style scoped>
 #logoContainer{
   z-index: 1060;
-  background-color: #f6f6f6;
 }
 .fusuma-container{
     display: grid;

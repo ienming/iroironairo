@@ -217,7 +217,10 @@ onMounted(()=>{
           style="top: 30px"
         >
           <div>
-            <h1 class="fs-4 ff-serif fw-bolder mb-4">相近的顏色</h1>
+            <h1 class="fs-4 ff-serif fw-bolder mb-4">
+              <span class="d-block">相近的顏色</span>
+              <span class="fs-6 fw-normal">選んだ色に近い色の写真</span>
+            </h1>
             <div class="mb-2">
               <span>{{
                 dataFiltered.length + "張 / " + data.length + "張照片"
