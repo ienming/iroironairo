@@ -1,0 +1,17 @@
+.bookmark {
+    .anim-line{
+        width: 100px;
+        height: 1px;
+        display: inline-block;
+        @media screen and (min-width: map-get($grid-breakpoints, "lg")) {
+            width: 1px;
+            height: 100px;
+        }
+    }
+    .text{
+        font-size: 14px;
+        @media screen and (min-width: map-get($grid-breakpoints, "lg")) {
+            writing-mode: vertical-rl;
+        }
+    }
+}
