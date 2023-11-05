@@ -1,5 +1,5 @@
 <script setup>
-import { computed, inject, ref, reactive, onMounted } from "vue";
+import { computed, inject, ref, reactive, onMounted, nextTick } from "vue";
 import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import { hsl2Hex, hex2Rgb } from "@/composable/common";
 import { diff } from "color-diff";
@@ -12,7 +12,9 @@ const route = useRoute();
 const data = inject("csvData", []);
 
 const colorHsl = computed(() => {
-  return JSON.parse(route.query.color);
+  if (route.query.color){
+    return JSON.parse(route.query.color);
+  }else return
 });
 const colorHex = computed(() => {
   return hsl2Hex(colorHsl.value.h, colorHsl.value.s, colorHsl.value.l);
@@ -91,8 +93,18 @@ function lotteryPhoto(){
   }
 }
 const randomPhotoEl = ref(null)
+const randomPhotoOffsetY = ref('')
 function loadRandomPhoto(){
   randomPhotoLoaded.value = true
+  nextTick(()=>{
+    const imgEl = randomPhotoEl.value
+    // console.log(randomPhotoEl)
+    // console.log(randomPhotoEl.value)
+    // console.log(imgEl.clientHeight)
+    if (imgEl){
+      randomPhotoOffsetY.value = `-${(imgEl.clientHeight-300)/2}px`
+    }
+  })
 }
 
 // 月份分群
@@ -239,12 +251,11 @@ onMounted(()=>{
     </main>
     <!-- 隨機照片 -->
     <section class="my-5">
-      <div v-if="randomPhoto" class="mt-3 random-photo-container ms-auto" :style="{'border-bottom': '20px solid '+randomPhotoColor}">
-        <img :src="randomPhoto.url_google" alt="" class="d-none" @load="loadRandomPhoto">
+      <div v-if="randomPhoto" class="mt-3 random-photo-container ms-auto position-relative" :style="{'border-bottom': '20px solid '+randomPhotoColor}">
+        <img :src="randomPhoto.url_google" alt="" ref="randomPhotoEl" class="opacity-0 position-absolute w-100" @load="loadRandomPhoto">
         <transition name="fade" mode="out-in">
-          <img v-if="randomPhotoLoaded" :src="randomPhoto.url_google" class="img-fluid w-100 position-relative opacity-75-hover"
-          style="top: -200%;" ref="randomPhotoEl" id="randomPhotoEl"
-          @click="showPolaroid(randomPhoto)" role="button"/>
+          <img v-if="randomPhotoLoaded" :src="randomPhoto.url_google" class="img-fluid w-100 position-absolute random-photo"
+          @click="showPolaroid(randomPhoto)" role="button" :style="{'top': randomPhotoOffsetY}"/>
           <div v-else class="h-100" :style="{'background-color':randomPhotoColor}">
             <p class="opacity-0">{{randomPhoto}}</p>
           </div>
@@ -382,5 +393,14 @@ onMounted(()=>{
   height: 300px;
   /* max-width: 450px; */
   overflow: hidden;
+}
+
+.random-photo{
+  transform-origin: center center;
+  transition: transform 1s ease-in-out;
+}
+
+.random-photo:hover{
+  transform: scale(1.05);
 }
 </style>

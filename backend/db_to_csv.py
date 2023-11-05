@@ -10,7 +10,7 @@ collection = db.photos
 # data = collection.find().limit(amount)
 data = collection.find()
 
-output_folder_path = "../frontend/src/assets"
+output_folder_path = "../frontend/public"
 csv_file_name = "data.csv"
 output_file_path = os.path.join(output_folder_path, csv_file_name)
 

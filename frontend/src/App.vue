@@ -166,6 +166,6 @@ export default {
     z-index: 1030;
 }
 .fusuma{
-    background-color: brown;
+    background-color: #F6F6F6;
 }
 </style>

@@ -151,7 +151,7 @@ for (let i = 0; i < places.value.length; i++) {
   filterByPlaces.value.push(places.value[i].key);
 }
 function filterPlace(checkedStatus) {
-  console.log(checkedStatus);
+  // console.log(checkedStatus);
   if (checkedStatus.key === "全部") {
     if (checkedStatus.value) {
       filterByPlaces.value = [];
@@ -170,13 +170,13 @@ function filterPlace(checkedStatus) {
       );
     }
   }
-  console.log(filterByPlaces.value);
+  // console.log(filterByPlaces.value);
   getQuantities()
 }
 const placeQuantities = ref([])
 function initPlaceQuantities(){
   const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
-  console.log("initialize place quantites")
+  // console.log("initialize place quantites")
   let arr = []
   for (let i=0; i<places.value.length; i++){
     let quant = {}
@@ -246,13 +246,13 @@ const months = [
 ];
 const filterByMonth = ref(months[0]);
 function filterMonth(key) {
-  console.log(key);
+  // console.log(key);
   filterByMonth.value = months.find((month) => month.key == key);
   getQuantities()
 }
 const monthQuantities = ref([])
 function initMonthQuantities(){
-  console.log("initialize month quantites")
+  // console.log("initialize month quantites")
   const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
   let arr = []
   for (let i=0; i<months.length; i++){
@@ -316,7 +316,7 @@ function filterHour(key) {
 }
 const hourQuantities = ref([])
 function initHourQuantities(){
-  console.log("initialize hour quantites")
+  // console.log("initialize hour quantites")
   const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
   let arr = []
   for (let i=0; i<hours.value.length; i++){
@@ -425,7 +425,7 @@ function lotteryPhoto() {
       }
     }
   }
-  console.log("Get new random photos: " + randomIndexes.value);
+  // console.log("Get new random photos: " + randomIndexes.value);
 }
 
 function randomPhotoLoaded(num) {
@@ -495,16 +495,18 @@ const hoveringShowCase = ref(false)
 const endBefore = ref(false)
 function animateShowCase(){
   const dom = showCaseDiv.value
-  const containerWidth = dom.clientWidth;
-  const contentWidth = dom.scrollWidth;
-  if (!hoveringShowCase.value && dom.scrollLeft < (contentWidth - containerWidth)) {
-    if (!endBefore.value){
-      let newPosition = dom.scrollLeft + 1;
-      dom.scrollLeft = newPosition
-      requestAnimationFrame(animateShowCase);
+  if (dom){
+    const containerWidth = dom.clientWidth;
+    const contentWidth = dom.scrollWidth;
+    if (!hoveringShowCase.value && dom.scrollLeft < (contentWidth - containerWidth)) {
+      if (!endBefore.value){
+        let newPosition = dom.scrollLeft + 1;
+        dom.scrollLeft = newPosition
+        requestAnimationFrame(animateShowCase);
+      }
+    }else if (dom.scrollLeft >= (contentWidth - containerWidth)){
+      endBefore.value = true
     }
-  }else if (dom.scrollLeft >= (contentWidth - containerWidth)){
-    endBefore.value = true
   }
 }
 function reAnimateShowCase(){
@@ -798,7 +800,8 @@ onMounted(() => {
     <!-- 控制項 -->
     <transition name="fade" mode="out-in">
       <section
-        class="p-4 position-fixed top-0 end-0 w-25 bg-silver h-100 overflow-scroll z-1 shadow-lg"
+        class="p-4 position-fixed top-0 end-0 w-25 bg-silver h-100 overflow-scroll shadow-lg"
+        style="z-index: 1040;"
         v-show="controllerShown"
       >
         <span class="pb-2 d-block"
@@ -856,6 +859,7 @@ onMounted(() => {
     <transition name="fade" mode="out-in">
       <section
         class="vh-100 bg-silver fixed-top d-flex justify-content-center align-items-center gap-5"
+        style="z-index: 1050;"
         v-if="polaroidShown"
       >
         <polaroid :photo="nowPolaroid"></polaroid>

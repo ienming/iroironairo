@@ -34,6 +34,10 @@ function resetCopyText() {
 // Router
 const router = useRouter()
 function navigateTo() {
+    // 銷毀Bootstrap tooltip
+    tooltipList.forEach(tooltip => {
+        tooltip.hide()
+    });
     router.push({
         path: '/color_search',
         query: {
@@ -48,7 +52,6 @@ onBeforeRouteLeave((to, from) => {
     tooltipList.forEach(tooltip => {
         tooltip.hide()
     });
-
     return true;
 })
 

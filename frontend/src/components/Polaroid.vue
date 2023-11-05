@@ -12,7 +12,7 @@ watch(() => props.photo, (newPhoto, oldPhoto) => {
 const imageElement = ref(null)
 onMounted(() => {
   imageElement.value.onload = () => {
-    console.log("Image loaded")
+    // console.log("Image loaded")
     isLoading.value = false;
   };
 });

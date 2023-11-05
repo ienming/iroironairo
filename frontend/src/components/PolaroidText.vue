@@ -23,7 +23,7 @@ const nextIndex = ref(undefined);
 const computeRelatingPhotos = (newPhoto) => {
   const findPosition = (el) => el.name === newPhoto.name;
   currentIndex.value = dataOrdered.value.findIndex(findPosition);
-  console.log('Current Index: '+currentIndex.value);
+  // console.log('Current Index: '+currentIndex.value);
 
   if (currentIndex.value === 0) {
     prevIndex.value = 0
@@ -35,8 +35,8 @@ const computeRelatingPhotos = (newPhoto) => {
     prevIndex.value = currentIndex.value - 1;
     nextIndex.value = currentIndex.value + 1;
   }
-  console.log("Prev index: "+prevIndex.value)
-  console.log("Next index: "+nextIndex.value)
+  // console.log("Prev index: "+prevIndex.value)
+  // console.log("Next index: "+nextIndex.value)
 };
 
 const prevPhoto = computed(()=>{
@@ -61,7 +61,7 @@ onMounted(() => {
 // Router
 const router = useRouter()
 function searchByPlace(place){
-  console.log("Search by place: "+place)
+  // console.log("Search by place: "+place)
   router.push({
       path: '/all',
       query: {
@@ -71,7 +71,7 @@ function searchByPlace(place){
 }
 
 function viewSinglePhoto(photo){
-  console.log("Go to view single photo: "+photo.name)
+  // console.log("Go to view single photo: "+photo.name)
   router.push({
       path: '/single_photo_view',
       query: {

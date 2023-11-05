@@ -131,10 +131,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   clearInterval(timer)
 })
-
-onBeforeRouteUpdate(()=>{
-  console.log("離開 stage")
-})
 </script>
 
 <template>
