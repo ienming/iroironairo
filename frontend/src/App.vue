@@ -106,12 +106,13 @@ export default {
   },
   methods: {
     onBeforeEnter(){
-      const url = new URL(window.location.href)
+      const url = new URL(window.location.href).href
       const containerDom = this.$refs.container
       const fusumas = containerDom.querySelectorAll(".fusuma")
       // 如果是透過顏色搜尋
-      const color = url.searchParams.get('color')
-      if (color !== null){
+      const colorParam = url.match(/color=([^&]+)/);
+      if (colorParam) {
+        const color = decodeURIComponent(colorParam[1].replace(/%22/g, '"'));
         const colorObj = JSON.parse(color)
         Array.from(fusumas).forEach(fusuma => {
           fusuma.style['background-color'] = hsl2Hex(colorObj.h, colorObj.s, colorObj.l)

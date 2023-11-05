@@ -3,7 +3,7 @@ import App from './App.vue'
 
 // Setting routers
 // import router from './router';
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory, createWebHashHistory } from "vue-router";
 import UserStage from "./views/user/Stage.vue";
 import AllPhotos from "./views/user/AllPhotos.vue";
 import ColorSearch from "./views/user/ColorSearch.vue";
@@ -23,7 +23,8 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory("/iroironairo/"),
+  // history: createWebHistory("/iroironairo/"),
+  history: createWebHashHistory("/iroironairo/"),
   routes,
 });
 
