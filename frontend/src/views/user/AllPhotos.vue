@@ -183,7 +183,7 @@ function filterPlace(checkedStatus) {
 const placeQuantities = ref([])
 function initPlaceQuantities(){
   const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
-  console.log("initialize place quantites")
+  // console.log("initialize place quantites")
   let arr = []
   for (let i=0; i<places.value.length; i++){
     let quant = {}
@@ -259,7 +259,7 @@ function filterMonth(key) {
 }
 const monthQuantities = ref([])
 function initMonthQuantities(){
-  console.log("initialize month quantites")
+  // console.log("initialize month quantites")
   const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
   let arr = []
   for (let i=0; i<months.length; i++){
@@ -323,7 +323,7 @@ function filterHour(key) {
 }
 const hourQuantities = ref([])
 function initHourQuantities(){
-  console.log("initialize hour quantites")
+  // console.log("initialize hour quantites")
   const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
   let arr = []
   for (let i=0; i<hours.value.length; i++){
@@ -837,7 +837,9 @@ onMounted(() => {
           >
           </selection>
           <div class="w-100">
-            <label for="dataDensity" class="form-label">顯示數量</label>
+            <label for="dataDensity" class="form-label">
+              每筆顯示比例
+            </label>
             <input
               type="range"
               min="3"

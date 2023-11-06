@@ -28,6 +28,10 @@ const router = createRouter({
   routes,
 });
 
+// router.beforeEach((to, from) => {
+//   console.log(`From ${from.path} to ${to.path}`)
+// })
+
 // Mount
 const app = createApp(App);
 // Router

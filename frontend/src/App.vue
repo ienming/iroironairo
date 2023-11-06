@@ -1,5 +1,6 @@
 <script>
 import { ref, provide, reactive } from 'vue';
+import { useRouter } from 'vue-router'
 import { hsl2Hex } from "@/composable/common";
 import gsap from 'gsap';
 import axios from 'axios';
@@ -100,6 +101,11 @@ export default {
       
     provide('csvData', data);
 
+    const router = useRouter()
+    router.beforeEach(async(to, from) => {
+      console.log(`From ${from.path} to ${to.path}`)
+    })
+
     return {
       data,
     }
@@ -152,11 +158,10 @@ export default {
         duration: .5,
         opacity: 1,
         stagger: .2,
-        x: 0
+        x: 0,
+        onComplete: () => {
+        }
       })
-    },
-    onLeave(){
-      console.log("--------Leave transition--------")
     }
   },
   mounted(){
@@ -295,8 +300,7 @@ export default {
     <transition
     @before-enter="onBeforeEnter"
     @enter="onEnter"
-    @before-leave="onBeforeLeave"
-    @leave="onLeave">
+    @before-leave="onBeforeLeave">
       <component :is="Component" />
     </transition>
   </router-view>
