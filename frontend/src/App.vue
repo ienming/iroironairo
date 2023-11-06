@@ -162,15 +162,13 @@ export default {
   mounted(){
     // Get colors for enter animation
     let timer = window.setInterval(()=>{
-      const randomIndex = Math.floor(Math.random()*this.data.length+1)
-      const color = this.data[randomIndex]['main_color']
-      // const el = document.querySelector("#logoContainer")
-      // el.style.color = hsl2Hex(color.h, color.s, color.l)
-      const el = document.querySelector("#logoContainer").querySelectorAll("span")
-      Array.from(el).forEach(e => {
-        e.style['background-color'] = hsl2Hex(color.h, color.s, color.l)
+      const els = document.querySelector("#logoContainer").querySelectorAll(".fusuma")
+      Array.from(els).forEach(el => {
+        const randomIndex = Math.floor(Math.random()*this.data.length+1)
+        const color = this.data[randomIndex]['main_color']
+        el.style['background-color'] = hsl2Hex(color.h, color.s, color.l)
       })
-    }, 200)
+    }, 500)
     // GSAP animation
     const logoTypeJp = this.$refs.logoTypeJp
     const logoTypes = Array.from(logoTypeJp.querySelectorAll("span"))
@@ -182,11 +180,11 @@ export default {
     const [offset, kerning] = [30, 6]
     let tl_intro = gsap.timeline().fromTo(first, {
       opacity: 0,
-      scale: 15
+      scale: 5
     }, {
       opacity: 1,
       scale: 1,
-      duration: 4,
+      duration: 1,
     })
     .to(first, {
       x: `-${offset*2+kerning*4}px`,
@@ -195,6 +193,12 @@ export default {
         clearInterval(timer)
         const el = document.querySelector("#logoContainer")
         el.style.color = '#333'
+        const fusumas = el.querySelectorAll(".fusuma")
+        for (let i=0; i<fusumas.length; i++){
+          if (i ==1 ){
+            Array.from(fusumas)[i].style['background-color'] = "#f6f6f6"
+          }
+        }
         const els = document.querySelector("#logoContainer").querySelectorAll("span")
         Array.from(els).forEach(el => {
           el.style['background-color'] = 'transparent'

@@ -17,10 +17,14 @@ const colorHsl = computed(() => {
   }else return
 });
 const colorHex = computed(() => {
-  return hsl2Hex(colorHsl.value.h, colorHsl.value.s, colorHsl.value.l);
+  if (colorHsl.value){
+    return hsl2Hex(colorHsl.value.h, colorHsl.value.s, colorHsl.value.l);
+  }else return
 });
 const colorRgb = computed(() => {
-  return hex2Rgb(colorHex.value);
+  if (colorHex.value){
+    return hex2Rgb(colorHex.value);
+  }else return
 });
 
 function colorDifference(color1, color2) {
@@ -173,7 +177,7 @@ function showNext() {
 const recommends = computed(()=>{
   let arr = []
   const clearData = JSON.parse(JSON.stringify(data.value.filter(d => d['main_color'])))
-  if(clearData){
+  if(clearData.length > 0){
     const maxIndex = clearData.length - 1;
     for (let i=0; i<4; i++){
       let randomIndex = Math.floor(Math.random() * (maxIndex + 1));

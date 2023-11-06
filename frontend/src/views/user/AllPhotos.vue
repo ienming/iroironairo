@@ -36,18 +36,25 @@ const dataFiltered = computed(() => {
   if (filterByPlaces.value.length < places.value.length) {
     let result = [];
     filterByPlaces.value.forEach((filterPlace) => {
-      result = result.concat(arr.filter((d) => d.places.includes(filterPlace)));
+      result = result.concat(arr.filter((d) => {
+        if (filterPlace !== '全部'){
+          return d.places.includes(filterPlace)
+        }else return d
+      }));
     });
     const set = new Set(result);
     arr = Array.from(set);
+    // console.log("filter by place")
   }
   // 根據月份篩選
   if (filterByMonth.value.key !== "0") {
     arr = arr.filter((d) => d.date.split("/")[1] == filterByMonth.value.key);
+    // console.log("filter by month")
   }
   // 根據時間篩選
   if (filterByHour.value.key !== "全部") {
     arr = arr.filter((d) => d.time.split(":")[0] == filterByHour.value.key);
+    // console.log("filter by hour")
   }
   // 篩選完畢後重新排序
   if (!displayMode.value) {
@@ -176,7 +183,7 @@ function filterPlace(checkedStatus) {
 const placeQuantities = ref([])
 function initPlaceQuantities(){
   const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
-  // console.log("initialize place quantites")
+  console.log("initialize place quantites")
   let arr = []
   for (let i=0; i<places.value.length; i++){
     let quant = {}
@@ -252,7 +259,7 @@ function filterMonth(key) {
 }
 const monthQuantities = ref([])
 function initMonthQuantities(){
-  // console.log("initialize month quantites")
+  console.log("initialize month quantites")
   const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
   let arr = []
   for (let i=0; i<months.length; i++){
@@ -316,7 +323,7 @@ function filterHour(key) {
 }
 const hourQuantities = ref([])
 function initHourQuantities(){
-  // console.log("initialize hour quantites")
+  console.log("initialize hour quantites")
   const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
   let arr = []
   for (let i=0; i<hours.value.length; i++){
@@ -531,7 +538,7 @@ onMounted(() => {
     lotteryPhoto();
   }, 15000);
 
-  watch(dataFiltered, () => {
+  watch(dataFiltered, (newValue, oldValue) => {
     lotteryPhoto();
   });
 
@@ -808,7 +815,7 @@ onMounted(() => {
           >{{ dataFiltered.filter((d) => d["_id"]).length }} 張 /
           {{ data.length }} 張照片</span
         >
-        <div class="d-flex flex-wrap gap-3">
+        <div v-if="dataFiltered.length > 0" class="d-flex flex-wrap gap-3">
           <selection
           v-if="monthQuantities.length > 0"
             class="w-100"
