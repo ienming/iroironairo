@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, onBeforeMount } from 'vue';
+import { inject, ref, onMounted, computed } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 import Bookmark from '@/components/Bookmark.vue';
 import Navigator from '@/components/Navigator.vue';
@@ -7,22 +7,21 @@ import Polaroid from '@/components/Polaroid.vue';
 import PolaroidText from '@/components/PolaroidText.vue';
 
 const data = inject('csvData', [])
-const nowPhoto = ref(undefined)
 
-// const route = useRoute()
-onBeforeRouteUpdate((to, form) =>{
-    const nowPhotoName = JSON.parse(to.query.photo)
-    nowPhoto.value = data.value.find((d) => d.name === nowPhotoName);
+onBeforeRouteUpdate((to, from) =>{
+  const nowPhotoName = JSON.parse(to.query.photo)
+  nowPhoto.value = data.value.find((d) => d.name === nowPhotoName);
 })
 
-onBeforeMount(()=>{
-  const route = useRoute()
+const route = useRoute()
+const nowPhoto = computed(()=>{
   if (JSON.stringify(route.query) !== '{}'){
     const nowPhotoName = JSON.parse(route.query.photo)
-    nowPhoto.value = data.value.find((d) => d.name === nowPhotoName);
+    if (data.value.length > 0){
+      return data.value.find((d) => d.name === nowPhotoName);
+    }else return {}
   }
 })
-
 </script>
 <template>
     <div>

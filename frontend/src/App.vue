@@ -97,10 +97,9 @@ export default {
       .catch((error) => {
         console.error(error);
       });
-
-      
+    
     provide('csvData', data);
-
+      
     const router = useRouter()
     router.beforeEach(async(to, from) => {
       console.log(`From ${from.path} to ${to.path}`)
@@ -139,7 +138,7 @@ export default {
         opacity: 0,
         x: "100%",
         stagger: {
-          amount: .2,
+          each: .05,
           from: 'end'
         },
         onComplete: () => { containerDom.style['z-index'] = '-1' }
@@ -157,7 +156,7 @@ export default {
       gsap.to(fusumas, {
         duration: .5,
         opacity: 1,
-        stagger: .2,
+        stagger: .05,
         x: 0,
         onComplete: () => {
         }
@@ -200,7 +199,7 @@ export default {
         el.style.color = '#333'
         const fusumas = el.querySelectorAll(".fusuma")
         for (let i=0; i<fusumas.length; i++){
-          if (i ==1 ){
+          if (i == 4 ){
             Array.from(fusumas)[i].style['background-color'] = "#f6f6f6"
           }
         }
@@ -282,16 +281,12 @@ export default {
       <h2 class="fs-4">iroironairo</h2>
     </div>
     <section class="vw-100 vh-100 fusuma-container">
-      <div class="fusuma"></div>
-      <div class="fusuma"></div>
-      <div class="fusuma"></div>
+      <div class="fusuma" v-for="n of 9"></div>
     </section>
   </section>
   <!-- Transition -->
   <section ref="container" class="vw-100 vh-100 position-fixed top-0 fusuma-container">
-      <div class="fusuma"></div>
-      <div class="fusuma"></div>
-      <div class="fusuma"></div>
+      <div class="fusuma" v-for="n of 9"></div>
   </section>
   <router-view v-slot="{ Component }">
     <!-- <transition name="fade" mode="out-in">
@@ -310,9 +305,12 @@ export default {
 #logoContainer{
   z-index: 1060;
 }
+#logoContainer>.fusuma-container{
+  grid-template-columns: repeat(3, 1fr);
+}
 .fusuma-container{
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(9, 1fr);
     z-index: 1030;
 }
 .fusuma{
