@@ -476,8 +476,17 @@ function getQuantities(){
   }
 }
 
-// 滾動 Show Case（for 滑鼠）
+// 滾動 Show Case (滑鼠滾輪)
 const showCaseDiv = ref(null);
+function horizontalScroll(){
+  const dom = showCaseDiv.value;
+  if (event.deltaX == 0){
+    dom.scrollLeft += event.deltaY;
+  }else{
+    dom.scrollLeft += event.deltaX;
+  }
+}
+// 滾動 Show Case（for 滑鼠）
 function scrollShowCase(type) {
   const dom = showCaseDiv.value;
   const currentChild = Array.from(dom.children).find((child) => {
@@ -544,7 +553,7 @@ onMounted(() => {
 
   window.setTimeout(()=>{
     requestAnimationFrame(animateShowCase)
-  }, 500)
+  }, 3000)
 
   lotteryPhoto();
   initTooltip();
@@ -621,6 +630,7 @@ onMounted(() => {
         v-if="!displayMode"
         class="pt-6 ps-6 d-flex justify-content-start overflow-scroll"
         ref="showCaseDiv"
+        @wheel.prevent="horizontalScroll"
         @mouseover="hoveringShowCase = true"
         @mouseleave="reAnimateShowCase"
       >
