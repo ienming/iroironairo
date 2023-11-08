@@ -297,13 +297,10 @@ export default {
       <div class="fusuma" v-for="n of 9"></div>
   </section>
   <router-view v-slot="{ Component }">
-    <!-- <transition name="fade" mode="out-in">
-      <component :is="Component" />
-    </transition> -->
     <transition
     @before-enter="onBeforeEnter"
     @enter="onEnter"
-    @before-leave="onBeforeLeave" name="fade">
+    @before-leave="onBeforeLeave" name="page-fade">
       <component :is="Component"/>
     </transition>
   </router-view>
