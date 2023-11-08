@@ -1,6 +1,6 @@
 <script setup>
-import { computed, inject, ref, reactive, onMounted, nextTick } from "vue";
-import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import { computed, inject, ref, onMounted, nextTick } from "vue";
+import { onBeforeRouteUpdate, onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
 import { hsl2Hex, hex2Rgb } from "@/composable/common";
 import { diff } from "color-diff";
 import Bookmark from "@/components/Bookmark.vue";
@@ -198,7 +198,7 @@ function reSearch(recColor) {
 }
 
 // 同一頁點選顏色時也要觸發 filter
-onBeforeRouteUpdate((to, form) => {
+onBeforeRouteUpdate((to, from) => {
   polaroidShown.value = false;
 });
 
@@ -213,8 +213,8 @@ onMounted(()=>{
 </script>
 
 <template>
-  <div class="z-1 min-vh-100 bg-silver">
-    <main class="container pt-5 pt-lg-8">
+  <main class="z-1 min-vh-100 bg-silver">
+    <div class="container pt-5 pt-lg-8">
       <div class="row">
         <div
           class="sticky-top d-flex justify-content-between"
@@ -256,7 +256,7 @@ onMounted(()=>{
           </div>
         </div>
       </div>
-    </main>
+    </div>
     <!-- 隨機照片 -->
     <section class="my-5">
       <div v-if="randomPhoto" class="mt-3 random-photo-container ms-auto position-relative" :style="{'border-bottom': '20px solid '+randomPhotoColor}">
@@ -273,7 +273,13 @@ onMounted(()=>{
         <section v-if="randomPhotoLoaded" class="container">
           <div>
             <div class="d-flex gap-2 my-2">
-              <p v-for="p of randomPhoto.places" class="fw-semibold mb-0 rounded-pill p-2 bg-dark text-white">#{{p}}</p>
+              <div v-for="place of randomPhoto.places" class="p-2 rounded-pill transition txt-lang-hover bg-dark text-white"
+              :style="bgStyle" role="button" @click="searchByPlace(place)">
+                <div>
+                  <span>#{{place }}</span>
+                  <span>#{{place }}</span>
+                </div>
+              </div>
             </div>
             <p>{{ randomPhoto.description }}</p>
           </div>
@@ -377,7 +383,7 @@ onMounted(()=>{
     ></bookmark>
     <!-- Nav -->
     <navigator class="position-fixed top-0 end-0 pe-4"></navigator>
-  </div>
+  </main>
 </template>
 
 <style scoped>

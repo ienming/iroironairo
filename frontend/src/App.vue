@@ -1,5 +1,5 @@
 <script>
-import { ref, provide, reactive } from 'vue';
+import { ref, provide, nextTick } from 'vue';
 import { useRouter } from 'vue-router'
 import { hsl2Hex } from "@/composable/common";
 import gsap from 'gsap';
@@ -92,7 +92,7 @@ export default {
             }
           }
         })
-        console.log("讀取 CSV")
+        // console.log("讀取 CSV")
       })
       .catch((error) => {
         console.error(error);
@@ -101,7 +101,7 @@ export default {
     provide('csvData', data);
       
     const router = useRouter()
-    router.beforeEach(async(to, from) => {
+    router.beforeEach((to, from) => {
       console.log(`From ${from.path} to ${to.path}`)
     })
 
@@ -116,9 +116,16 @@ export default {
       const fusumas = containerDom.querySelectorAll(".fusuma")
       // 如果是透過顏色搜尋
       const colorParam = url.match(/color=([^&]+)/);
+      const photoParam = url.match(/photo=([^&]+)/)
       if (colorParam) {
         const color = decodeURIComponent(colorParam[1].replace(/%22/g, '"'));
         const colorObj = JSON.parse(color)
+        Array.from(fusumas).forEach(fusuma => {
+          fusuma.style['background-color'] = hsl2Hex(colorObj.h, colorObj.s, colorObj.l)
+        })
+      }else if(photoParam){
+        const name = decodeURIComponent(photoParam[1].replace(/%22/g, '"'));
+        const colorObj = this.data.find(d => d.name == name.slice(1, -1))['main_color']
         Array.from(fusumas).forEach(fusuma => {
           fusuma.style['background-color'] = hsl2Hex(colorObj.h, colorObj.s, colorObj.l)
         })
@@ -141,7 +148,9 @@ export default {
           each: .05,
           from: 'end'
         },
-        onComplete: () => { containerDom.style['z-index'] = '-1' }
+        onComplete: () => { 
+          containerDom.style['z-index'] = '-1' 
+        }
       })
     },
     onBeforeLeave(){
@@ -157,9 +166,7 @@ export default {
         duration: .5,
         opacity: 1,
         stagger: .05,
-        x: 0,
-        onComplete: () => {
-        }
+        x: 0
       })
     }
   },
@@ -296,7 +303,7 @@ export default {
     @before-enter="onBeforeEnter"
     @enter="onEnter"
     @before-leave="onBeforeLeave">
-      <component :is="Component" />
+      <component :is="Component"/>
     </transition>
   </router-view>
 </template>
