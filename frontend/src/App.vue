@@ -99,11 +99,6 @@ export default {
       });
     
     provide('csvData', data);
-      
-    const router = useRouter()
-    router.beforeEach((to, from) => {
-      console.log(`From ${from.path} to ${to.path}`)
-    })
 
     return {
       data,
@@ -136,7 +131,7 @@ export default {
       }
     },
     onEnter(){
-      console.log("--------Start transition---------")
+      // console.log("--------Start transition---------")
       const containerDom = this.$refs.container
       const fusumas = containerDom.querySelectorAll(".fusuma")
       gsap.to(fusumas, {
@@ -154,7 +149,7 @@ export default {
       })
     },
     onBeforeLeave(){
-      console.log("--------Before leave transition--------")
+      // console.log("--------Before leave transition--------")
       // console.log("切換分頁時執行")
       const el = this.$refs.container
       gsap.set(el, {

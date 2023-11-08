@@ -186,6 +186,7 @@ const recommends = computed(()=>{
     return arr
   }
 })
+
 const router = useRouter()
 function reSearch(recColor) {
     // randomPhotoLoaded.value = false
@@ -193,6 +194,15 @@ function reSearch(recColor) {
         path: '/color_search',
         query: {
             color: JSON.stringify(recColor)
+        },
+    })
+}
+
+function searchByPlace(place){
+  router.push({
+        path: '/all',
+        query: {
+            place: JSON.stringify(place)
         },
     })
 }
