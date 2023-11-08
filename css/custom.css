@@ -10681,8 +10681,18 @@ textarea.form-control-lg {
   opacity: 0;
 }
 
+.page-fade-enter-active,
+.page-fade-leave-active {
+  transition: opacity 1.5s ease;
+}
+
+.page-fade-enter-from,
+.page-fade-leave-to {
+  opacity: 0;
+}
+
 .transition {
-  transition: all 1.5s ease;
+  transition: all 0.5s ease;
 }
 
 .polaroid {

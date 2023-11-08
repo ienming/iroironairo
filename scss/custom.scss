@@ -113,7 +113,7 @@ $utilities: map-merge($utilities, $custom_utilities);
 // Vue transition
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s ease;
+  transition: opacity .5s ease;
 }
 
 .fade-enter-from,
@@ -121,9 +121,19 @@ $utilities: map-merge($utilities, $custom_utilities);
   opacity: 0;
 }
 
+.page-fade-enter-active,
+.page-fade-leave-active {
+  transition: opacity 1.5s ease;
+}
+
+.page-fade-enter-from,
+.page-fade-leave-to {
+  opacity: 0;
+}
+
 // Custom transition
 .transition{
-    transition: all 1.5s ease;
+    transition: all 0.5s ease;
 }
 
 @import "./polaroid";
