@@ -82,7 +82,7 @@ function viewSinglePhoto(photo){
 </script>
 
 <template>
-    <div id="Sec_text" class="z-1 overflow-scroll">
+    <div id="Sec_text" class="overflow-scroll w-100">
         <p class="d-flex gap-2 flex-wrap">
           <div v-for="place of photo.places" class="p-2 rounded-pill transition txt-lang-hover"
           :style="bgStyle" role="button" @click="searchByPlace(place)">
@@ -93,13 +93,13 @@ function viewSinglePhoto(photo){
           </div>
         </p>
         <p class="mb-0 mt-3">{{ photo.description }}</p>
-        <div class="d-flex flex-wrap gap-2 mt-5 mt-lg-6 z-1">
+        <div class="d-flex flex-wrap gap-2 mt-4 mt-lg-6 color-swatch-container">
             <color-swatch
             :color-hsl="color"
             :label="hsl2Hex(color.h, color.s, color.l)"
             v-for="color of photo.colors"></color-swatch>
         </div>
-        <div class="mt-5">
+        <div class="mt-4 mt-lg-5">
           <p class="mb-2 fw-bold opacity-50">靠近這一天</p>
           <div v-if="prevPhoto" class="d-flex align-items-center justify-content-between opacity-50-hover border-top p-3" role="button"
           :style="{'--bs-border-color': bgStyle.backgroundColor}"
@@ -118,16 +118,20 @@ function viewSinglePhoto(photo){
 </template>
 
 <style scoped>
-#Sec_text{
+/* #Sec_text{
   width: 80%;
   margin-right: auto;
   max-height: 70vh;
-}
+} */
 
 @media screen and (min-width: 992px) {
   #Sec_text{
-    width: 30vw;
+    width: 30vw !important;
     margin: unset;
+    z-index: 1;
+  }
+  .color-swatch-container{
+    z-index: 1;
   }
 }
 </style>

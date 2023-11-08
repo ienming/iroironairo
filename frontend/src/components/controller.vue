@@ -32,9 +32,9 @@ onMounted(()=>{
 </script>
 
 <template>
-    <section class="position-fixed w-lg-100 d-flex flex-column flex-lg-row justify-content-lg-between align-items-center"
+    <section class="position-fixed w-100 d-flex flex-row justify-content-center justify-content-lg-between align-items-center"
     ref="controllerEl">
-        <div class="d-flex flex-column px-3 pb-3 pb-lg-0 gap-3">
+        <div class="d-flex flex-row flex-lg-column px-3 py-3 py-lg-0 gap-4 gap-lg-3">
             <button class="luc-controller" @click="emit('shuffle')">
                 <i class="fa-solid fa-shuffle"></i>
             </button>
@@ -50,7 +50,7 @@ onMounted(()=>{
                 <i class="fa-solid fa-stop" v-else></i>
             </button>
         </div>
-        <div class="d-flex flex-column px-3 pb-3 pb-lg-0 gap-3">
+        <div class="d-flex flex-row flex-lg-column px-3 py-3 py-lg-0 gap-4 gap-lg-3">
             <button class="luc-controller" @click="emit('show-prev')">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
@@ -69,6 +69,17 @@ section {
     --luc-text-color-reverse: #fff;
     bottom: 0;
     right: 0;
+    background-color: var(--luc-bg-color);
+}
+
+button {
+    border: 1px solid var(--luc-text-color-reverse);
+    color: var(--luc-text-color-reverse);
+}
+
+button:hover{
+    background-color: var(--luc-bg-color);
+    color: var(--luc-text-color-reverse);
 }
 
 @media screen and (min-width: 992px) {
@@ -77,16 +88,11 @@ section {
     right: unset;
     top: 50%;
     transform: translateY(-50%);
+    background-color: transparent;
   }
-}
-
-button {
+  button {
     border: 1px solid var(--luc-border-color);
     color: var(--luc-text-color);
-}
-
-button:hover{
-    background-color: var(--luc-bg-color);
-    color: var(--luc-text-color-reverse);
+    }
 }
 </style>

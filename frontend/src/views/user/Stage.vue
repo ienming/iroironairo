@@ -135,7 +135,7 @@ onBeforeUnmount(() => {
 
 <template>
   <main v-if="heroData" :style="backgroundStyle" class="transition">
-    <section class="container min-vh-100 d-flex flex-column flex-lg-row align-items-center justify-content-start justify-content-lg-center gap-5 position-relative py-5">
+    <section class="container min-vh-100 d-flex flex-column flex-lg-row align-items-center justify-content-start justify-content-lg-center gap-4 gap-lg-5 position-relative pt-5 pb-8 pb-lg-5">
       <polaroid :photo="heroData" :photo-loaded="imgLoaded" :bg-style="backgroundStyle"></polaroid>
       <polaroid-text :photo="heroData" :bg-style="backgroundStyleReverse"></polaroid-text>
     </section>
@@ -152,8 +152,7 @@ onBeforeUnmount(() => {
     <bookmark :theme="backgroundStyle"
     class="position-fixed top-0 d-flex align-items-center gap-1"></bookmark>
     <!-- Nav -->
-    <navigator :theme="backgroundStyle"
-    class="position-fixed top-0 end-0 pe-4"></navigator>
+    <navigator :theme="backgroundStyle"></navigator>
     <!-- Transition -->
     <!-- <FusumaTransition /> -->
   </main>

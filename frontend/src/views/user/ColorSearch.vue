@@ -392,7 +392,7 @@ onMounted(()=>{
       class="position-fixed top-0 d-flex align-items-center gap-1"
     ></bookmark>
     <!-- Nav -->
-    <navigator class="position-fixed top-0 end-0 pe-4"></navigator>
+    <navigator></navigator>
   </main>
 </template>
 
