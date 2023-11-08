@@ -274,7 +274,7 @@ onMounted(()=>{
           <div>
             <div class="d-flex gap-2 my-2">
               <div v-for="place of randomPhoto.places" class="p-2 rounded-pill transition txt-lang-hover bg-dark text-white"
-              :style="bgStyle" role="button" @click="searchByPlace(place)">
+              role="button" @click="searchByPlace(place)">
                 <div>
                   <span>#{{place }}</span>
                   <span>#{{place }}</span>

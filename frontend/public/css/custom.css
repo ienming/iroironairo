@@ -10673,7 +10673,7 @@ textarea.form-control-lg {
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.5s ease;
+  transition: opacity 1.5s ease;
 }
 
 .fade-enter-from,
@@ -10682,7 +10682,7 @@ textarea.form-control-lg {
 }
 
 .transition {
-  transition: all 1.5s ease;
+  transition: all 0.5s ease;
 }
 
 .polaroid {

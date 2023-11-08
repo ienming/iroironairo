@@ -166,7 +166,8 @@ export default {
         duration: .5,
         opacity: 1,
         stagger: .05,
-        x: 0
+        x: 0,
+        // delay: 0.55
       })
     }
   },
@@ -302,7 +303,7 @@ export default {
     <transition
     @before-enter="onBeforeEnter"
     @enter="onEnter"
-    @before-leave="onBeforeLeave">
+    @before-leave="onBeforeLeave" name="fade">
       <component :is="Component"/>
     </transition>
   </router-view>
