@@ -15,22 +15,5 @@
         width: 100%;
         position: relative;
         overflow: hidden;
-        cursor: pointer;
-        &::after{
-            position: absolute;
-            content: attr(data-copy-text);
-            background-color: transparentize($gray-900, .45);
-            width: 100%;
-            height: 100%;
-            color: transparentize($white, .1);
-            font-size: 14px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-        }
-        &:hover::after{
-            opacity: 1;
-        }
     }
 }

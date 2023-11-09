@@ -10734,23 +10734,6 @@ textarea.form-control-lg {
   width: 100%;
   position: relative;
   overflow: hidden;
-  cursor: pointer;
-}
-.color-swatch > div::after {
-  position: absolute;
-  content: attr(data-copy-text);
-  background-color: rgba(33, 37, 41, 0.55);
-  width: 100%;
-  height: 100%;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 14px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-}
-.color-swatch > div:hover::after {
-  opacity: 1;
 }
 
 .luc-controller {
@@ -10761,6 +10744,7 @@ textarea.form-control-lg {
   opacity: 0.75;
   min-width: 40px;
   min-height: 40px;
+  color: var(--luc-controller-color);
 }
 .luc-controller:hover {
   opacity: 1;
