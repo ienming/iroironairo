@@ -97,11 +97,22 @@ export default {
       .catch((error) => {
         console.error(error);
       });
+
+    const usingMobile = ref(false)
+    const mobileStrings = ['iPhone', 'Android']
+    mobileStrings.forEach(str => {
+      if (navigator.userAgent.indexOf(str) > -1){
+        usingMobile.value = true
+        return
+      }
+    })
     
     provide('csvData', data);
+    provide('usingMobile', usingMobile)
 
     return {
       data,
+      usingMobile
     }
   },
   methods: {

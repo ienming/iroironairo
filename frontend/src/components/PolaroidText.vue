@@ -82,7 +82,7 @@ function viewSinglePhoto(photo){
 </script>
 
 <template>
-    <div id="Sec_text" class="overflow-scroll w-100">
+    <div id="Sec_text" class="w-100">
         <p class="d-flex gap-2 flex-wrap">
           <div v-for="place of photo.places" class="p-2 rounded-pill transition txt-lang-hover"
           :style="bgStyle" role="button" @click="searchByPlace(place)">

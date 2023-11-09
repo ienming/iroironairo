@@ -22,3 +22,19 @@ export function hex2Rgb(hex) {
   // 返回RGB數值作為對象
   return { r, g, b };
 }
+
+export function getReverseColor(color){
+  if (25 < color.l && color.l < 75) {
+    return {
+      'h': 360,
+      's': 0,
+      'l': 100,
+    }
+  } else {
+    return {
+      'h': color.h,
+      's': color.s,
+      'l': 100 - color.l,
+    }
+  }
+}

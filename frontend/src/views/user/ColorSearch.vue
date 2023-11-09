@@ -1,7 +1,7 @@
 <script setup>
 import { computed, inject, ref, onMounted, nextTick } from "vue";
 import { onBeforeRouteUpdate, onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
-import { hsl2Hex, hex2Rgb } from "@/composable/common";
+import { hsl2Hex, hex2Rgb, getReverseColor } from "@/composable/common";
 import { diff } from "color-diff";
 import Bookmark from "@/components/Bookmark.vue";
 import Navigator from "@/components/Navigator.vue";
@@ -146,9 +146,13 @@ const months = [
 // Polaroid
 const polaroidShown = ref(false);
 const nowPolaroid = ref(null);
+const modalController = ref(null)
 function showPolaroid(data) {
   nowPolaroid.value = data;
   polaroidShown.value = true;
+  nextTick(()=>{
+    setDynamicColor()
+  })
 }
 function showPrev() {
   const findingFunction = (d) => d.name === nowPolaroid.value.name;
@@ -160,6 +164,9 @@ function showPrev() {
   } else {
     nowPolaroid.value = dataFiltered.value[dataFiltered.value.length - 1];
   }
+  nextTick(()=>{
+    setDynamicColor()
+  })
 }
 function showNext() {
   const findingFunction = (d) => d.name === nowPolaroid.value.name;
@@ -171,6 +178,9 @@ function showNext() {
       nowPolaroid.value = dataFiltered.value[currentPhotoIndex + 1];
     }
   }
+  nextTick(()=>{
+    setDynamicColor()
+  })
 }
 
 // 推薦顏色
@@ -186,6 +196,16 @@ const recommends = computed(()=>{
     return arr
   }
 })
+
+// 依照照片設定動態顏色
+function setDynamicColor(){
+  const color = nowPolaroid.value['main_color']
+    const colorReverse = getReverseColor(color)
+    modalController.value.style
+      .setProperty('--luc-controller-bg', hsl2Hex(color.h, color.s, color.l))
+    modalController.value.style
+      .setProperty('--luc-controller-color', hsl2Hex(colorReverse.h, colorReverse.s, colorReverse.l))
+}
 
 const router = useRouter()
 function reSearch(recColor) {
@@ -227,10 +247,10 @@ onMounted(()=>{
     <div class="container pt-5 pt-lg-8">
       <div class="row">
         <div
-          class="sticky-top d-flex justify-content-between"
+          class="sticky-top d-flex flex-column flex-lg-row justify-content-between"
           style="top: 30px"
         >
-          <div>
+          <div class="py-4 py-lg-0">
             <h1 class="fs-4 ff-serif fw-bolder mb-4">
               <span class="d-block">相近的顏色</span>
               <span class="fs-6 fw-normal">選んだ色に近い色の写真</span>
@@ -241,7 +261,7 @@ onMounted(()=>{
               }}</span>
             </div>
           </div>  
-          <div class="bg-white rounded-3 p-3 shadow-lg row col-5">
+          <div class="bg-white rounded-3 p-3 ms-0 shadow-lg row col-12 col-lg-5">
             <p
               :style="{ 'background-color': colorHex }"
               class="rounded-3 mb-0 col-5"
@@ -350,7 +370,7 @@ onMounted(()=>{
           <div class="d-flex gap-3 justify-content-center">
             <transition-group name="fade">
               <div v-for="rec of recommends" :style="{'background-color': hsl2Hex(rec.h, rec.s, rec.l)}"
-              class="rounded-pill color-circle"
+              class="rounded-pill color-other"
               role="button"
               :key="rec.h+rec.s+rec.l"
               @click="reSearch(rec)"></div>
@@ -362,24 +382,25 @@ onMounted(()=>{
     <!-- Polaroid -->
     <transition name="fade" mode="out-in">
       <section
-        class="vh-100 bg-silver fixed-top d-flex justify-content-center align-items-center gap-5"
+        class="vh-100 bg-silver fixed-top overflow-scroll d-lg-flex justify-content-center align-items-center"
         v-if="polaroidShown"
       >
+      <div class="d-flex flex-column flex-lg-row px-3 pt-6 pb-8 p-lg-0 justify-content-center align-items-center gap-5">
         <polaroid :photo="nowPolaroid"></polaroid>
         <polaroid-text
           :photo="nowPolaroid"
           :bg-style="{ 'background-color': '#232323', color: '#f6f6f6' }"
         ></polaroid-text>
-        <i
-          class="fa-solid fa-xmark fa-xl position-absolute top-0 end-0 p-5 opacity-50-hover"
-          role="button"
-          @click="polaroidShown = false"
-        ></i>
-        <div
-          class="position-absolute end-0 d-flex flex-column px-3 pb-3 pb-lg-0 gap-3"
+      </div>
+      <div
+          class="position-fixed end-0 d-flex flex-row flex-lg-column px-3 py-3 gap-3 w-100 w-lg-auto justify-content-around modal-controller"
+          ref="modalController"
         >
           <button class="luc-controller" @click="showPrev">
             <i class="fa-solid fa-arrow-left"></i>
+          </button>
+          <button class="luc-controller" @click="polaroidShown = false">
+            <i class="fa-solid fa-xmark fa-xl"></i>
           </button>
           <button class="luc-controller" @click="showNext">
             <i class="fa-solid fa-arrow-right"></i>
@@ -403,13 +424,13 @@ onMounted(()=>{
   height: var(--size);
 }
 
-.color-circle{
+.color-other{
   --size: 60px;
   height: var(--size);
   width: var(--size);
   transition: .2s ease-out;
 }
-.color-circle:hover{
+.color-other:hover{
   transform: translateY(-10px);
 }
 
@@ -426,5 +447,14 @@ onMounted(()=>{
 
 .random-photo:hover{
   transform: scale(1.05);
+}
+
+.modal-controller{
+  --luc-controller-bg: #f6f6f6;
+  --luc-controller-color: #232323;
+  bottom: 0;
+  background-color: var(--luc-controller-bg);
+  color: var(--luc-controller-color);
+  border-color: var(--luc-controller-color);
 }
 </style>

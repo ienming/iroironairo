@@ -14,7 +14,7 @@ const mobileMenuOpening = ref(false)
 </script>
 
 <template>
-    <section class="position-fixed top-0 end-0 pt-4 pt-lg-0 pe-4">
+    <section class="position-fixed top-0 end-0 pt-4 pt-lg-0 pe-4" style="z-index: 1030;">
         <div class="d-lg-none">
             <div class="rounded-pill p-3 d-flex justify-content-center align-items-center shadow-lg" style="width: 60px; height: 60px;"
             :style="{'background-color': theme.color, 'color': theme.backgroundColor}"

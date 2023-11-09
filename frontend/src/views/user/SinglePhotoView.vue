@@ -1,17 +1,24 @@
 <script setup>
-import { inject, ref, computed } from 'vue';
+import { inject, ref, computed, onMounted } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 import { hsl2Hex } from "@/composable/common";
 import Bookmark from '@/components/Bookmark.vue';
 import Navigator from '@/components/Navigator.vue';
 import PolaroidText from '@/components/PolaroidText.vue';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const data = inject('csvData', [])
+const usingMobile = inject('usingMobile', false)
 const imgLoaded = ref(false)
 
 onBeforeRouteUpdate((to, from) =>{
   const nowPhotoName = JSON.parse(to.query.photo)
   imgLoaded.value = false
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  })
 })
 
 function hasLoaded(){
@@ -99,20 +106,39 @@ const mainColor = computed(()=>{
     return hsl2Hex(color.h, color.s, color.l)
   }else return
 })
+
+onMounted(()=>{
+  if (usingMobile.value){
+    // GSAP scrollTrigger
+    gsap.registerPlugin(ScrollTrigger) 
+    const el = document.querySelector("#photo-des-el")
+    gsap.fromTo(el, {
+      yPercent: -20
+    }, {
+      yPercent: -95,
+      scrollTrigger: {
+        start: "top top",
+        toggleActions: "restart pause reverse pause",
+        scrub: 1,
+        markers: true
+      }
+    })
+  }
+})
 </script>
 <template>
     <main>
-        <section class="vh-100 bg-silver gap-5 d-flex align-items-center"
+        <section class="vh-100 bg-silver gap-lg-5 d-flex flex-column flex-lg-row align-items-center"
         v-if="nowPhoto">
-            <div class="col-12 col-lg-6 vh-100 p-7"
-            :style="{'background-color': mainColor}">
-            <img :src="nowPhoto.url_google" alt="" class="d-none" @load="hasLoaded">
-            <transition name="fade" mode="out-in">
-              <img v-if="imgLoaded"
-              :src="nowPhoto.url_google" alt="" class="w-100 h-100 object-fit-cover"/>
-            </transition>
+            <div class="col-12 col-lg-6 vh-100 p-4 p-lg-7"
+              :style="{'background-color': mainColor}">
+              <img :src="nowPhoto.url_google" alt="" class="d-none" @load="hasLoaded">
+              <transition name="fade" mode="out-in">
+                <img v-if="imgLoaded"
+                :src="nowPhoto.url_google" alt="" class="w-100 h-100 object-fit-cover"/>
+              </transition>
             </div>
-            <section class="col-12 col-lg-6">
+            <section class="col-12 col-lg-6 rounded-4 px-5 py-3 p-lg-0 bg-silver" id="photo-des-el">
               <p>{{nowPhoto.date}} {{nowPhoto.time}}</p>
               <polaroid-text :photo="nowPhoto" :bg-style="{'background-color': '#232323', 'color': '#f6f6f6'}"></polaroid-text>
             </section>
@@ -135,5 +161,13 @@ const mainColor = computed(()=>{
 .watermark{
   opacity: 0.1;
   font-size: 100px;
+}
+#photo-des-el{
+  z-index: 1030;
+}
+@media screen and (min-width: 992px) {
+  #photo-des-el{
+    z-index: unset;
+  }
 }
 </style>

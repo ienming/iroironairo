@@ -5,7 +5,7 @@ import Navigator from "@/components/Navigator.vue";
 <template>
     <main>
         <section class="min-vh-100 d-flex justify-content-center align-items-center ff-serif">
-            <section class="row flex-column flex-lg-row w-100 px-1 px-lg-6">
+            <section class="row flex-column flex-lg-row w-100 px-1 px-lg-6 gap-5 gap-lg-0">
                 <section class="col-12 col-lg-6 d-flex align-items-center">
                     <div class="col-lg-8">
                         <h2 class="fs-6">iroironairo</h2>

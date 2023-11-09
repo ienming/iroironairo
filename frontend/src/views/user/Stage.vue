@@ -1,12 +1,11 @@
 <script setup>
 import { onMounted, inject, ref, computed, onBeforeUnmount } from 'vue'
-import { onBeforeRouteUpdate } from 'vue-router';
+import { getReverseColor } from '../../composable/common';
 import Controller from '@/components/Controller.vue';
 import Bookmark from '@/components/Bookmark.vue';
 import Navigator from '@/components/Navigator.vue';
 import Polaroid from '../../components/Polaroid.vue';
 import PolaroidText from '../../components/PolaroidText.vue';
-// import FusumaTransition from '@/components/FusumaTransition.vue';
 
 const imgLoaded = ref(false)
 const data = inject('csvData', [])
@@ -21,19 +20,7 @@ const bodyBgColor = computed(()=>{
   return {}
 })
 const bodyTextColor = computed(()=>{
-  if (25 < bodyBgColor.value.l && bodyBgColor.value.l < 75) {
-    return {
-      'h': 360,
-      's': 0,
-      'l': 100,
-    }
-  } else {
-    return {
-      'h': bodyBgColor.value.h,
-      's': bodyBgColor.value.s,
-      'l': 100 - bodyBgColor.value.l,
-    }
-  }
+  return getReverseColor(bodyBgColor.value)
 })
 
 // 重設圖片載入狀態，已顯示 spinner
@@ -153,7 +140,5 @@ onBeforeUnmount(() => {
     class="position-fixed top-0 d-flex align-items-center gap-1"></bookmark>
     <!-- Nav -->
     <navigator :theme="backgroundStyle"></navigator>
-    <!-- Transition -->
-    <!-- <FusumaTransition /> -->
   </main>
 </template>
