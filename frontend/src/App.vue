@@ -164,7 +164,7 @@ export default {
       // console.log("切換分頁時執行")
       const el = this.$refs.container
       gsap.set(el, {
-        'z-index': 1030
+        'z-index': 1040
       })
       const containerDom = this.$refs.container
       const fusumas = containerDom.querySelectorAll(".fusuma")
@@ -286,7 +286,7 @@ export default {
   <!-- Logo -->
   <section id="logoContainer" ref="logoContainer" class="ff-serif position-fixed">
     <div class="d-flex flex-column align-items-center position-absolute top-50 start-50 translate-middle">
-      <h1 class="position-relative" ref="logoTypeJp">
+      <h1 class="position-relative d-flex flex-column flex-lg-row" ref="logoTypeJp">
         <span class="position-absolute d-inline-block">色</span>
         <span class="position-absolute d-inline-block">々</span>
         <span class="position-absolute d-inline-block">な</span>

@@ -26,6 +26,12 @@ const mobileMenuOpening = ref(false)
         <transition name="fade">
             <section v-show="mobileMenuOpening" class="position-fixed top-0 start-0 w-100 vh-100 luc-mobile-nav px-3"
             :style="{'background-color': theme.color}">
+                <div @click="mobileMenuOpening = false" class="text-center d-flex justify-content-end pt-4 pe-1 pb-4">
+                    <div class="rounded-pill p-3 d-flex justify-content-center align-items-center shadow-lg" style="width: 60px; height: 60px;"
+                    :style="{'background-color': theme.backgroundColor, 'color': theme.color}">
+                        <i class="fa-solid fa-xmark fa-xl" role="button"></i>
+                    </div>
+                </div>
                 <div class="mt-8 d-flex flex-column gap-5 ff-serif">
                     <router-link :to="{
                             path: '/'
@@ -54,12 +60,6 @@ const mobileMenuOpening = ref(false)
                             <span>關於 iroironairo 色々な色について</span>
                         </div>
                     </router-link>
-                </div>
-                <div @click="mobileMenuOpening = false" class="text-center d-flex justify-content-center position-fixed bottom-0 start-50 translate-middle-x pb-5">
-                    <div class="rounded-pill p-3 d-flex justify-content-center align-items-center shadow-lg" style="width: 60px; height: 60px;"
-                    :style="{'background-color': theme.backgroundColor, 'color': theme.color}">
-                        <i class="fa-solid fa-xmark fa-xl" role="button"></i>
-                    </div>
                 </div>
             </section>
         </transition>

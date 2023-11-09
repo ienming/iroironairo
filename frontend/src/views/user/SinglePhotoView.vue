@@ -1,7 +1,7 @@
 <script setup>
-import { inject, ref, computed, onMounted } from 'vue';
+import { inject, ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
-import { hsl2Hex } from "@/composable/common";
+import { hsl2Hex, getReverseColor } from "@/composable/common";
 import Bookmark from '@/components/Bookmark.vue';
 import Navigator from '@/components/Navigator.vue';
 import PolaroidText from '@/components/PolaroidText.vue';
@@ -107,22 +107,38 @@ const mainColor = computed(()=>{
   }else return
 })
 
+
+let ctx
+const main = ref()
+gsap.registerPlugin(ScrollTrigger) 
 onMounted(()=>{
   if (usingMobile.value){
-    // GSAP scrollTrigger
-    gsap.registerPlugin(ScrollTrigger) 
-    const el = document.querySelector("#photo-des-el")
-    gsap.fromTo(el, {
-      yPercent: -20
-    }, {
-      yPercent: -95,
-      scrollTrigger: {
-        start: "top top",
-        toggleActions: "restart pause reverse pause",
-        scrub: 1,
-        markers: true
-      }
-    })
+    ctx = gsap.context(()=>{
+      let triggerEl = document.querySelector("#photo")
+      let el = document.querySelector("#photo-des-el")
+
+      gsap.fromTo(el, {
+        yPercent: -20
+      }, {
+        yPercent: -95,
+        scrollTrigger: {
+          trigger: triggerEl,
+          start: "top end",
+          toggleActions: "restart pause reverse pause",
+          scrub: 1,
+          markers: true
+        }
+      })
+    }, main.value)
+
+    console.log(ctx)
+  }
+})
+
+onBeforeUnmount(()=>{
+  if (ctx){
+    ctx.revert();
+    console.log(ctx)
   }
 })
 </script>
@@ -130,8 +146,8 @@ onMounted(()=>{
     <main>
         <section class="vh-100 bg-silver gap-lg-5 d-flex flex-column flex-lg-row align-items-center"
         v-if="nowPhoto">
-            <div class="col-12 col-lg-6 vh-100 p-4 p-lg-7"
-              :style="{'background-color': mainColor}">
+            <div class="col-12 col-lg-6 vh-100 p-4 pt-5 p-lg-7"
+              :style="{'background-color': mainColor}" id="photo">
               <img :src="nowPhoto.url_google" alt="" class="d-none" @load="hasLoaded">
               <transition name="fade" mode="out-in">
                 <img v-if="imgLoaded"
@@ -151,7 +167,8 @@ onMounted(()=>{
           </span>
         </div>
         <!-- Bookmark -->
-        <bookmark class="position-fixed top-0 d-flex align-items-center gap-1"></bookmark>
+        <bookmark
+        class="position-fixed top-0 d-flex align-items-center gap-1"></bookmark>
         <!-- Nav -->
         <navigator></navigator>
     </main>

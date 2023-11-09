@@ -1,12 +1,13 @@
 <script setup>
 import { computed, inject, ref, onMounted, nextTick } from "vue";
 import { onBeforeRouteUpdate, onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
-import { hsl2Hex, hex2Rgb, getReverseColor } from "@/composable/common";
+import { hsl2Hex, hex2Rgb } from "@/composable/common";
 import { diff } from "color-diff";
 import Bookmark from "@/components/Bookmark.vue";
 import Navigator from "@/components/Navigator.vue";
 import Polaroid from "@/components/Polaroid.vue";
 import PolaroidText from "@/components/PolaroidText.vue";
+import IroModal from "@/components/IroModal.vue";
 
 const route = useRoute();
 const data = inject("csvData", []);
@@ -150,9 +151,6 @@ const modalController = ref(null)
 function showPolaroid(data) {
   nowPolaroid.value = data;
   polaroidShown.value = true;
-  nextTick(()=>{
-    setDynamicColor()
-  })
 }
 function showPrev() {
   const findingFunction = (d) => d.name === nowPolaroid.value.name;
@@ -164,9 +162,6 @@ function showPrev() {
   } else {
     nowPolaroid.value = dataFiltered.value[dataFiltered.value.length - 1];
   }
-  nextTick(()=>{
-    setDynamicColor()
-  })
 }
 function showNext() {
   const findingFunction = (d) => d.name === nowPolaroid.value.name;
@@ -178,9 +173,6 @@ function showNext() {
       nowPolaroid.value = dataFiltered.value[currentPhotoIndex + 1];
     }
   }
-  nextTick(()=>{
-    setDynamicColor()
-  })
 }
 
 // 推薦顏色
@@ -196,16 +188,6 @@ const recommends = computed(()=>{
     return arr
   }
 })
-
-// 依照照片設定動態顏色
-function setDynamicColor(){
-  const color = nowPolaroid.value['main_color']
-    const colorReverse = getReverseColor(color)
-    modalController.value.style
-      .setProperty('--luc-controller-bg', hsl2Hex(color.h, color.s, color.l))
-    modalController.value.style
-      .setProperty('--luc-controller-color', hsl2Hex(colorReverse.h, colorReverse.s, colorReverse.l))
-}
 
 const router = useRouter()
 function reSearch(recColor) {
@@ -381,32 +363,8 @@ onMounted(()=>{
     </section>
     <!-- Polaroid -->
     <transition name="fade" mode="out-in">
-      <section
-        class="vh-100 bg-silver fixed-top overflow-scroll d-lg-flex justify-content-center align-items-center"
-        v-if="polaroidShown"
-      >
-      <div class="d-flex flex-column flex-lg-row px-3 pt-6 pb-8 p-lg-0 justify-content-center align-items-center gap-5">
-        <polaroid :photo="nowPolaroid"></polaroid>
-        <polaroid-text
-          :photo="nowPolaroid"
-          :bg-style="{ 'background-color': '#232323', color: '#f6f6f6' }"
-        ></polaroid-text>
-      </div>
-      <div
-          class="position-fixed end-0 d-flex flex-row flex-lg-column px-3 py-3 gap-3 w-100 w-lg-auto justify-content-around modal-controller"
-          ref="modalController"
-        >
-          <button class="luc-controller" @click="showPrev">
-            <i class="fa-solid fa-arrow-left"></i>
-          </button>
-          <button class="luc-controller" @click="polaroidShown = false">
-            <i class="fa-solid fa-xmark fa-xl"></i>
-          </button>
-          <button class="luc-controller" @click="showNext">
-            <i class="fa-solid fa-arrow-right"></i>
-          </button>
-        </div>
-      </section>
+      <iro-modal v-if="polaroidShown" :photo="nowPolaroid"
+      @show-prev="showPrev" @show-next="showNext" @close-modal="polaroidShown = false"></iro-modal>
     </transition>
     <!-- Bookmark -->
     <bookmark
@@ -447,14 +405,5 @@ onMounted(()=>{
 
 .random-photo:hover{
   transform: scale(1.05);
-}
-
-.modal-controller{
-  --luc-controller-bg: #f6f6f6;
-  --luc-controller-color: #232323;
-  bottom: 0;
-  background-color: var(--luc-controller-bg);
-  color: var(--luc-controller-color);
-  border-color: var(--luc-controller-color);
 }
 </style>

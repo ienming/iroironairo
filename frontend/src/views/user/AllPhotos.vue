@@ -17,6 +17,7 @@ import Selection from "@/components/Selection.vue";
 import Polaroid from "@/components/Polaroid.vue";
 import PolaroidText from "@/components/PolaroidText.vue";
 import ButtonCheckbox from "@/components/ButtonCheckbox.vue";
+import IroModal from "@/components/IroModal.vue";
 
 // 顯示模式
 const displayMode = ref(false);
@@ -30,6 +31,7 @@ function switchMode(){
 }
 
 const data = inject("csvData", []);
+const usingMobile = inject("usingMobile", false)
 const dataFiltered = computed(() => {
   let arr = data.value.filter((d) => d["main_color"]);
   // 根據地點篩選
@@ -353,6 +355,7 @@ const filterActivating = computed(()=>{
 // Polaroid
 const polaroidShown = ref(false);
 const nowPolaroid = ref(null);
+const modalController = ref(null)
 function showPolaroid(data) {
   nowPolaroid.value = data;
   polaroidShown.value = true;
@@ -555,6 +558,10 @@ onMounted(() => {
     requestAnimationFrame(animateShowCase)
   }, 3000)
 
+  if (usingMobile.value){
+    density.value = 30
+  }
+
   lotteryPhoto();
   initTooltip();
   initHourQuantities();
@@ -595,7 +602,7 @@ onMounted(() => {
             ></div>
           </transition>
         </div>
-        <div v-if="randomPhotos.length > 0" id="randomPhoto_1">
+        <div v-if="randomPhotos.length > 0" class="d-none d-lg-block" id="randomPhoto_1">
           <img
             ref="randomPhoto_1"
             :src="randomPhotos[0].url_google"
@@ -704,7 +711,7 @@ onMounted(() => {
     </main>
     <section class="position-relative">
       <div class="d-flex">
-        <div class="row ff-serif text-dark col-lg-5 me-auto ps-6 pt-3 d-flex">
+        <div class="row ff-serif text-dark col-lg-5 me-auto ps-3 ps-lg-6 pt-3 d-flex">
           <div class="col-lg-8">
             <h2 class="fs-6">iroironairo</h2>
             <h1 class="fw-semibold mt-2 mb-3">色々な色</h1>
@@ -782,7 +789,7 @@ onMounted(() => {
         </div>
         <div
           v-if="randomPhotos.length > 1"
-          class="ms-auto pe-8 pt-3"
+          class="ms-auto pe-lg-8 pt-3"
           id="randomPhoto_2"
         >
           <img
@@ -817,10 +824,16 @@ onMounted(() => {
     <!-- 控制項 -->
     <transition name="fade" mode="out-in">
       <section
-        class="p-4 position-fixed top-0 end-0 w-25 bg-silver h-100 overflow-scroll shadow-lg"
+        class="p-4 position-fixed top-0 end-0 w-lg-25 bg-silver h-100 overflow-y-scroll shadow-lg"
         style="z-index: 1040;"
         v-show="controllerShown"
       >
+        <div v-if="usingMobile" class="d-flex justify-content-end pb-4">
+          <div class="rounded-pill p-3 d-flex justify-content-center align-items-center shadow-lg bg-dark text-white" style="width: 60px; height: 60px;"
+            @click="controllerShown = false">
+                <i class="fa-solid fa-xmark fa-xl" role="button"></i>
+          </div>
+        </div>
         <span class="pb-2 d-block"
           >{{ dataFiltered.filter((d) => d["_id"]).length }} 張 /
           {{ data.length }} 張照片</span
@@ -876,32 +889,8 @@ onMounted(() => {
     </transition>
     <!-- Modal Polaroid -->
     <transition name="fade" mode="out-in">
-      <section
-        class="vh-100 bg-silver fixed-top d-flex justify-content-center align-items-center gap-5"
-        style="z-index: 1050;"
-        v-if="polaroidShown"
-      >
-        <polaroid :photo="nowPolaroid"></polaroid>
-        <polaroid-text
-          :photo="nowPolaroid"
-          :bg-style="{ 'background-color': '#232323', color: '#f6f6f6' }"
-        ></polaroid-text>
-        <i
-          class="fa-solid fa-xmark fa-xl position-absolute top-0 end-0 p-5 opacity-50-hover"
-          role="button"
-          @click="polaroidShown = false"
-        ></i>
-        <div
-          class="position-absolute end-0 d-flex flex-column px-3 pb-3 pb-lg-0 gap-3"
-        >
-          <button class="luc-controller" @click="showPrev">
-            <i class="fa-solid fa-arrow-left"></i>
-          </button>
-          <button class="luc-controller" @click="showNext">
-            <i class="fa-solid fa-arrow-right"></i>
-          </button>
-        </div>
-      </section>
+      <iro-modal v-if="polaroidShown" :photo="nowPolaroid"
+      @show-prev="showPrev" @show-next="showNext" @close-modal="polaroidShown = false"></iro-modal>
     </transition>
     <!-- Bookmark -->
     <bookmark

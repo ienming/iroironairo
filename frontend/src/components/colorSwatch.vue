@@ -18,18 +18,7 @@ const emit = defineEmits(['show-polaroid'])
 const color = computed(() => {
     return hsl2Hex(props.colorHsl.h, props.colorHsl.s, props.colorHsl.l)
 })
-const copyText = ref("複製顏色")
 const toolTips = ref(null)
-
-// Copy color to clipboard
-function copyColor() {
-    navigator.clipboard.writeText(color.value)
-    copyText.value = "已複製！"
-}
-
-function resetCopyText() {
-    copyText.value = "複製顏色"
-}
 
 // Router
 const router = useRouter()
@@ -63,7 +52,7 @@ onMounted(() => {
 
 <template>
     <div class="color-swatch">
-        <div :style="{ 'background-color': color }" :data-copy-text="copyText" @click="copyColor" @mouseout="resetCopyText">
+        <div :style="{ 'background-color': color }">
         </div>
         <p class="w-100 m-0 d-flex justify-content-between align-items-center">
             <span class="me-3">{{ label }}</span>
