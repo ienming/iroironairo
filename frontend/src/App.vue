@@ -178,6 +178,18 @@ export default {
     }
   },
   mounted(){
+    // Whether mobile
+    if (this.usingMobile){
+      const fusumaContainers = document.querySelectorAll(".fusuma-container")
+      Array.from(fusumaContainers).forEach(el => {
+        el.style['grid-template-columns'] = 'unset'
+        el.style['grid-template-rows'] = 'repeat(7, 1fr)'
+      })
+      const el = document.querySelector("#logoContainer > .fusuma-container")
+      el.style['grid-template-columns'] = 'unset'
+      el.style['grid-template-rows'] = 'repeat(7, 1fr)'
+    }
+
     // Get colors for enter animation
     let timer = window.setInterval(()=>{
       const els = document.querySelector("#logoContainer").querySelectorAll(".fusuma")
@@ -213,8 +225,14 @@ export default {
         el.style.color = '#333'
         const fusumas = el.querySelectorAll(".fusuma")
         for (let i=0; i<fusumas.length; i++){
-          if (i == 4 ){
-            Array.from(fusumas)[i].style['background-color'] = "#f6f6f6"
+          if (this.usingMobile){
+            if (i == 3){
+              Array.from(fusumas)[i].style['background-color'] = "#f6f6f6"
+            }
+          }else{
+            if (i == 4 ){
+              Array.from(fusumas)[i].style['background-color'] = "#f6f6f6"
+            }
           }
         }
         const els = document.querySelector("#logoContainer").querySelectorAll("span")
@@ -302,14 +320,22 @@ export default {
   <section ref="container" class="vw-100 vh-100 position-fixed top-0 fusuma-container">
       <div class="fusuma" v-for="n of 9"></div>
   </section>
+  <transition
+  @before-enter="onBeforeEnter"
+  @enter="onEnter"
+  @before-leave="onBeforeLeave" name="page-fade">
   <router-view v-slot="{ Component }">
+      <component :is="Component"/>
+    </router-view>
+  </transition>
+  <!-- <router-view v-slot="{ Component }">
     <transition
     @before-enter="onBeforeEnter"
     @enter="onEnter"
     @before-leave="onBeforeLeave" name="page-fade">
       <component :is="Component"/>
     </transition>
-  </router-view>
+  </router-view> -->
 </template>
 
 <style scoped>

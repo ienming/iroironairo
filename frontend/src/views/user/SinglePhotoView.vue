@@ -130,15 +130,12 @@ onMounted(()=>{
         }
       })
     }, main.value)
-
-    console.log(ctx)
   }
 })
 
 onBeforeUnmount(()=>{
   if (ctx){
     ctx.revert();
-    console.log(ctx)
   }
 })
 </script>
