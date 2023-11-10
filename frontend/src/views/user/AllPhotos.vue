@@ -325,7 +325,6 @@ function filterHour(key) {
 }
 const hourQuantities = ref([])
 function initHourQuantities(){
-  // console.log("initialize hour quantites")
   const clearData = JSON.parse(JSON.stringify(dataFiltered.value.filter(d => d.type !== 'monthTag')))
   let arr = []
   for (let i=0; i<hours.value.length; i++){
@@ -552,6 +551,9 @@ onMounted(() => {
 
   watch(dataFiltered, (newValue, oldValue) => {
     lotteryPhoto();
+    initHourQuantities();
+    initMonthQuantities();
+    initPlaceQuantities();
   });
 
   window.setTimeout(()=>{
@@ -564,9 +566,6 @@ onMounted(() => {
 
   lotteryPhoto();
   initTooltip();
-  initHourQuantities();
-  initMonthQuantities();
-  initPlaceQuantities();
 });
 </script>
 

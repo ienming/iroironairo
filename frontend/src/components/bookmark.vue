@@ -12,9 +12,7 @@ const props = defineProps({
 
 <template>
     <div class="bookmark ff-serif p-3 p-lg-4 flex-lg-column" ref="bookmarkEl"
-    :style="{'color': theme.color}">
-        <span class="anim-line"
-        :style="{'background-color': theme.color}"></span>
+    :style="{'--bookmark-color': theme.color}">
         <span class="text">iroironairo</span>
     </div>
 </template>

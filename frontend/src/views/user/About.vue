@@ -4,9 +4,9 @@ import Navigator from "@/components/Navigator.vue";
 </script>
 <template>
     <main>
-        <section class="min-vh-100 d-flex justify-content-center align-items-center ff-serif">
-            <section class="row flex-column flex-lg-row w-100 px-1 px-lg-6 gap-5 gap-lg-0">
-                <section class="col-12 col-lg-6 d-flex align-items-center pt-4 pt-lg-0">
+        <section class="min-vh-100 d-flex justify-content-center align-items-lg-center ff-serif">
+            <section class="row flex-column w-100 pt-7 px-1 px-lg-6 pt-lg-0 gap-5 gap-lg-0">
+                <section class="col-12 col-lg-6 d-flex align-items-center pt-4 pt-lg-0 mb-0 mb-lg-5">
                     <div class="col-lg-8">
                         <h2 class="fs-6">iroironairo</h2>
                         <h1 class="fw-semibold mt-2 mb-3 d-flex align-items-center gap-1">

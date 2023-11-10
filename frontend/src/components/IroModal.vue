@@ -31,6 +31,7 @@ onMounted(()=>{
 <template>
     <section
         class="vh-100 bg-silver fixed-top overflow-scroll d-lg-flex justify-content-center align-items-center"
+        style="z-index: 1050;"
       >
       <div class="d-flex flex-column flex-lg-row px-3 pt-4 pb-8 p-lg-0 justify-content-center align-items-center gap-5">
         <polaroid :photo="photo"></polaroid>
