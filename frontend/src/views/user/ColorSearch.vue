@@ -1,12 +1,10 @@
 <script setup>
 import { computed, inject, ref, onMounted, nextTick } from "vue";
-import { onBeforeRouteUpdate, onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
+import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 import { hsl2Hex, hex2Rgb } from "@/composable/common";
 import { diff } from "color-diff";
 import Bookmark from "@/components/Bookmark.vue";
 import Navigator from "@/components/Navigator.vue";
-import Polaroid from "@/components/Polaroid.vue";
-import PolaroidText from "@/components/PolaroidText.vue";
 import IroModal from "@/components/IroModal.vue";
 
 const route = useRoute();
@@ -246,9 +244,9 @@ onMounted(()=>{
           <div class="bg-white rounded-3 p-3 ms-0 shadow-lg row col-12 col-lg-5">
             <p
               :style="{ 'background-color': colorHex }"
-              class="rounded-3 mb-0 col-5"
+              class="rounded-3 mb-lg-0 col-lg-5 color-searched"
             ></p>
-            <div class="col-7">
+            <div class="col-lg-7">
               <p class="mb-1">{{ colorHex }}</p>
               <p class="mb-1">
                 {{ "RGB: " + colorRgb.r + ", " + colorRgb.g + ", " + colorRgb.b }}
@@ -323,7 +321,7 @@ onMounted(()=>{
               <strong>{{ month.label.split(" ")[0] }}</strong>
               {{ month.label.split(" ")[1] }}
             </p>
-            <div class="d-flex">
+            <div class="d-flex py-4 overflow-x-auto">
               <div
                 v-for="d of dataFiltered.filter(
                   (d) => d.date.split('/')[1] == month.key
@@ -337,7 +335,7 @@ onMounted(()=>{
                 }"
                 :class="d.area == 'kansai' ? 'rounded-pill' : ''"
                 role="button"
-                class="position-relative color-data"
+                class="position-relative color-data flex-shrink-0"
                 :data-place="d.places.length > 0 ? d.places : '無'"
                 @click="showPolaroid(d)"
               ></div>
@@ -376,8 +374,16 @@ onMounted(()=>{
 </template>
 
 <style scoped>
+.color-searched{
+  height: 80px;
+}
+@media screen and (min-width: 992px) {
+  .color-searched{
+    height: unset;
+  }
+}
 .color-data {
-  --size: 15px;
+  --size: 30px;
   width: var(--size);
   height: var(--size);
 }

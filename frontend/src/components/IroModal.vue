@@ -32,7 +32,7 @@ onMounted(()=>{
     <section
         class="vh-100 bg-silver fixed-top overflow-scroll d-lg-flex justify-content-center align-items-center"
       >
-      <div class="d-flex flex-column flex-lg-row px-3 pt-6 pb-8 p-lg-0 justify-content-center align-items-center gap-5">
+      <div class="d-flex flex-column flex-lg-row px-3 pt-4 pb-8 p-lg-0 justify-content-center align-items-center gap-5">
         <polaroid :photo="photo"></polaroid>
         <polaroid-text
           :photo="photo"
@@ -40,7 +40,7 @@ onMounted(()=>{
         ></polaroid-text>
       </div>
       <div
-          class="position-fixed end-0 d-flex flex-row flex-lg-column px-3 py-3 gap-3 w-100 w-lg-auto justify-content-around modal-controller"
+          class="position-fixed end-0 d-flex flex-row flex-lg-column px-2 py-2 gap-3 w-100 w-lg-auto justify-content-around modal-controller"
           ref="modalController"
         >
           <button class="luc-controller" @click="emit('show-prev')">

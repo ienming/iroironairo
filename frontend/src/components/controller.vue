@@ -34,7 +34,7 @@ onMounted(()=>{
 <template>
     <section class="position-fixed w-100 d-flex flex-row justify-content-center justify-content-lg-between align-items-center"
     ref="controllerEl">
-        <div class="d-flex flex-row flex-lg-column px-3 py-3 py-lg-0 gap-4 gap-lg-3">
+        <div class="d-flex flex-row flex-lg-column px-2 py-2 py-lg-0 gap-4 gap-lg-3">
             <button class="luc-controller" @click="emit('shuffle')">
                 <i class="fa-solid fa-shuffle"></i>
             </button>
@@ -50,7 +50,7 @@ onMounted(()=>{
                 <i class="fa-solid fa-stop" v-else></i>
             </button>
         </div>
-        <div class="d-flex flex-row flex-lg-column px-3 py-3 py-lg-0 gap-4 gap-lg-3">
+        <div class="d-flex flex-row flex-lg-column px-2 py-2 py-lg-0 gap-4 gap-lg-3">
             <button class="luc-controller" @click="emit('show-prev')">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>

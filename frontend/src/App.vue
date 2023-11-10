@@ -92,7 +92,7 @@ export default {
             }
           }
         })
-        // console.log("讀取 CSV")
+        console.log("讀取 CSV")
       })
       .catch((error) => {
         console.error(error);
@@ -109,6 +109,14 @@ export default {
     
     provide('csvData', data);
     provide('usingMobile', usingMobile)
+
+    // Router
+    const router = useRouter()
+    router.beforeEach((to, from) => {
+      window.scrollTo({
+        top: 0
+      })
+    })
 
     return {
       data,
@@ -130,11 +138,15 @@ export default {
           fusuma.style['background-color'] = hsl2Hex(colorObj.h, colorObj.s, colorObj.l)
         })
       }else if(photoParam){
-        const name = decodeURIComponent(photoParam[1].replace(/%22/g, '"'));
-        const colorObj = this.data.find(d => d.name == name.slice(1, -1))['main_color']
-        Array.from(fusumas).forEach(fusuma => {
-          fusuma.style['background-color'] = hsl2Hex(colorObj.h, colorObj.s, colorObj.l)
-        })
+        const name = decodeURIComponent(photoParam[1].replace(/%22/g, '"')).slice(1,-1);
+        const target = this.data.find(d => d.name == name)
+        let colorObj
+        if (target){
+          colorObj = target['main_color']
+          Array.from(fusumas).forEach(fusuma => {
+            fusuma.style['background-color'] = hsl2Hex(colorObj.h, colorObj.s, colorObj.l)
+          })
+        }
       }else{
         Array.from(fusumas).forEach(fusuma => {
           fusuma.style['background-color'] = '#f6f6f6'
@@ -320,22 +332,14 @@ export default {
   <section ref="container" class="vw-100 vh-100 position-fixed top-0 fusuma-container">
       <div class="fusuma" v-for="n of 9"></div>
   </section>
-  <transition
-  @before-enter="onBeforeEnter"
-  @enter="onEnter"
-  @before-leave="onBeforeLeave" name="page-fade">
-  <router-view v-slot="{ Component }">
-      <component :is="Component"/>
-    </router-view>
-  </transition>
-  <!-- <router-view v-slot="{ Component }">
-    <transition
+  <RouterView v-slot="{ Component }">
+    <Transition
     @before-enter="onBeforeEnter"
     @enter="onEnter"
     @before-leave="onBeforeLeave" name="page-fade">
-      <component :is="Component"/>
-    </transition>
-  </router-view> -->
+      <Component :is="Component"/>
+    </Transition>
+  </RouterView>
 </template>
 
 <style scoped>

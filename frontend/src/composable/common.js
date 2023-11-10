@@ -23,8 +23,8 @@ export function hex2Rgb(hex) {
   return { r, g, b };
 }
 
-export function getReverseColor(color){
-  if (25 < color.l && color.l < 75) {
+export function getReverseColor(hslObj){
+  if (25 < hslObj.l && hslObj.l < 75) {
     return {
       'h': 360,
       's': 0,
@@ -32,9 +32,9 @@ export function getReverseColor(color){
     }
   } else {
     return {
-      'h': color.h,
-      's': color.s,
-      'l': 100 - color.l,
+      'h': hslObj.h,
+      's': hslObj.s,
+      'l': 100 - hslObj.l,
     }
   }
 }

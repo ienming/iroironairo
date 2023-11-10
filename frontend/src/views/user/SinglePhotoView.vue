@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue';
+import { inject, ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { onBeforeRouteUpdate, useRoute } from 'vue-router';
 import { hsl2Hex, getReverseColor } from "@/composable/common";
 import Bookmark from '@/components/Bookmark.vue';
@@ -107,29 +107,39 @@ const mainColor = computed(()=>{
   }else return
 })
 
+const themeStyle = computed(()=>{
+  if (Object.keys(nowPhoto.value).length > 0){
+    let hslObj = nowPhoto.value['main_color']
+    let reverseObj = getReverseColor(hslObj)
+    return {
+      "color": hsl2Hex(reverseObj.h, reverseObj.s, reverseObj.l),
+      "backgroundColor": hsl2Hex(hslObj.h, hslObj.s, hslObj.l)
+    }
+  }else return
+})
+
+gsap.registerPlugin(ScrollTrigger) 
 
 let ctx
-const main = ref()
-gsap.registerPlugin(ScrollTrigger) 
+const main = ref(null)
+
 onMounted(()=>{
   if (usingMobile.value){
-    ctx = gsap.context(()=>{
-      let triggerEl = document.querySelector("#photo")
-      let el = document.querySelector("#photo-des-el")
-
-      gsap.fromTo(el, {
-        yPercent: -20
-      }, {
-        yPercent: -95,
-        scrollTrigger: {
-          trigger: triggerEl,
-          start: "top end",
-          toggleActions: "restart pause reverse pause",
-          scrub: 1,
-          markers: true
-        }
-      })
-    }, main.value)
+      ctx = gsap.context((self)=>{
+        gsap.fromTo(self.selector("#photo-des-el"), {
+          y: -50
+        }, {
+          yPercent: -95,
+          scrollTrigger: {
+            trigger: self.selector("#photo"),
+            start: "top end",
+            toggleActions: "restart pause reverse pause",
+            scrub: 1,
+            // markers: true
+          }
+        })
+      }, main.value)
+      // console.log(ctx)
   }
 })
 
@@ -142,7 +152,7 @@ onBeforeUnmount(()=>{
 <template>
     <main>
         <section class="vh-100 bg-silver gap-lg-5 d-flex flex-column flex-lg-row align-items-center"
-        v-if="nowPhoto">
+        v-if="nowPhoto" ref="main">
             <div class="col-12 col-lg-6 vh-100 p-4 pt-5 p-lg-7"
               :style="{'background-color': mainColor}" id="photo">
               <img :src="nowPhoto.url_google" alt="" class="d-none" @load="hasLoaded">
@@ -151,7 +161,7 @@ onBeforeUnmount(()=>{
                 :src="nowPhoto.url_google" alt="" class="w-100 h-100 object-fit-cover"/>
               </transition>
             </div>
-            <section class="col-12 col-lg-6 rounded-4 px-5 py-3 p-lg-0 bg-silver" id="photo-des-el">
+            <section class="col-12 col-lg-6 rounded-4 p-4 py-3 p-lg-0 bg-silver" id="photo-des-el">
               <p>{{nowPhoto.date}} {{nowPhoto.time}}</p>
               <polaroid-text :photo="nowPhoto" :bg-style="{'background-color': '#232323', 'color': '#f6f6f6'}"></polaroid-text>
             </section>
@@ -164,10 +174,10 @@ onBeforeUnmount(()=>{
           </span>
         </div>
         <!-- Bookmark -->
-        <bookmark
+        <bookmark :theme="themeStyle"
         class="position-fixed top-0 d-flex align-items-center gap-1"></bookmark>
         <!-- Nav -->
-        <navigator></navigator>
+        <navigator :theme="themeStyle"></navigator>
     </main>
 </template>
 

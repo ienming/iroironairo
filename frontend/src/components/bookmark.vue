@@ -11,7 +11,8 @@ const props = defineProps({
 </script>
 
 <template>
-    <div class="bookmark ff-serif p-3 p-lg-4 flex-lg-column" ref="bookmarkEl">
+    <div class="bookmark ff-serif p-3 p-lg-4 flex-lg-column" ref="bookmarkEl"
+    :style="{'color': theme.color}">
         <span class="anim-line"
         :style="{'background-color': theme.color}"></span>
         <span class="text">iroironairo</span>
