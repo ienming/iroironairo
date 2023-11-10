@@ -177,7 +177,10 @@ onBeforeUnmount(()=>{
         <bookmark :theme="themeStyle"
         class="position-fixed top-0 d-flex align-items-center gap-1"></bookmark>
         <!-- Nav -->
-        <navigator :theme="themeStyle"></navigator>
+        <navigator :theme="usingMobile ? themeStyle:{
+            'color': '#232323',
+            'backgroundColor': '#F6F6F6'
+        }"></navigator>
     </main>
 </template>
 

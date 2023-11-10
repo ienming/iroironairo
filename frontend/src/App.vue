@@ -199,7 +199,7 @@ export default {
       })
       const el = document.querySelector("#logoContainer > .fusuma-container")
       el.style['grid-template-columns'] = 'unset'
-      el.style['grid-template-rows'] = 'repeat(7, 1fr)'
+      el.style['grid-template-rows'] = 'repeat(3, 1fr)'
     }
 
     // Get colors for enter animation
@@ -238,7 +238,7 @@ export default {
         const fusumas = el.querySelectorAll(".fusuma")
         for (let i=0; i<fusumas.length; i++){
           if (this.usingMobile){
-            if (i == 3){
+            if (i == 1){
               Array.from(fusumas)[i].style['background-color'] = "#f6f6f6"
             }
           }else{
