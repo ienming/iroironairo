@@ -1,5 +1,5 @@
 <script>
-import { ref, provide, nextTick } from 'vue';
+import { ref, provide } from 'vue';
 import { useRouter } from 'vue-router'
 import { hsl2Hex } from "@/composable/common";
 import gsap from 'gsap';
