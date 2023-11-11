@@ -10720,7 +10720,7 @@ textarea.form-control-lg {
   background: #fff;
   border-radius: 8px;
   color: #212529;
-  padding: 10px;
+  padding: 10px !important;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -10853,10 +10853,13 @@ textarea.form-control-lg {
   width: max-content;
   text-decoration: underline;
 }
-.txt-lang-hover > div {
+.txt-lang-hover .txt-lang-container {
   transition: 0.2s ease-in-out;
 }
-.txt-lang-hover:hover > div {
+.txt-lang-hover span {
+  transition: 0.3s opacity ease;
+}
+.txt-lang-hover:hover .txt-lang-container {
   transform: translateY(-100%);
 }
 .txt-lang-hover:hover span:nth-child(1) {

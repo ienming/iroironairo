@@ -15,11 +15,14 @@
         width: max-content;
         text-decoration: underline;
     }
-    >div{
+    .txt-lang-container{
         transition: .2s ease-in-out;
     }
+    span {
+        transition: .3s opacity ease;
+    }
     &:hover{
-        >div{
+        .txt-lang-container{
             transform: translateY(-100%);
         }
         span:nth-child(1){
