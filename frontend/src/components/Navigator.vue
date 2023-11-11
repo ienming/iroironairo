@@ -71,7 +71,7 @@ const mobileMenuOpening = ref(false)
                     }"
                     :style="{'color': theme.color}"
                     class="txt-lang-hover">
-                    <div>
+                    <div class="txt-lang-container">
                         <span>首頁</span>
                         <span>ホーム</span>
                     </div>
@@ -81,7 +81,7 @@ const mobileMenuOpening = ref(false)
                     }"
                     :style="{'color': theme.color}"
                     class="txt-lang-hover">
-                    <div>
+                    <div class="txt-lang-container">
                         <span>全部相片</span>
                         <span>全ての写真</span>
                     </div>
@@ -91,7 +91,7 @@ const mobileMenuOpening = ref(false)
                     }"
                     :style="{'color': theme.color}"
                     class="txt-lang-hover">
-                    <div>
+                    <div class="txt-lang-container">
                         <span>關於 iroironairo</span>
                         <span>色々な色について</span>
                     </div>
