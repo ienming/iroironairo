@@ -165,32 +165,35 @@ const script = function (p5) {
         }
 
         // match main color
-        let threshold = 10;
-
-        let temp = mainCs.find((el) => {
-          return colorDifference(colorRGB, el.color_rgb) <= threshold;
-        })
-
-        if (!temp) {
-          mainCs.push({ color: [h, s, l], color_rgb: colorRGB, amount: 1 });
-        } else {
-          const middleColor = {
-            "R": (temp.color_rgb['R']+colorRGB['R'])/2,
-            "G": (temp.color_rgb['G']+colorRGB['G'])/2,
-            "B": (temp.color_rgb['B']+colorRGB['B'])/2,
+        let threshold = 18;
+        if (mainCs.length > 0){
+          const palette = mainCs.map(color => color.color_rgb)
+          // console.log(palette)
+          const now = colorRGB
+          const nearest = closest(now, palette)
+          if (colorDifference(now, nearest) <= threshold){
+            const middle = {
+              "R": (nearest['R']+now['R'])/2,
+              "G": (nearest['G']+now['G'])/2,
+              "B": (nearest['B']+now['B'])/2,
+            }
+            const middle_p5 = p5.color(middle['R'], middle['G'], middle['B'])
+            const target = mainCs.find(color => JSON.stringify(color.color_rgb) === JSON.stringify(nearest))
+            target.color = [p5.hue(middle_p5), p5.saturation(middle_p5), p5.lightness(middle_p5)]
+            target.color_rgb = middle
+            target.amount += 1;
+          }else{
+            mainCs.push({ color: [h, s, l], color_rgb: colorRGB, amount: 1 });
           }
-          const mC_p5 = p5.color(middleColor['R'], middleColor['G'], middleColor['B'])
-          temp.color = [p5.hue(mC_p5), p5.saturation(mC_p5), p5.lightness(mC_p5)]
-          temp.color_rgb = middleColor
-          temp.amount += 1;
+        }else{
+          mainCs.push({ color: [h, s, l], color_rgb: colorRGB, amount: 1 });
         }
       }
     }
     mainCs = mainCs.sort((a, b) => b.amount - a.amount)
-    // if (mainCs.length > 3) {
-    //   mainCs.length = 3
-    // }
-    // mainCs = mainCs.filter(c => c.amount > 300)
+    if (mainCs.length > 3) {
+      mainCs.length = 3
+    }
     console.log('find main colors')
     console.log(mainCs)
     emit('main-colors-handler', mainCs)
