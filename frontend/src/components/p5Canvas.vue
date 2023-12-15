@@ -149,6 +149,7 @@ const script = function (p5) {
 
   findMainColor = function () {
     mainCs = []
+    const threshold = 18;
     // start sampling
     for (let i = 0; i < 100; i++) {
       for (let j = 0; j < 100; j++) {
@@ -165,7 +166,6 @@ const script = function (p5) {
         }
 
         // match main color
-        let threshold = 18;
         if (mainCs.length > 0){
           const palette = mainCs.map(color => color.color_rgb)
           // console.log(palette)
@@ -190,10 +190,56 @@ const script = function (p5) {
         }
       }
     }
-    mainCs = mainCs.sort((a, b) => b.amount - a.amount)
-    if (mainCs.length > 3) {
-      mainCs.length = 3
+
+    let compareIndex = 0, finishMerge = false;
+    console.log(mainCs.length)
+    while (!finishMerge){
+      let compareTarget = mainCs[compareIndex]
+      console.log(compareTarget)
+      if (mainCs.length == 1){
+        finishMerge = true
+      }else{
+        const palette = mainCs.filter((color, id) => {
+          if (id !== compareIndex) return color
+        }).map((color) => { return color.color_rgb })
+        const nearestColor = closest(compareTarget.color_rgb, palette)
+        if (colorDifference(compareTarget.color_rgb, nearestColor) <= threshold){
+          console.log(`There is the color that is close enough to index ${compareIndex}`)
+          const nearest = mainCs.find(color => JSON.stringify(color.color_rgb) === JSON.stringify(nearestColor))
+          const middle = {
+            "R": ((Math.round(nearest.color_rgb['R'])*nearest.amount)+(Math.round(compareTarget.color_rgb['R'])*compareTarget.amount))/(nearest.amount + compareTarget.amount),
+            "G": ((Math.round(nearest.color_rgb['G'])*nearest.amount)+(Math.round(compareTarget.color_rgb['G'])*compareTarget.amount))/(nearest.amount + compareTarget.amount),
+            "B": ((Math.round(nearest.color_rgb['B'])*nearest.amount)+(Math.round(compareTarget.color_rgb['B'])*compareTarget.amount))/(nearest.amount + compareTarget.amount),
+          }
+          const middle_p5 = p5.color(middle['R'], middle['G'], middle['B'])
+          const obj = {
+            color: [p5.hue(middle_p5), p5.saturation(middle_p5), p5.lightness(middle_p5)],
+            color_rgb: middle,
+            amount: (compareTarget.amount + nearest.amount)/2
+          }
+          //Remove now and nearest in mainCs (replace with middle)
+          const compareTargetIndex = mainCs.findIndex(color => JSON.stringify(color.color_rgb) === JSON.stringify(compareTarget.color_rgb))
+          const nearestIndex = mainCs.findIndex(color => JSON.stringify(color.color_rgb) === JSON.stringify(nearest.color_rgb))
+          mainCs.splice(nearestIndex, 1)
+          mainCs.splice(compareTargetIndex, 1, obj)
+        }else{
+          console.log("No color is close to index: "+compareIndex)
+          if (compareIndex < mainCs.length-1){
+            compareIndex ++
+          }else{
+            console.log("No color could be merged")
+            finishMerge = true
+          }
+        }
+      }
     }
+
+    mainCs = mainCs.filter(color => color.amount > 10)
+    mainCs = mainCs.sort((a, b) => b.amount - a.amount)
+    // if (mainCs.length > 3){
+    //   mainCs.length = 3
+    // }
+
     console.log('find main colors')
     console.log(mainCs)
     emit('main-colors-handler', mainCs)
