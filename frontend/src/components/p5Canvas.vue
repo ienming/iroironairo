@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { diff } from 'color-diff';
+import { diff, closest } from 'color-diff';
 let [draw, sample, reorder, findMainColor, data, mainCs] = [undefined, undefined, undefined, undefined, undefined, []]
 
 const props = defineProps({
@@ -165,13 +165,8 @@ const script = function (p5) {
         }
 
         // match main color
-        // let threshold = 10
-        // let temp = mainCs.find((el) => {
-        //   return Math.abs(el.color[0] - h) <= threshold &&
-        //     Math.abs(el.color[1] - s) <= threshold * 3 &&
-        //     Math.abs(el.color[2] - l) <= threshold * 4;
-        // });
-        let threshold = 20;
+        let threshold = 10;
+
         let temp = mainCs.find((el) => {
           return colorDifference(colorRGB, el.color_rgb) <= threshold;
         })
@@ -179,15 +174,23 @@ const script = function (p5) {
         if (!temp) {
           mainCs.push({ color: [h, s, l], color_rgb: colorRGB, amount: 1 });
         } else {
+          const middleColor = {
+            "R": (temp.color_rgb['R']+colorRGB['R'])/2,
+            "G": (temp.color_rgb['G']+colorRGB['G'])/2,
+            "B": (temp.color_rgb['B']+colorRGB['B'])/2,
+          }
+          const mC_p5 = p5.color(middleColor['R'], middleColor['G'], middleColor['B'])
+          temp.color = [p5.hue(mC_p5), p5.saturation(mC_p5), p5.lightness(mC_p5)]
+          temp.color_rgb = middleColor
           temp.amount += 1;
         }
       }
     }
-    mainCs = mainCs.filter(c => c.amount > 10000/10)
     mainCs = mainCs.sort((a, b) => b.amount - a.amount)
-    if (mainCs.length > 3) {
-      mainCs.length = 3
-    }
+    // if (mainCs.length > 3) {
+    //   mainCs.length = 3
+    // }
+    // mainCs = mainCs.filter(c => c.amount > 300)
     console.log('find main colors')
     console.log(mainCs)
     emit('main-colors-handler', mainCs)

@@ -203,14 +203,14 @@ export default {
     }
 
     // Get colors for enter animation
-    let timer = window.setInterval(()=>{
-      const els = document.querySelector("#logoContainer").querySelectorAll(".fusuma")
-      Array.from(els).forEach(el => {
-        const randomIndex = Math.floor(Math.random()*this.data.length+1)
-        const color = this.data[randomIndex]['main_color']
-        el.style['background-color'] = hsl2Hex(color.h, color.s, color.l)
-      })
-    }, 500)
+    // let timer = window.setInterval(()=>{
+    //   const els = document.querySelector("#logoContainer").querySelectorAll(".fusuma")
+    //   Array.from(els).forEach(el => {
+    //     const randomIndex = Math.floor(Math.random()*this.data.length+1)
+    //     const color = this.data[randomIndex]['main_color']
+    //     el.style['background-color'] = hsl2Hex(color.h, color.s, color.l)
+    //   })
+    // }, 500)
     // GSAP animation
     const logoTypeJp = this.$refs.logoTypeJp
     const logoTypes = Array.from(logoTypeJp.querySelectorAll("span"))
@@ -308,6 +308,11 @@ export default {
       .add(tl_eng, "-=1")
       .add(tl_fusuma, "+=2")
       .add(tl_text_fade, "-=1")
+
+    // debug please remove
+    master.pause()
+    document.querySelector("#logoContainer").style.display = 'none'
+    this.$refs.container.style.display = 'none'
   }
 };
 </script>

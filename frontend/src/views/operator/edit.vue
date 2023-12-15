@@ -1,12 +1,6 @@
 <script setup>
 import p5Canvas from '../../components/p5Canvas.vue'
 import modalLoading from '../../components/modalLoading.vue'
-// import selectImg from '../components/selectImg.vue';
-// import viewImg from '../components/viewImg.vue';
-// import selectScale from '../components/selectScale.vue';
-// import selectOrder from '../components/selectOrder.vue';
-// import showMainColor from '../components/showMainColor.vue';
-// import showData from '../components/showData.vue';
 import { ref, onMounted } from 'vue'
 
 
@@ -187,9 +181,9 @@ onMounted(() => {
       </div>
     </div>
   </main>
-  <transition name="fade">
+  <!-- <Transition name="fade">
     <modalLoading v-if="updating"></modalLoading>
-  </transition>
+  </Transition> -->
 </template>
 
 <style scoped>
