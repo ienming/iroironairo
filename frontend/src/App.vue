@@ -309,7 +309,7 @@ export default {
       .add(tl_fusuma, "+=2")
       .add(tl_text_fade, "-=1")
 
-    //debug
+    //For quickly update photos information from operator pages
     document.querySelector("#logoContainer").style.display = 'none'
     this.$refs.container.style.display = 'none'
   }
