@@ -150,21 +150,22 @@ const script = function (p5) {
           // console.log(palette)
           const now = colorRGB
           const nearest = closest(now, palette)
-          threshold = 8;
-          if ((now['R'] < 37 && now['G'] < 37 && now['B'] < 37) || (now['R'] > 200 && now['G'] > 200 && now['B'] > 200)){
-          // if (l < 5 || l > 5){
-            threshold = 2 //如果顏色太深或太亮，看起來像黑色時把規則調嚴格，以免造成肉眼看起來的部分沒很多黑色，但卻被計算成太多次
+          threshold = 20;
+          // if ((now['R'] < 37 && now['G'] < 37 && now['B'] < 37) || (now['R'] > 200 && now['G'] > 200 && now['B'] > 200)){
+          if (l < 15 || l > 85){
+            threshold = 10
+            //如果顏色太深或太亮，把規則調嚴格，以免造成肉眼看起來的部分沒很多黑色或白色，但卻被計算成太多次
           }
           if (colorDifference(now, nearest) <= threshold){
-            const middle = {
-              "R": (nearest['R']+now['R'])/2,
-              "G": (nearest['G']+now['G'])/2,
-              "B": (nearest['B']+now['B'])/2,
-            }
-            const middle_p5 = p5.color(middle['R'], middle['G'], middle['B'])
+            // const middle = {
+            //   "R": (nearest['R']+now['R'])/2,
+            //   "G": (nearest['G']+now['G'])/2,
+            //   "B": (nearest['B']+now['B'])/2,
+            // }
+            // const middle_p5 = p5.color(middle['R'], middle['G'], middle['B'])
             const target = mainCs.find(color => JSON.stringify(color.color_rgb) === JSON.stringify(nearest))
-            target.color = [p5.hue(middle_p5), p5.saturation(middle_p5), p5.lightness(middle_p5)]
-            target.color_rgb = middle
+            // target.color = [p5.hue(middle_p5), p5.saturation(middle_p5), p5.lightness(middle_p5)]
+            // target.color_rgb = middle
             target.amount += 1;
           }else{
             mainCs.push({ color: [h, s, l], color_rgb: colorRGB, amount: 1 });
@@ -177,49 +178,49 @@ const script = function (p5) {
 
     let compareIndex = 0, finishMerge = false;
     console.log(mainCs.length)
-    while (!finishMerge){
-      let compareTarget = mainCs[compareIndex]
-      console.log(mainCs.length)
-      console.log(compareIndex)
-      if (mainCs.length == 1){
-        finishMerge = true
-      }else{
-        const palette = mainCs.filter((color, id) => {
-          if (id !== compareIndex) return color
-        }).map((color) => { return color.color_rgb })
-        const nearestColor = closest(compareTarget.color_rgb, palette)
-        threshold = 8 // 以免整張都是黑色的照片最後產生的主要顏色沒有合併
-        if (colorDifference(compareTarget.color_rgb, nearestColor) <= threshold*1.15){
-          console.log(`There is the color that is close enough to index ${compareIndex}`)
-          const nearest = mainCs.find(color => JSON.stringify(color.color_rgb) === JSON.stringify(nearestColor))
-          const middle = {
-            "R": ((Math.round(nearest.color_rgb['R'])*nearest.amount)+(Math.round(compareTarget.color_rgb['R'])*compareTarget.amount))/(nearest.amount + compareTarget.amount),
-            "G": ((Math.round(nearest.color_rgb['G'])*nearest.amount)+(Math.round(compareTarget.color_rgb['G'])*compareTarget.amount))/(nearest.amount + compareTarget.amount),
-            "B": ((Math.round(nearest.color_rgb['B'])*nearest.amount)+(Math.round(compareTarget.color_rgb['B'])*compareTarget.amount))/(nearest.amount + compareTarget.amount),
-          }
-          const middle_p5 = p5.color(middle['R'], middle['G'], middle['B'])
-          const obj = {
-            color: [p5.hue(middle_p5), p5.saturation(middle_p5), p5.lightness(middle_p5)],
-            color_rgb: middle,
-            amount: (compareTarget.amount + nearest.amount)/2
-          }
-          //Remove now and nearest in mainCs (replace with middle)
-          const compareTargetIndex = mainCs.findIndex(color => JSON.stringify(color.color_rgb) === JSON.stringify(compareTarget.color_rgb))
-          const nearestIndex = mainCs.findIndex(color => JSON.stringify(color.color_rgb) === JSON.stringify(nearest.color_rgb))
-          mainCs.splice(nearestIndex, 1)
-          mainCs.splice(compareTargetIndex, 1, obj)
-          compareIndex = 0
-        }else{
-          console.log("No color is close to index: "+compareIndex)
-          if (compareIndex < mainCs.length-1){
-            compareIndex ++
-          }else{
-            console.log("No color could be merged")
-            finishMerge = true
-          }
-        }
-      }
-    }
+    // while (!finishMerge){
+    //   let compareTarget = mainCs[compareIndex]
+    //   console.log(mainCs.length)
+    //   console.log(compareIndex)
+    //   if (mainCs.length == 1){
+    //     finishMerge = true
+    //   }else{
+    //     const palette = mainCs.filter((color, id) => {
+    //       if (id !== compareIndex) return color
+    //     }).map((color) => { return color.color_rgb })
+    //     const nearestColor = closest(compareTarget.color_rgb, palette)
+    //     threshold = 8 // 以免整張都是黑色的照片最後產生的主要顏色沒有合併
+    //     if (colorDifference(compareTarget.color_rgb, nearestColor) <= threshold*1.15){
+    //       console.log(`There is the color that is close enough to index ${compareIndex}`)
+    //       const nearest = mainCs.find(color => JSON.stringify(color.color_rgb) === JSON.stringify(nearestColor))
+    //       const middle = {
+    //         "R": ((Math.round(nearest.color_rgb['R'])*nearest.amount)+(Math.round(compareTarget.color_rgb['R'])*compareTarget.amount))/(nearest.amount + compareTarget.amount),
+    //         "G": ((Math.round(nearest.color_rgb['G'])*nearest.amount)+(Math.round(compareTarget.color_rgb['G'])*compareTarget.amount))/(nearest.amount + compareTarget.amount),
+    //         "B": ((Math.round(nearest.color_rgb['B'])*nearest.amount)+(Math.round(compareTarget.color_rgb['B'])*compareTarget.amount))/(nearest.amount + compareTarget.amount),
+    //       }
+    //       const middle_p5 = p5.color(middle['R'], middle['G'], middle['B'])
+    //       const obj = {
+    //         color: [p5.hue(middle_p5), p5.saturation(middle_p5), p5.lightness(middle_p5)],
+    //         color_rgb: middle,
+    //         amount: (compareTarget.amount + nearest.amount)/2
+    //       }
+    //       //Remove now and nearest in mainCs (replace with middle)
+    //       const compareTargetIndex = mainCs.findIndex(color => JSON.stringify(color.color_rgb) === JSON.stringify(compareTarget.color_rgb))
+    //       const nearestIndex = mainCs.findIndex(color => JSON.stringify(color.color_rgb) === JSON.stringify(nearest.color_rgb))
+    //       mainCs.splice(nearestIndex, 1)
+    //       mainCs.splice(compareTargetIndex, 1, obj)
+    //       compareIndex = 0
+    //     }else{
+    //       console.log("No color is close to index: "+compareIndex)
+    //       if (compareIndex < mainCs.length-1){
+    //         compareIndex ++
+    //       }else{
+    //         console.log("No color could be merged")
+    //         finishMerge = true
+    //       }
+    //     }
+    //   }
+    // }
 
     mainCs = mainCs.filter(color => color.amount > 10)
     mainCs = mainCs.sort((a, b) => b.amount - a.amount)
