@@ -309,18 +309,22 @@ onMounted(()=>{
               </div>
           </div>
           <section v-for="month of months" class="mb-3">
-            <p
-              class="mb-2 ff-serif"
-              :class="
-                dataFiltered.filter((d) => d.date.split('/')[1] == month.key)
-                  .length > 0
-                  ? ''
-                  : 'opacity-50'
-              "
-            >
-              <strong>{{ month.label.split(" ")[0] }}</strong>
-              {{ month.label.split(" ")[1] }}
-            </p>
+            <div class="d-flex gap-2 ff-serif"
+                :class="
+                  dataFiltered.filter((d) => d.date.split('/')[1] == month.key)
+                    .length > 0
+                    ? ''
+                    : 'opacity-50'
+                ">
+              <p
+              >
+                <strong>{{ month.label.split(" ")[0] }}</strong>
+                {{ month.label.split(" ")[1] }}
+              </p>
+              <span>({{ dataFiltered.filter(
+                  (d) => d.date.split('/')[1] == month.key
+                ).length }})</span>
+            </div>
             <div class="d-flex py-4 overflow-x-auto">
               <div
                 v-for="d of dataFiltered.filter(

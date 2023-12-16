@@ -84,7 +84,7 @@ function showPrev(){
 // 自動播放
 let timer
 const autoPlaying = ref(false)
-const timeLeft = ref(15)
+const timeLeft = ref(10)
 
 function startPlaying(){
   autoPlaying.value = true
@@ -93,14 +93,14 @@ function startPlaying(){
       timeLeft.value --
     }else{
       showNext()
-      timeLeft.value = 15
+      timeLeft.value = 10
     }
   }, 1000)
 }
 
 function stopPlaying(){
   autoPlaying.value = false
-  timeLeft.value = 15
+  timeLeft.value = 10
   clearInterval(timer)
 }
 
