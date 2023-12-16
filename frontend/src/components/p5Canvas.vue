@@ -20,27 +20,6 @@ const emit = defineEmits(['main-colors-handler'])
 const sampling = ref(25)
 const nowOrder = ref('lightness')
 
-// if the img is changed
-// watch(props, (newValue, oldValue)=>{
-//   // console.log("p5: imgNum props changed to "+newValue.imgNum)
-//   sample()
-// })
-
-// Change sampling number
-// const sampling = inject('sampling')
-// watch(sampling, (newValue, oldValue)=>{
-//   sample()
-//   reorder()
-//   draw()
-// })
-
-// Change order by
-// const nowOrder = inject('order')
-// watch(nowOrder, (newValue, oldValue)=>{
-//   reorder()
-//   draw()
-// })
-
 function colorDifference(color1, color2) {
   let result = diff(color1, color2)
   return result;
@@ -149,7 +128,7 @@ const script = function (p5) {
 
   findMainColor = function () {
     mainCs = []
-    const threshold = 18;
+    const threshold = 8;
     // start sampling
     for (let i = 0; i < 100; i++) {
       for (let j = 0; j < 100; j++) {
@@ -195,7 +174,8 @@ const script = function (p5) {
     console.log(mainCs.length)
     while (!finishMerge){
       let compareTarget = mainCs[compareIndex]
-      console.log(compareTarget)
+      console.log(mainCs.length)
+      console.log(compareIndex)
       if (mainCs.length == 1){
         finishMerge = true
       }else{
@@ -203,7 +183,7 @@ const script = function (p5) {
           if (id !== compareIndex) return color
         }).map((color) => { return color.color_rgb })
         const nearestColor = closest(compareTarget.color_rgb, palette)
-        if (colorDifference(compareTarget.color_rgb, nearestColor) <= threshold){
+        if (colorDifference(compareTarget.color_rgb, nearestColor) <= threshold*1.5){
           console.log(`There is the color that is close enough to index ${compareIndex}`)
           const nearest = mainCs.find(color => JSON.stringify(color.color_rgb) === JSON.stringify(nearestColor))
           const middle = {
@@ -222,6 +202,7 @@ const script = function (p5) {
           const nearestIndex = mainCs.findIndex(color => JSON.stringify(color.color_rgb) === JSON.stringify(nearest.color_rgb))
           mainCs.splice(nearestIndex, 1)
           mainCs.splice(compareTargetIndex, 1, obj)
+          compareIndex = 0
         }else{
           console.log("No color is close to index: "+compareIndex)
           if (compareIndex < mainCs.length-1){
@@ -236,9 +217,9 @@ const script = function (p5) {
 
     mainCs = mainCs.filter(color => color.amount > 10)
     mainCs = mainCs.sort((a, b) => b.amount - a.amount)
-    // if (mainCs.length > 3){
-    //   mainCs.length = 3
-    // }
+    if (mainCs.length > 3){
+      mainCs.length = 3
+    }
 
     console.log('find main colors')
     console.log(mainCs)
