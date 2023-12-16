@@ -128,7 +128,7 @@ const script = function (p5) {
 
   findMainColor = function () {
     mainCs = []
-    const threshold = 8;
+    let threshold = 8;
     // start sampling
     for (let i = 0; i < 100; i++) {
       for (let j = 0; j < 100; j++) {
@@ -143,13 +143,17 @@ const script = function (p5) {
           "G": p5.green(c),
           "B": p5.blue(c)
         }
-
+        
         // match main color
         if (mainCs.length > 0){
           const palette = mainCs.map(color => color.color_rgb)
           // console.log(palette)
           const now = colorRGB
           const nearest = closest(now, palette)
+          threshold = 8;
+          if (now['R'] < 30 && now['G'] < 30 && now['B'] < 30){
+            threshold = 2 //如果顏色太深，看起來像黑色時把規則調嚴格，以免造成肉眼看起來的部分沒很多黑色，但卻被計算成太多次
+          }
           if (colorDifference(now, nearest) <= threshold){
             const middle = {
               "R": (nearest['R']+now['R'])/2,
@@ -183,6 +187,7 @@ const script = function (p5) {
           if (id !== compareIndex) return color
         }).map((color) => { return color.color_rgb })
         const nearestColor = closest(compareTarget.color_rgb, palette)
+        threshold = 8 // 以免整張都是黑色的照片最後產生的主要顏色沒有合併
         if (colorDifference(compareTarget.color_rgb, nearestColor) <= threshold*1.5){
           console.log(`There is the color that is close enough to index ${compareIndex}`)
           const nearest = mainCs.find(color => JSON.stringify(color.color_rgb) === JSON.stringify(nearestColor))
