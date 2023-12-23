@@ -35,7 +35,7 @@
 
 ## 成果
 
-可以從<a href='https://ienming.github.io/iroironairo/#/ "iroironairo"' target="_blank">這個連結</a>看到我的成果。
+可以從<a href='https://ienming.github.io/iroironairo/' target="_blank">這個連結</a>看到我的成果。
 如果有興趣，
 <a href="https://www.behance.net/gallery/186477055/-iroironairo" target="_blank">在Behance 上也有關於這個專案的介紹</a>，歡迎去看看。
 
