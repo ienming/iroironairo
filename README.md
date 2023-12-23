@@ -34,7 +34,6 @@
 * 用 GSAP 做了轉場效果，從日本傳統和式建築「襖」（fusuma）發想的轉場動態，算是做介面設計中的小樂趣
 
 ## 成果
-
 可以從<a href='https://ienming.github.io/iroironairo/' target="_blank">這個連結</a>看到我的成果。
 如果有興趣，
 <a href="https://www.behance.net/gallery/186477055/-iroironairo" target="_blank">在Behance 上也有關於這個專案的介紹</a>，歡迎去看看。
