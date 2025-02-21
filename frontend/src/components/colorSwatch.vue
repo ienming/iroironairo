@@ -95,7 +95,8 @@ onMounted(() => {
 }
 
 i {
-    opacity: .35;
     cursor: pointer;
+    font-size: 12px;
+    opacity: 0.35;
 }
 </style>

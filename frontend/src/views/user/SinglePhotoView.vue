@@ -5,15 +5,12 @@ import { hsl2Hex, getReverseColor } from "@/composable/common";
 import Bookmark from '@/components/Bookmark.vue';
 import Navigator from '@/components/Navigator.vue';
 import PolaroidText from '@/components/PolaroidText.vue';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const data = inject('csvData', [])
 const usingMobile = inject('usingMobile', false)
 const imgLoaded = ref(false)
 
 onBeforeRouteUpdate((to, from) =>{
-  const nowPhotoName = JSON.parse(to.query.photo)
   imgLoaded.value = false
   window.scrollTo({
     top: 0,
@@ -118,69 +115,60 @@ const themeStyle = computed(()=>{
   }else return
 })
 
-gsap.registerPlugin(ScrollTrigger) 
-
-let ctx
 const main = ref(null)
-
-onMounted(()=>{
-  if (usingMobile.value){
-      ctx = gsap.context((self)=>{
-        gsap.fromTo(self.selector("#photo-des-el"), {
-          y: -50
-        }, {
-          yPercent: -95,
-          scrollTrigger: {
-            trigger: self.selector("#photo"),
-            start: "top end",
-            toggleActions: "restart pause reverse pause",
-            scrub: 1,
-            // markers: true
-          }
-        })
-      }, main.value)
-      // console.log(ctx)
-  }
-})
-
-onBeforeUnmount(()=>{
-  if (ctx){
-    ctx.revert();
-  }
-})
 </script>
 <template>
     <main>
-        <section class="vh-100 bg-silver gap-lg-5 d-flex flex-column flex-lg-row align-items-center"
-        v-if="nowPhoto" ref="main">
-            <div class="col-12 col-lg-6 vh-100 p-4 pt-5 p-lg-7"
-              :style="{'background-color': mainColor}" id="photo">
-              <img :src="nowPhoto.url_google" alt="" class="d-none" @load="hasLoaded">
-              <transition name="fade" mode="out-in">
-                <img v-if="imgLoaded"
-                :src="nowPhoto.url_google" alt="" class="w-100 h-100 object-fit-cover"/>
+        <section
+          ref="main"
+          v-if="nowPhoto"
+          class="vh-100 bg-silver gap-lg-5 d-flex flex-column flex-lg-row align-items-center">
+            <div
+              id="photo"
+              class="col-12 col-lg-6 vh-100 p-4 pt-5 p-lg-7"
+              :style="{'background-color': mainColor}">
+              <img
+                :src="nowPhoto.url_google"
+                alt=""
+                class="d-none"
+                @load="hasLoaded" />
+              <transition
+                name="fade"
+                mode="out-in">
+                <img
+                  v-if="imgLoaded"
+                  alt=""
+                  class="w-100 h-100 object-fit-cover"
+                  :src="nowPhoto.url_google" />
               </transition>
             </div>
-            <section class="col-12 col-lg-6 rounded-4 p-4 py-3 p-lg-0 bg-silver" id="photo-des-el">
+            <section
+              id="photo-des-el"
+              class="col-12 col-lg-6 rounded-4 p-4 py-3 p-lg-0 bg-silver">
               <p>{{nowPhoto.date}} {{nowPhoto.time}}</p>
-              <polaroid-text :photo="nowPhoto" :bg-style="{'background-color': '#232323', 'color': '#f6f6f6'}"></polaroid-text>
+              <polaroid-text
+                :photo="nowPhoto"
+                :bg-style="{'background-color': '#232323', 'color': '#f6f6f6'}" />
             </section>
         </section>
         <!-- Watermark -->
-        <div class="position-fixed bottom-0 text-end"
-        style="transform-origin: 100% center; rotate: 90deg; right: 50px;">
+        <div
+          class="position-fixed bottom-0 text-end"
+          style="transform-origin: 100% center; rotate: 90deg; right: 50px;">
           <span class="ff-serif watermark">
             {{ place2Roma }}
           </span>
         </div>
         <!-- Bookmark -->
-        <bookmark :theme="themeStyle"
-        class="position-fixed top-0 d-flex align-items-center gap-1"></bookmark>
+        <bookmark
+          :theme="themeStyle"
+          class="position-fixed top-0 d-flex align-items-center gap-1" />
         <!-- Nav -->
-        <navigator :theme="usingMobile ? themeStyle:{
+        <navigator
+          :theme="usingMobile ? themeStyle:{
             'color': '#232323',
             'backgroundColor': '#F6F6F6'
-        }"></navigator>
+          }" />
     </main>
 </template>
 
@@ -189,12 +177,16 @@ onBeforeUnmount(()=>{
   opacity: 0.1;
   font-size: 100px;
 }
+
 #photo-des-el{
   z-index: 1030;
+  margin-top: -15vh;
 }
+
 @media screen and (min-width: 992px) {
   #photo-des-el{
     z-index: unset;
+    margin-top: unset;
   }
 }
 </style>
