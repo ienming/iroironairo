@@ -21,15 +21,23 @@ const props = defineProps({
 </script>
 
 <template>
-    <input type="checkbox" :id="props.value" class="d-none"
-    @change="emit('change-value', {'key': props.value, 'value': !props.checked})">
-    <label :for="props.value"
-    class="m-0 p-2 rounded-pill border border-dark flex-shrink-0 opacity-75-hover"
-    :class="props.quant.quant > 0 && props.checked ? ['bg-dark', 'text-white']:'opacity-25'"
-    role="button">
+    <input
+        :id="props.value"
+        type="checkbox"
+        class="d-none"
+        @change="emit('change-value', {'key': props.value, 'value': !props.checked})">
+    <label
+        :for="props.value"
+        role="button"
+        class="m-0 px-2 py-1 rounded-pill border border-dark flex-shrink-0 opacity-75-hover"
+        :class="props.quant.quant > 0 && props.checked ? ['bg-dark', 'text-white']:'opacity-25'">
         {{ props.label }}
-        <i class="fa-solid fa-plus" v-if="!props.checked"></i>
-        <i class="fa-solid fa-check" v-else></i>
+        <i
+            v-if="!props.checked"
+            class="fa-solid fa-plus" />
+        <i
+            v-else
+            class="fa-solid fa-check" />
         <span v-if="props.value !== '全部'">({{ props.quant['quant'] }})</span>
     </label>
 </template>

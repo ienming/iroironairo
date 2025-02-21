@@ -55,31 +55,47 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="color-swatch txt-lang-hover" data-bs-placement="bottom" data-bs-toggle="tooltip" data-bs-title="相近的顏色"
-    ref="toolTips" @click="navigateTo" role="button">
-        <div :style="{ 'background-color': color }">
-        </div>
-        <p class="w-100 m-0 d-flex justify-content-between align-items-center">
+    <div
+        ref="toolTips"
+        role="button"
+        class="txt-lang-hover color-swatch"
+        data-bs-placement="bottom"
+        data-bs-toggle="tooltip"
+        data-bs-title="相近的顏色"
+        @click="navigateTo">
+        <div
+            class="color-fill"
+            :style="{ 'background-color': color }" />
+        <p class="w-100 m-0 d-flex justify-content-between align-items-center p-2">
             <div class="me-3 txt-lang-container">
                 <span>{{ label }}</span>
                 <span>{{ label }}</span>
             </div>
             <div class="d-flex gap-3 gap-lg-2">
-                <i v-if="viewPhoto" class="fa-solid fa-image" data-bs-title="查看照片" data-bs-toggle="tooltip"
-                    @click="emit('show-polaroid')"></i>
-                <i class="fa-solid fa-magnifying-glass"></i>
+                <i
+                    v-if="viewPhoto"
+                    class="fa-solid fa-image"
+                    data-bs-title="查看照片"
+                    data-bs-toggle="tooltip"
+                    @click="emit('show-polaroid')" />
+                <i class="fa-solid fa-magnifying-glass" />
             </div>
         </p>
     </div>
 </template>
 
 <style scoped>
+.color-swatch {
+    padding: 4px !important;
+}
+
+.color-swatch .color-fill {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
 i {
     opacity: .35;
     cursor: pointer;
 }
-
-/* i:hover {
-    opacity: 1;
-} */
 </style>

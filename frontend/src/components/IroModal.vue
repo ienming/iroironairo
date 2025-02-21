@@ -30,28 +30,31 @@ onMounted(()=>{
 
 <template>
     <section
-        class="vh-100 bg-silver fixed-top overflow-scroll d-lg-flex justify-content-center align-items-center"
-        style="z-index: 1050;"
-      >
+      class="vh-100 bg-silver fixed-top overflow-scroll d-lg-flex justify-content-center align-items-center"
+      style="z-index: 1050;">
       <div class="d-flex flex-column flex-lg-row px-3 pt-4 pb-8 p-lg-0 justify-content-center align-items-center gap-5">
-        <polaroid :photo="photo"></polaroid>
+        <polaroid :photo="photo" />
         <polaroid-text
           :photo="photo"
-          :bg-style="{ 'background-color': '#232323', color: '#f6f6f6' }"
-        ></polaroid-text>
+          :bg-style="{ 'background-color': '#232323', color: '#f6f6f6' }" />
       </div>
       <div
-          class="position-fixed end-0 d-flex flex-row flex-lg-column px-2 py-2 gap-3 w-100 w-lg-auto justify-content-around modal-controller"
-          ref="modalController"
-        >
-          <button class="luc-controller" @click="emit('show-prev')">
-            <i class="fa-solid fa-arrow-left"></i>
+        ref="modalController"
+        class="position-fixed end-0 d-flex flex-row flex-lg-column px-2 py-2 gap-3 w-100 w-lg-auto justify-content-around modal-controller">
+          <button
+            class="luc-controller"
+            @click="emit('show-prev')">
+            <i class="fa-solid fa-arrow-left" />
           </button>
-          <button class="luc-controller" @click="emit('close-modal')">
-            <i class="fa-solid fa-xmark fa-xl"></i>
+          <button
+            class="luc-controller"
+            @click="emit('close-modal')">
+            <i class="fa-solid fa-xmark fa-xl" />
           </button>
-          <button class="luc-controller" @click="emit('show-next')">
-            <i class="fa-solid fa-arrow-right"></i>
+          <button
+            class="luc-controller"
+            @click="emit('show-next')">
+            <i class="fa-solid fa-arrow-right" />
           </button>
         </div>
     </section>
@@ -65,5 +68,13 @@ onMounted(()=>{
   background-color: var(--luc-controller-bg);
   color: var(--luc-controller-color);
   border-color: var(--luc-controller-color);
+}
+
+@media screen and (min-width: 992px) {
+  .modal-controller {
+    bottom: auto;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 </style>

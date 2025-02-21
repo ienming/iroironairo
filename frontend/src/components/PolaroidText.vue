@@ -82,10 +82,16 @@ function viewSinglePhoto(photo){
 </script>
 
 <template>
-    <div id="Sec_text" class="w-100">
+    <div
+      id="Sec_text"
+      class="w-100">
         <p class="d-flex gap-2 flex-wrap">
-          <div v-for="place of photo.places" class="p-2 rounded-pill transition txt-lang-hover"
-          :style="bgStyle" role="button" @click="searchByPlace(place)">
+          <div
+            v-for="place of photo.places"
+            class="px-2 py-1 rounded-pill transition txt-lang-hover"
+            role="button"
+            :style="bgStyle"
+            @click="searchByPlace(place)">
             <div class="txt-lang-container">
               <span>#{{place }}</span>
               <span>#{{place }}</span>
@@ -95,21 +101,27 @@ function viewSinglePhoto(photo){
         <p class="mb-0 mt-3">{{ photo.description }}</p>
         <div class="d-flex flex-wrap gap-2 mt-4 mt-lg-6 color-swatch-container">
             <color-swatch
-            :color-hsl="color"
-            :label="hsl2Hex(color.h, color.s, color.l)"
-            v-for="color of photo.colors"></color-swatch>
+              v-for="color of photo.colors"
+              :color-hsl="color"
+              :label="hsl2Hex(color.h, color.s, color.l)" />
         </div>
         <div class="mt-4 mt-lg-5">
-          <p class="mb-2 fw-bold opacity-50">靠近這一天</p>
-          <div v-if="prevPhoto" class="d-flex align-items-center justify-content-between opacity-50-hover border-top p-3" role="button"
-          :style="{'--bs-border-color': bgStyle.backgroundColor}"
-          @click="viewSinglePhoto(prevPhoto)">
+          <small class="d-block mb-2 opacity-50">靠近這一天</small>
+          <div
+            v-if="prevPhoto"
+            class="d-flex align-items-center justify-content-between opacity-50-hover border-top p-3"
+            role="button"
+            :style="{'--bs-border-color': bgStyle.backgroundColor}"
+            @click="viewSinglePhoto(prevPhoto)">
             <span>{{ prevPhoto.date+' '+prevPhoto.time }}</span>
             <span class="opacity-75">#{{ prevPhoto.places[0] }}</span>
           </div>
-          <div v-if="nextPhoto" class="d-flex align-items-center justify-content-between opacity-50-hover border-top p-3" role="button"
-          :style="{'--bs-border-color': bgStyle.backgroundColor}"
-          @click="viewSinglePhoto(nextPhoto)">
+          <div
+            v-if="nextPhoto"
+            class="d-flex align-items-center justify-content-between opacity-50-hover border-top p-3"
+            role="button"
+            :style="{'--bs-border-color': bgStyle.backgroundColor}"
+            @click="viewSinglePhoto(nextPhoto)">
             <span>{{ nextPhoto.date+' '+nextPhoto.time }}</span>
             <span class="opacity-75">#{{ nextPhoto.places[0] }}</span>
           </div>
@@ -118,12 +130,6 @@ function viewSinglePhoto(photo){
 </template>
 
 <style scoped>
-/* #Sec_text{
-  width: 80%;
-  margin-right: auto;
-  max-height: 70vh;
-} */
-
 @media screen and (min-width: 992px) {
   #Sec_text{
     width: 30vw !important;

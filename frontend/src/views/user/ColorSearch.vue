@@ -96,18 +96,8 @@ function lotteryPhoto(){
   }
 }
 const randomPhotoEl = ref(null)
-const randomPhotoOffsetY = ref('')
 function loadRandomPhoto(){
-  randomPhotoLoaded.value = true
-  nextTick(()=>{
-    const imgEl = randomPhotoEl.value
-    // console.log(randomPhotoEl)
-    // console.log(randomPhotoEl.value)
-    // console.log(imgEl.clientHeight)
-    if (imgEl){
-      randomPhotoOffsetY.value = `-${(imgEl.clientHeight-300)/2}px`
-    }
-  })
+  randomPhotoLoaded.value = true;
 }
 
 // 月份分群
@@ -189,7 +179,6 @@ const recommends = computed(()=>{
 
 const router = useRouter()
 function reSearch(recColor) {
-    // randomPhotoLoaded.value = false
     router.push({
         path: '/color_search',
         query: {
@@ -241,12 +230,11 @@ onMounted(()=>{
               }}</span>
             </div>
           </div>  
-          <div class="bg-white rounded-3 p-3 ms-0 shadow-lg row col-12 col-lg-5">
-            <p
+          <div class="bg-white rounded-3 ms-0 shadow-lg overflow-hidden row col-12 col-lg-4">
+            <div
               :style="{ 'background-color': colorHex }"
-              class="rounded-3 mb-lg-0 col-lg-5 color-searched"
-            ></p>
-            <div class="col-lg-7">
+              class="mb-lg-0 col-lg-6 color-searched" />
+            <div class="col-lg-6 py-1 py-lg-3">
               <p class="mb-1">{{ colorHex }}</p>
               <p class="mb-1">
                 {{ "RGB: " + colorRgb.r + ", " + colorRgb.g + ", " + colorRgb.b }}
@@ -267,113 +255,136 @@ onMounted(()=>{
         </div>
       </div>
     </div>
-    <!-- 隨機照片 -->
-    <section class="my-5">
-      <div v-if="randomPhoto" class="mt-3 random-photo-container ms-auto position-relative" :style="{'border-bottom': '20px solid '+randomPhotoColor}">
-        <img :src="randomPhoto.url_google" alt="" ref="randomPhotoEl" class="opacity-0 position-absolute w-100" @load="loadRandomPhoto">
-        <transition name="fade" mode="out-in">
-          <img v-if="randomPhotoLoaded" :src="randomPhoto.url_google" class="img-fluid w-100 position-absolute random-photo"
-          @click="showPolaroid(randomPhoto)" role="button" :style="{'top': randomPhotoOffsetY}"/>
-          <div v-else class="h-100" :style="{'background-color':randomPhotoColor}">
-            <p class="opacity-0">{{randomPhoto}}</p>
-          </div>
-        </transition>
-      </div>
-      <transition name="fade" mode="out-in">
-        <section v-if="randomPhotoLoaded" class="container">
-          <div>
-            <div class="d-flex gap-2 my-2">
-              <div v-for="place of randomPhoto.places" class="p-2 rounded-pill transition txt-lang-hover bg-dark text-white"
-              role="button" @click="searchByPlace(place)">
-                <div class="txt-lang-container">
-                  <span>#{{place }}</span>
-                  <span>#{{place }}</span>
+    <section
+      v-if="hasData"
+      class="mt-5 grid-layout">
+      <!-- 隨機照片 -->
+      <section>
+        <div
+          v-if="randomPhoto"
+          class="position-sticky top-0">
+          <img
+            :src="randomPhoto.url_google"
+            style="width: 1px;"
+            class="position-absolute"
+            @load="loadRandomPhoto">
+          <transition
+            name="fade"
+            mode="out-in">
+            <section
+              v-if="randomPhotoLoaded">
+              <div class="random-photo-container">
+                <img
+                  ref="randomPhotoEl"
+                  class="img-fluid w-100 random-photo"
+                  role="button"
+                  :src="randomPhoto.url_google"
+                  @click="showPolaroid(randomPhoto)" />
+              </div>
+              <div class="px-4 ps-lg-6 pb-lg-6">
+                <div class="d-flex gap-2 my-2 my-lg-4">
+                  <div
+                    v-for="place of randomPhoto.places"
+                    :key="place.key"
+                    class="px-2 py-1 rounded-pill transition txt-lang-hover bg-dark text-white flex-wrap"
+                    role="button"
+                    @click="searchByPlace(place)">
+                    <div class="txt-lang-container">
+                      <span>#{{place }}</span>
+                      <span>#{{place }}</span>
+                    </div>
+                  </div>
                 </div>
+                <p>{{ randomPhoto.description }}</p>
               </div>
+            </section>
+          </transition>
+        </div>
+      </section>
+      <!-- Data viz -->
+      <section class="ps-4 ps-lg-0 pb-8 overflow-x-scroll">
+        <div>
+            <div class="d-flex gap-2 py-4 border-top border-bottom mb-3">
+                <div class="d-flex gap-1 align-items-center">
+                  <div style="width: 15px; height: 15px;" class="rounded-pill bg-dark opacity-25"></div>
+                  <span>關西地區</span>
+                </div>
+                <div class="d-flex gap-1 align-items-center">
+                  <div style="width: 15px; height: 15px;" class="bg-dark opacity-25"></div>
+                  <span>非關西地區</span>
+                </div>
             </div>
-            <p>{{ randomPhoto.description }}</p>
-          </div>
-        </section>
-      </transition>
+            <section v-for="month of months" class="mb-3">
+              <div class="d-flex gap-2 ff-serif"
+                  :class="
+                    dataFiltered.filter((d) => d.date.split('/')[1] == month.key)
+                      .length > 0
+                      ? ''
+                      : 'opacity-50'
+                  ">
+                <p
+                >
+                  <strong>{{ month.label.split(" ")[0] }}</strong>
+                  {{ month.label.split(" ")[1] }}
+                </p>
+                <span>({{ dataFiltered.filter(
+                    (d) => d.date.split('/')[1] == month.key
+                  ).length }})</span>
+              </div>
+              <div class="d-flex py-4 overflow-x-auto">
+                <div
+                  v-for="d of dataFiltered.filter(
+                    (d) => d.date.split('/')[1] == month.key
+                  )"
+                  :style="{
+                    'background-color': hsl2Hex(
+                      d.main_color.h,
+                      d.main_color.s,
+                      d.main_color.l
+                    )
+                  }"
+                  :class="d.area == 'kansai' ? 'rounded-pill' : ''"
+                  role="button"
+                  class="position-relative color-data flex-shrink-0"
+                  :data-place="d.places.length > 0 ? d.places : '無'"
+                  @click="showPolaroid(d)"
+                ></div>
+              </div>
+            </section>
+        </div>
+      </section>
     </section>
-    <section class="container pb-8">
-      <div v-if="hasData" class="row">
-          <div class="d-flex gap-2 py-4 border-top border-bottom mb-3">
-              <div class="d-flex gap-1 align-items-center">
-                <div style="width: 15px; height: 15px;" class="rounded-pill bg-dark opacity-25"></div>
-                <span>關西地區</span>
-              </div>
-              <div class="d-flex gap-1 align-items-center">
-                <div style="width: 15px; height: 15px;" class="bg-dark opacity-25"></div>
-                <span>非關西地區</span>
-              </div>
-          </div>
-          <section v-for="month of months" class="mb-3">
-            <div class="d-flex gap-2 ff-serif"
-                :class="
-                  dataFiltered.filter((d) => d.date.split('/')[1] == month.key)
-                    .length > 0
-                    ? ''
-                    : 'opacity-50'
-                ">
-              <p
-              >
-                <strong>{{ month.label.split(" ")[0] }}</strong>
-                {{ month.label.split(" ")[1] }}
-              </p>
-              <span>({{ dataFiltered.filter(
-                  (d) => d.date.split('/')[1] == month.key
-                ).length }})</span>
-            </div>
-            <div class="d-flex py-4 overflow-x-auto">
-              <div
-                v-for="d of dataFiltered.filter(
-                  (d) => d.date.split('/')[1] == month.key
-                )"
-                :style="{
-                  'background-color': hsl2Hex(
-                    d.main_color.h,
-                    d.main_color.s,
-                    d.main_color.l
-                  )
-                }"
-                :class="d.area == 'kansai' ? 'rounded-pill' : ''"
-                role="button"
-                class="position-relative color-data flex-shrink-0"
-                :data-place="d.places.length > 0 ? d.places : '無'"
-                @click="showPolaroid(d)"
-              ></div>
-            </div>
-          </section>
-      </div>
-      <div v-else class="row">
-        <div class="col-lg-6 mx-lg-auto mt-6">
-          <p class="text-center mb-5">
-            找不太到相似顏色的照片，試試搜尋這些顏色？
-          </p>
-          <div class="d-flex gap-3 justify-content-center">
-            <transition-group name="fade">
-              <div v-for="rec of recommends" :style="{'background-color': hsl2Hex(rec.h, rec.s, rec.l)}"
-              class="rounded-pill color-other"
-              role="button"
-              :key="rec.h+rec.s+rec.l"
-              @click="reSearch(rec)"></div>
-            </transition-group>
-          </div>
+    <section v-else class="row">
+      <div class="col-lg-6 mx-lg-auto mt-6">
+        <p class="text-center mb-5">
+          找不太到相似顏色的照片，試試搜尋這些顏色？
+        </p>
+        <div class="d-flex gap-3 justify-content-center">
+          <transition-group name="fade">
+            <div v-for="rec of recommends" :style="{'background-color': hsl2Hex(rec.h, rec.s, rec.l)}"
+            class="rounded-pill color-other"
+            role="button"
+            :key="rec.h+rec.s+rec.l"
+            @click="reSearch(rec)"></div>
+          </transition-group>
         </div>
       </div>
     </section>
     <!-- Polaroid -->
-    <transition name="fade" mode="out-in">
-      <iro-modal v-if="polaroidShown" :photo="nowPolaroid"
-      @show-prev="showPrev" @show-next="showNext" @close-modal="polaroidShown = false"></iro-modal>
+    <transition
+      name="fade"
+      mode="out-in">
+      <iro-modal
+        v-if="polaroidShown"
+        :photo="nowPolaroid"
+        @show-prev="showPrev"
+        @show-next="showNext"
+        @close-modal="polaroidShown = false" />
     </transition>
     <!-- Bookmark -->
-    <bookmark
-      class="position-fixed top-0 d-flex align-items-center gap-1"
-    ></bookmark>
+    <bookmark class="position-fixed top-0 d-flex align-items-center gap-1" />
     <!-- Nav -->
-    <navigator></navigator>
+    <navigator />
   </main>
 </template>
 
@@ -390,6 +401,7 @@ onMounted(()=>{
   --size: 30px;
   width: var(--size);
   height: var(--size);
+  transition: all .2s ease-out;
 }
 
 .color-other{
@@ -403,9 +415,8 @@ onMounted(()=>{
 }
 
 .random-photo-container{
-  height: 300px;
-  /* max-width: 450px; */
   overflow: hidden;
+  max-height: 80vh;
 }
 
 .random-photo{
@@ -415,5 +426,17 @@ onMounted(()=>{
 
 .random-photo:hover{
   transform: scale(1.05);
+}
+
+.grid-layout {
+  display: grid;
+  grid-template-columns: none;
+  gap: 16px;
+}
+
+@media screen and (min-width: 992px) {
+  .grid-layout {
+    grid-template-columns: minmax(50vw, 700px) auto;
+  }
 }
 </style>
