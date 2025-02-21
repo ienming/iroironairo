@@ -145,7 +145,7 @@ const main = ref(null)
             <section
               id="photo-des-el"
               class="col-12 col-lg-6 rounded-4 p-4 py-3 p-lg-0 bg-silver">
-              <p>{{nowPhoto.date}} {{nowPhoto.time}}</p>
+              <small class="d-block mb-2 mb-lg-3 opacity-50">{{nowPhoto.date}} {{nowPhoto.time}}</small>
               <polaroid-text
                 :photo="nowPhoto"
                 :bg-style="{'background-color': '#232323', 'color': '#f6f6f6'}" />

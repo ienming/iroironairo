@@ -401,7 +401,6 @@ onMounted(()=>{
   --size: 30px;
   width: var(--size);
   height: var(--size);
-  transition: all .2s ease-out;
 }
 
 .color-other{
