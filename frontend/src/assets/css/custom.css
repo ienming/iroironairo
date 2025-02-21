@@ -10766,6 +10766,10 @@ textarea.form-control-lg {
   font-family: "Noto Sans JP", sans-serif;
 }
 
+.fs-small {
+  font-size: 14px;
+}
+
 .bg-silver {
   background-color: #F6F6F6;
 }

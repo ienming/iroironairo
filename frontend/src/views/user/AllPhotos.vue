@@ -671,42 +671,6 @@ onMounted(() => {
           </div>
         </transition-group>
       </section>
-      <!-- 依照月份分群 -->
-      <!-- <section v-else class="ps-6">
-        <section
-          v-for="month of months.filter((m) => m.label !== '全部')"
-          class="mb-3"
-        >
-          <div class="mb-1 d-flex align-items-center">
-            <p class="ff-serif mb-0">
-              <strong>{{ month.label }}</strong> {{ month2Txt(month.key).jp }}
-            </p>
-          </div>
-          <div class="d-flex overflow-scroll">
-            <div
-              v-for="(d, id) of dataFiltered
-                .filter((d) => d.type !== 'monthTag')
-                .filter((d) => d.date.split('/')[1] == month.key)"
-            >
-              <div
-                style="height: 25vh"
-                :style="{
-                  'background-color': hsl2Hex(
-                    d.main_color.h,
-                    d.main_color.s,
-                    d.main_color.l
-                  ),
-                  width: density + 'px',
-                }"
-                role="button"
-                class="position-relative color-data"
-                :data-place="d.places.length > 0 ? d.places : '無'"
-                @click="showPolaroid(d)"
-              ></div>
-            </div>
-          </div>
-        </section>
-      </section> -->
     </main>
     <section class="position-relative">
       <div class="d-flex">
@@ -724,66 +688,18 @@ onMounted(() => {
             </h3>
           </div>
           <div
-            class="col-lg-4 d-flex flex-column gap-2 align-items-start"
             ref="controllerContainer"
-          >
-            <!-- <div
-              class="luc-controller opacity-50 opacity-100-hover"
-              role="button"
-              data-bs-toggle="tooltip"
-              data-bs-placement="bottom"
-              data-bs-title="切換顯示模式"
-              @click="switchMode"
-            >
-              Switch mode
-            </div> -->
-            <div class="d-flex align-items-center">
-              <div
-                v-if="!displayMode"
-                class="luc-controller opacity-50 opacity-100-hover"
-                role="button"
-                data-bs-toggle="tooltip"
-                data-bs-placement="bottom"
-                data-bs-title="往前捲動"
-                @click="scrollShowCase('prev')"
-              >
-                <i class="fa-solid fa-arrow-left"></i>
-              </div>
-              <div
-                v-if="!displayMode"
-                class="luc-controller opacity-50 opacity-100-hover"
-                role="button"
-                data-bs-toggle="tooltip"
-                data-bs-placement="bottom"
-                data-bs-title="往後捲動"
-                @click="scrollShowCase('next')"
-              >
-                <i class="fa-solid fa-arrow-right"></i>
-              </div>
-            </div>
+            class="col-lg-4 d-flex flex-column gap-2 align-items-start">
             <div
               class="luc-controller opacity-50 opacity-100-hover rounded-pill"
               role="button"
-              data-bs-toggle="tooltip"
-              data-bs-placement="bottom"
-              data-bs-title="篩選照片"
-              @click="controllerShown = !controllerShown"
-            >
-              <i class="fa-solid fa-sliders"></i>
-              <span class="ff-sans" v-if="filterActivating">
-                照片已篩選
+              @click="controllerShown = !controllerShown">
+              <i class="fa-solid fa-swatchbook" />
+              <span class="ff-sans ps-2 fs-small">
+                <span v-if="filterActivating">照片篩選中...</span>
+                <span v-else>篩選照片</span>
               </span>
             </div>
-            <!-- <a
-              class="luc-controller link-dark opacity-50 opacity-100-hover link-underline link-underline-opacity-0"
-              target="blank"
-              data-bs-toggle="tooltip"
-              data-bs-placement="bottom"
-              data-bs-title="展示"
-              :href="PosterLink"
-            >
-              <i class="fa-solid fa-print"></i>
-            </a> -->
           </div>
         </div>
         <div
@@ -820,89 +736,99 @@ onMounted(() => {
         </div>
       </div>
     </section>
+    <!-- Overlay -->
+     <!-- <div
+      class="overlay"
+      :class="{'show': controllerShown}" /> -->
     <!-- 控制項 -->
-    <transition name="fade" mode="out-in">
-      <section
-        class="p-4 position-fixed top-0 end-0 w-lg-25 bg-silver h-100 overflow-y-scroll shadow-lg"
-        style="z-index: 1040;"
-        v-show="controllerShown"
-      >
-        <div v-if="usingMobile" class="d-flex justify-content-end pb-4">
-          <div class="rounded-pill p-3 d-flex justify-content-center align-items-center shadow-lg bg-dark text-white" style="width: 60px; height: 60px;"
-            @click="controllerShown = false">
-                <i class="fa-solid fa-xmark fa-xl" role="button"></i>
-          </div>
+    <section
+      class="p-4 position-fixed top-0 end-0 w-lg-25 bg-silver h-100 overflow-y-scroll shadow-lg controller-panel"
+      :class="{'show': controllerShown}">
+      <div v-if="usingMobile" class="d-flex justify-content-end pb-4">
+        <div class="rounded-pill p-3 d-flex justify-content-center align-items-center shadow-lg bg-dark text-white" style="width: 60px; height: 60px;"
+          @click="controllerShown = false">
+              <i class="fa-solid fa-xmark fa-xl" role="button" />
         </div>
-        <span class="pb-2 d-block"
-          >{{ dataFiltered.filter((d) => d["_id"]).length }} 張 /
-          {{ data.length }} 張照片</span
-        >
-        <div v-if="dataFiltered.length > 0" class="d-flex flex-wrap gap-3">
-          <selection
-          v-if="monthQuantities.length > 0"
-            class="w-100"
-            label="拍攝月份"
-            :options="months"
-            :options-quants = "monthQuantities"
-            :current-label="filterByMonth.label"
-            @change-value="filterMonth"
-          >
-          </selection>
-          <selection
-            v-if="hourQuantities.length > 0"
-            class="w-100"
-            label="拍攝時間"
-            :options="hours"
-            :options-quants = "hourQuantities"
-            :current-label="filterByHour.label"
-            @change-value="filterHour"
-          >
-          </selection>
-          <div class="w-100">
-            <label for="dataDensity" class="form-label">
-              每筆顯示比例
-            </label>
-            <input
-              type="range"
-              min="3"
-              max="30"
-              class="form-range w-100"
-              id="dataDensity"
-              v-model="density"
-            />
-          </div>
-        </div>
-        <div class="pb-3">
-          <div class="mt-2 d-flex gap-2 flex-wrap">
-            <button-checkbox
-              v-for="place of places"
-              :label="place.label"
-              :value="place.key"
-              :checked="filterByPlaces.includes(place.key)"
-              :quant="placeQuantities.find(q => q.key == place.key)"
-              @change-value="filterPlace"
-            ></button-checkbox>
-          </div>
-        </div>
-      </section>
-    </transition>
+      </div>
+      <span class="pb-2 d-block">
+        {{ dataFiltered.filter((d) => d["_id"]).length }} 張 /
+        {{ data.length }} 張照片
+      </span>
+      <div v-if="dataFiltered.length > 0" class="d-flex flex-wrap gap-3">
+        <selection
+        v-if="monthQuantities.length > 0"
+          class="w-100"
+          label="拍攝月份"
+          :options="months"
+          :options-quants = "monthQuantities"
+          :current-label="filterByMonth.label"
+          @change-value="filterMonth" />
+        <selection
+          v-if="hourQuantities.length > 0"
+          class="w-100"
+          label="拍攝時間"
+          :options="hours"
+          :options-quants = "hourQuantities"
+          :current-label="filterByHour.label"
+          @change-value="filterHour" />
+      </div>
+      <div class="mt-4 d-flex gap-2 flex-wrap">
+        <button-checkbox
+          v-for="place of places"
+          :label="place.label"
+          :value="place.key"
+          :checked="filterByPlaces.includes(place.key)"
+          :quant="placeQuantities.find(q => q.key == place.key)"
+          @change-value="filterPlace" />
+      </div>
+    </section>
     <!-- Modal Polaroid -->
     <transition name="fade" mode="out-in">
-      <iro-modal v-if="polaroidShown" :photo="nowPolaroid"
-      @show-prev="showPrev" @show-next="showNext" @close-modal="polaroidShown = false"></iro-modal>
+      <iro-modal
+        v-if="polaroidShown"
+        :photo="nowPolaroid"
+        @show-prev="showPrev"
+        @show-next="showNext"
+        @close-modal="polaroidShown = false" />
     </transition>
     <!-- Bookmark -->
-    <bookmark
-      class="position-fixed top-0 d-flex align-items-center gap-1"
-    ></bookmark>
+    <bookmark class="position-fixed top-0 d-flex align-items-center gap-1" />
     <!-- Nav -->
-    <navigator></navigator>
+    <navigator />
   </div>
 </template>
 
 <style scoped>
 h1 {
   font-size: 36px;
+}
+
+.overlay {
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1040;
+  opacity: 0;
+}
+
+.overlay.show {
+  opacity: .5;
+  pointer-events: auto;
+}
+
+.controller-panel {
+  z-index: 1040;
+  transform: translateX(100%);
+  transition: transform .3s ease-out;
+}
+
+.controller-panel.show {
+  transform: translateX(0);
 }
 
 .anim-line-h {

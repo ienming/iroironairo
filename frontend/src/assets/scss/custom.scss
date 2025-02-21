@@ -61,6 +61,10 @@ $utilities: map-merge($utilities, $custom_utilities);
     font-family: 'Noto Sans JP', sans-serif;
 }
 
+.fs-small {
+    font-size: 14px;
+}
+
 .bg-silver{
     background-color: $silver;
 }
