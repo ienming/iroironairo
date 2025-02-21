@@ -11,16 +11,10 @@ import Navigator from "@/components/Navigator.vue";
                         <h2 class="fs-6">iroironairo</h2>
                         <h1 class="fw-semibold mt-2 mb-3 d-flex align-items-center gap-1">
                             <span>色々な色</span>
-                            <img src="/favicon.png" alt="logo">
+                            <img
+                                src="/favicon.png"
+                                alt="logo" />
                         </h1>
-                        <h3
-                        class="d-flex flex-grow align-items-center opacity-50"
-                        style="font-size: 14px"
-                        >
-                        <span>2022.09.28</span>
-                        <div style="height: 1px" class="w-100 bg-dark mx-2"></div>
-                        <span>2023.03.24</span>
-                        </h3>
                     </div>
                 </section>
                 <section class="col-12 col-lg-6">
@@ -33,27 +27,25 @@ import Navigator from "@/components/Navigator.vue";
                     <p>
                         透過萃取照片中的顏色並整理後，它們呈現我在那段時間生活、旅遊、第一次在異國長時間居住時，所看見與自己背景文化的差異。也代表我關注、喜歡，且一直注視的那些重複的主題和色彩，並以此構成我的經驗與記憶。
                     </p>
-                    <a class="txt-lang-hover link-dark link-offset-2"
-                    target="_blank"
-                    href="https://www.behance.net/gallery/186477055/-iroironairo">
-                        <div class="txt-lang-container">
-                            <span>專案過程
-                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                            </span>
-                            <span>プロセス
-                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                            </span>
-                        </div>
-                    </a>
-                    <p class="text-end" style="font-size: 12px;">
+                    <p
+                        class="text-end mt-8"
+                        style="font-size: 12px;">
                         Copyright © 2023 Lucien Hsieh
                     </p>
                 </section>
             </section>
         </section>
         <!-- Bookmark -->
-        <bookmark class="position-fixed top-0 d-flex align-items-center gap-1"></bookmark>
+        <bookmark class="position-fixed top-0 d-flex align-items-center gap-1" />
         <!-- Nav -->
-        <navigator></navigator>
+        <navigator />
     </main>
 </template>
+
+<style scoped>
+.txt-lang-container i {
+    font-size: 12px;
+    padding-left: 4px;
+    opacity: 0.85;
+}
+</style>
