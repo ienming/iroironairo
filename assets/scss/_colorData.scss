@@ -1,0 +1,25 @@
+.color-data {
+  transition: all .2s ease-out;
+
+  &:hover {
+    width: 90px !important;
+    &::after {
+      transform: scale(1);
+    }
+  }
+
+  &::after {
+    display: block;
+    content: attr(data-place);
+    position: absolute;
+    top: 12px;
+    padding: 8px;
+    border-radius: 25px;
+    font-size: 14px;
+    width: max-content;
+    z-index: 99;
+    transform-origin: center;
+    transform: scale(0);
+    background-color: #fff;
+  }
+}

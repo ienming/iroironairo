@@ -1,0 +1,25 @@
+import { createRouter, createWebHashHistory } from "vue-router";
+import UserStage from "./views/user/Stage.vue";
+import AllPhotos from "./views/user/AllPhotos.vue";
+import ColorSearch from "./views/user/ColorSearch.vue";
+import SinglePhotoView from "./views/user/SinglePhotoView.vue";
+import About from "./views/user/About.vue";
+import OperatorIndex from "./views/Operator/index.vue";
+import OperatorEdit from "./views/Operator/edit.vue";
+
+const routes = [
+  { path: "/", component: UserStage },
+  { path: "/all", component: AllPhotos },
+  { path: "/color_search", component: ColorSearch },
+  { path: "/single_photo_view", component: SinglePhotoView },
+  { path: "/about", component: About },
+  { path: "/operator", component: OperatorIndex },
+  { path: "/operator_edit", component: OperatorEdit },
+];
+
+const router = createRouter({
+  history: createWebHashHistory("/iroironairo/"),
+  routes,
+});
+
+export default router;
