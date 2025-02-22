@@ -547,7 +547,7 @@ function initTooltip() {
 onMounted(() => {
   window.setInterval(() => {
     lotteryPhoto();
-  }, 15000);
+  }, 30000);
 
   watch(dataFiltered, (newValue, oldValue) => {
     lotteryPhoto();
