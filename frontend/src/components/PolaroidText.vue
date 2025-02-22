@@ -88,7 +88,7 @@ function viewSinglePhoto(photo){
         <p class="d-flex gap-2 flex-wrap">
           <div
             v-for="place of photo.places"
-            class="px-2 py-1 rounded-pill transition txt-lang-hover"
+            class="px-2 py-1 transition txt-lang-hover place-toggle-btn"
             role="button"
             :style="bgStyle"
             @click="searchByPlace(place)">
@@ -130,6 +130,10 @@ function viewSinglePhoto(photo){
 </template>
 
 <style scoped>
+.place-toggle-btn {
+  border-radius: 4px;
+}
+
 @media screen and (min-width: 992px) {
   #Sec_text{
     width: 30vw !important;

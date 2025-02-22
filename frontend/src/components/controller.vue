@@ -1,14 +1,10 @@
 <script setup>
 import { watch, ref, onMounted } from 'vue';
-const props = defineProps(['theme', 'autoPlaying', 'timeLeft'])
+const props = defineProps(['theme', 'isAutoPlay', 'timeLeft'])
 const emit = defineEmits(['show-next', 'show-prev', 'start-playing', 'stop-playing', 'shuffle'])
 
 const controllerEl = ref(null)
-const hoveringStop = ref(false)
-
-function toggleStop(){
-    hoveringStop.value = !hoveringStop.value
-}
+const isHoveringStopBtn = ref(false)
 
 watch(props, (oldValue, newValue)=>{
     let newStyle = newValue.theme
@@ -38,24 +34,33 @@ onMounted(()=>{
             <button class="luc-controller" @click="emit('shuffle')">
                 <i class="fa-solid fa-shuffle"></i>
             </button>
-            <button class="luc-controller" @click="emit('start-playing')"
-            v-if="!autoPlaying">
-                <i class="fa-solid fa-play"></i>
+            <button
+                v-if="isAutoPlay"
+                class="luc-controller"
+                @click="emit('stop-playing'); console.log('stop-playing');"
+                @mouseenter="isHoveringStopBtn = true"
+                @mouseleave="isHoveringStopBtn = false">
+                <span v-if="!isHoveringStopBtn">{{ timeLeft }}</span>
+                <i v-else 
+                    class="fa-solid fa-stop" />
             </button>
-            <button class="luc-controller" @click="emit('stop-playing')"
-            @mouseenter="toggleStop"
-            @mouseleave="toggleStop"
-            v-else>
-                <span v-if="!hoveringStop">{{ timeLeft }}</span>
-                <i class="fa-solid fa-stop" v-else></i>
+            <button
+                v-else
+                class="luc-controller"
+                @click="emit('start-playing')">
+                <i class="fa-solid fa-play" />
             </button>
         </div>
         <div class="d-flex flex-row flex-lg-column px-2 py-2 py-lg-0 gap-4 gap-lg-3">
-            <button class="luc-controller" @click="emit('show-prev')">
-                <i class="fa-solid fa-arrow-left"></i>
+            <button
+                class="luc-controller"
+                @click="emit('show-prev')">
+                <i class="fa-solid fa-arrow-left" />
             </button>
-            <button class="luc-controller" @click="emit('show-next')">
-                <i class="fa-solid fa-arrow-right"></i>
+            <button
+                class="luc-controller"
+                @click="emit('show-next')">
+                <i class="fa-solid fa-arrow-right" />
             </button>
         </div>
     </section>

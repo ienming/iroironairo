@@ -1,6 +1,6 @@
 .color-swatch {
     background: $white;
-    border-radius: 8px;
+    border-radius: 4px;
     color: $gray-900;
     padding: 10px !important;
     display: flex;
@@ -10,7 +10,7 @@
     justify-content: center;
     max-width: 140px;
     >div{
-        border-radius: 8px;
+        border-radius: 4px;
         min-height: 52px;
         width: 100%;
         position: relative;

@@ -7,7 +7,6 @@ import Navigator from '@/components/Navigator.vue';
 import Polaroid from '../../components/Polaroid.vue';
 import PolaroidText from '../../components/PolaroidText.vue';
 
-const imgLoaded = ref(false)
 const data = inject('csvData', [])
 const nowHeroIndex = ref(0)
 const heroData = computed(()=>{
@@ -22,11 +21,6 @@ const bodyBgColor = computed(()=>{
 const bodyTextColor = computed(()=>{
   return getReverseColor(bodyBgColor.value)
 })
-
-// 重設圖片載入狀態，已顯示 spinner
-function resetImgLoaded(){
-  imgLoaded.value = false
-}
 
 // 依照時間排列
 const reorderData = computed(() => {
@@ -64,7 +58,6 @@ const backgroundStyleReverse = computed(() => {
 
 // 控制
 function showNext(){
-  resetImgLoaded()
   if (nowHeroIndex.value == reorderData.value.length-1){
     nowHeroIndex.value = 0
   }else{
@@ -73,7 +66,6 @@ function showNext(){
 }
 
 function showPrev(){
-  resetImgLoaded()
   if (nowHeroIndex.value == 0){
     nowHeroIndex.value = reorderData.value.length-1
   }else{
@@ -82,26 +74,27 @@ function showPrev(){
 }
 
 // 自動播放
-let timer
-const autoPlaying = ref(false)
-const timeLeft = ref(10)
+let timer;
+const CHANGE_INTERVAL = 15;
+const isAutoPlay = ref(false);
+const timeLeft = ref(CHANGE_INTERVAL);
 
 function startPlaying(){
-  autoPlaying.value = true
-  timer = window.setInterval(()=>{
+  isAutoPlay.value = true;
+
+  timer = setInterval(()=>{
     if (timeLeft.value >= 1){
-      timeLeft.value --
+      timeLeft.value --;
     }else{
-      showNext()
-      timeLeft.value = 10
+      showNext();
+      timeLeft.value = CHANGE_INTERVAL;
     }
   }, 1000)
 }
 
 function stopPlaying(){
-  autoPlaying.value = false
-  timeLeft.value = 10
-  clearInterval(timer)
+  isAutoPlay.value = false;
+  clearInterval(timer);
 }
 
 // 隨機排序
@@ -121,24 +114,34 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <main v-if="heroData" :style="backgroundStyle" class="transition">
-    <section class="container min-vh-100 d-flex flex-column flex-lg-row align-items-center justify-content-start justify-content-lg-center gap-4 gap-lg-5 position-relative pt-5 pb-8 pb-lg-5">
-      <polaroid :photo="heroData" :photo-loaded="imgLoaded" :bg-style="backgroundStyle"></polaroid>
-      <polaroid-text :photo="heroData" :bg-style="backgroundStyleReverse"></polaroid-text>
+  <main
+    v-if="heroData"
+    class="transition"
+    :style="backgroundStyle">
+    <section
+      class="container min-vh-100 d-flex flex-column flex-lg-row align-items-center justify-content-start justify-content-lg-center gap-4 gap-lg-5 position-relative pt-5 pb-8 pb-lg-5">
+      <polaroid
+        :photo="heroData"
+        :bg-style="backgroundStyle" />
+      <polaroid-text
+        :photo="heroData"
+        :bg-style="backgroundStyleReverse" />
     </section>
     <!-- Controller -->
-    <controller :theme="backgroundStyle"
-      :auto-playing="autoPlaying"
+    <controller
+      :theme="backgroundStyle"
+      :is-auto-play="isAutoPlay"
       :time-left="timeLeft"
       @start-playing="startPlaying"
       @stop-playing="stopPlaying"
       @show-next="showNext"
       @show-prev="showPrev"
-      @shuffle="shuffle"></controller>
+      @shuffle="shuffle" />
     <!-- Bookmark -->
-    <bookmark :theme="backgroundStyle"
-    class="position-fixed top-0 d-flex align-items-center gap-1"></bookmark>
+    <bookmark
+      :theme="backgroundStyle"
+      class="position-fixed top-0 d-flex align-items-center gap-1" />
     <!-- Nav -->
-    <navigator :theme="backgroundStyle"></navigator>
+    <navigator :theme="backgroundStyle" />
   </main>
 </template>

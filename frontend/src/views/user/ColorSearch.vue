@@ -205,7 +205,7 @@ onBeforeRouteUpdate((to, from) => {
 onMounted(()=>{
   window.setInterval(() => {
     lotteryPhoto();
-  }, 15000);
+  }, 60000);
 
   lotteryPhoto()
 })
