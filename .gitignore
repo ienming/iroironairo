@@ -8,3 +8,5 @@ frontend/src/assets/photos
 frontend/dist
 backend/env/
 .vscode
+
+data-backup/*
