@@ -92,7 +92,6 @@ export default {
             }
           }
         })
-        console.log("讀取 CSV")
       })
       .catch((error) => {
         console.error(error);
@@ -173,7 +172,6 @@ export default {
     },
     onBeforeLeave(){
       // console.log("--------Before leave transition--------")
-      // console.log("切換分頁時執行")
       const el = this.$refs.container
       gsap.set(el, {
         'z-index': 1040

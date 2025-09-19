@@ -1,5 +1,5 @@
 <script setup>
-import { watch, onMounted, ref } from 'vue';
+import { watch, ref } from 'vue';
 const props = defineProps(['photo', 'bgStyle']);
 
 const isLoading = ref(true);
@@ -9,10 +9,6 @@ watch(() => props.photo, (newPhoto, oldPhoto) => {
     isLoading.value = true;
   }
 });
-
-function hi() {
-  isLoading.value = false;
-}
 </script>
 
 <template>
@@ -22,18 +18,20 @@ function hi() {
             v-show="isLoading"
             class="d-flex justify-content-center align-items-center">
             <div
-              class="spinner-border"
-              role="status" />
+              role="status"
+              class="spinner-border opacity-25" />
           </div>
-          <div
-            v-show="!isLoading"
-            class="overflow-hidden">
-            <img
-              :src="photo.url_google"
-              :onload="isLoading = false"
-              class="w-100 h-100 object-fit-cover"
-              style="object-position: center;">
-          </div>
+          <transition name="fade">
+            <div
+              v-show="!isLoading"
+              class="overflow-hidden">
+              <img
+                :src="photo.url_google"
+                class="w-100 h-100 object-fit-cover"
+                style="object-position: center;"
+                @load="isLoading = false">
+            </div>
+          </transition>
         </div>
         <div>
           <p

@@ -122,7 +122,6 @@ const script = function (p5) {
         });
         break;
     }
-    console.log("reorder")
     // console.log(cs);
   }
 
@@ -177,7 +176,7 @@ const script = function (p5) {
     }
 
     let compareIndex = 0, finishMerge = false;
-    console.log(mainCs.length)
+    // console.log(mainCs.length)
     // while (!finishMerge){
     //   let compareTarget = mainCs[compareIndex]
     //   console.log(mainCs.length)
@@ -228,8 +227,6 @@ const script = function (p5) {
       mainCs.length = 3
     }
 
-    console.log('find main colors')
-    console.log(mainCs)
     emit('main-colors-handler', mainCs)
   }
 };

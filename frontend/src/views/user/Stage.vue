@@ -7,32 +7,28 @@ import Navigator from '@/components/Navigator.vue';
 import Polaroid from '../../components/Polaroid.vue';
 import PolaroidText from '../../components/PolaroidText.vue';
 
-const data = inject('csvData', [])
-const nowHeroIndex = ref(0)
+const data = inject('csvData', []);
+const nowHeroIndex = ref(0);
 const heroData = computed(()=>{
-  return reorderData.value[nowHeroIndex.value]
+  return orderedData.value[nowHeroIndex.value];
 })
 const bodyBgColor = computed(()=>{
   if (heroData.value){
-    return heroData.value.main_color
+    return heroData.value.main_color;
   }
-  return {}
+  return {};
 })
 const bodyTextColor = computed(()=>{
-  return getReverseColor(bodyBgColor.value)
+  return getReverseColor(bodyBgColor.value);
 })
 
 // 依照時間排列
-const reorderData = computed(() => {
-  // 測試時先篩選出確定有顏色的
-  if (shuffleNum.value){
-    return data.value.filter(d => d['main_color']).sort(() => Math.random() - shuffleNum.value)
-  }else{
-    return data.value.filter(d => d['main_color']).sort(
-      (a, b) => {
-        return new Date(a.iso_date.slice(0, -1)) - new Date(b.iso_date.slice(0, -1))
-      })
-  }
+const orderedData = computed(() => {
+  return data.value
+    .filter(d => d['main_color'])
+    .sort((a, b) => {
+      return new Date(a.iso_date.slice(0, -1)) - new Date(b.iso_date.slice(0, -1));
+    });
 })
 
 // 依照照片設定背景色和文字顏色
@@ -43,7 +39,7 @@ const backgroundStyle = computed(() => {
       color: `hsl(${bodyTextColor.value.h},${bodyTextColor.value.s}%,${bodyTextColor.value.l}%)`,
     };
   }
-  return {}
+  return {};
 })
 
 const backgroundStyleReverse = computed(() => {
@@ -53,23 +49,23 @@ const backgroundStyleReverse = computed(() => {
       color: `hsl(${bodyBgColor.value.h},${bodyBgColor.value.s}%,${bodyBgColor.value.l}%)`,
     };
   }
-  return {}
+  return {};
 })
 
 // 控制
 function showNext(){
-  if (nowHeroIndex.value == reorderData.value.length-1){
-    nowHeroIndex.value = 0
-  }else{
-    nowHeroIndex.value++
+  if (nowHeroIndex.value == orderedData.value.length - 1){
+    nowHeroIndex.value = 0;
+  } else {
+    nowHeroIndex.value ++;
   }
 }
 
 function showPrev(){
   if (nowHeroIndex.value == 0){
-    nowHeroIndex.value = reorderData.value.length-1
-  }else{
-    nowHeroIndex.value --
+    nowHeroIndex.value = orderedData.value.length - 1;
+  } else {
+    nowHeroIndex.value --;
   }
 }
 
@@ -82,14 +78,14 @@ const timeLeft = ref(CHANGE_INTERVAL);
 function startPlaying(){
   isAutoPlay.value = true;
 
-  timer = setInterval(()=>{
+  timer = setInterval(() => {
     if (timeLeft.value >= 1){
       timeLeft.value --;
-    }else{
+    } else {
       showNext();
       timeLeft.value = CHANGE_INTERVAL;
     }
-  }, 1000)
+  }, 1000);
 }
 
 function stopPlaying(){
@@ -97,19 +93,16 @@ function stopPlaying(){
   clearInterval(timer);
 }
 
-// 隨機排序
-const shuffleNum = ref(undefined)
 function shuffle() {
-  resetImgLoaded()
-  shuffleNum.value = Math.random()
+  nowHeroIndex.value = Math.round(orderedData.value.length * Math.random());
 }
 
 onMounted(() => {
-  startPlaying()
+  startPlaying();
 })
 
 onBeforeUnmount(() => {
-  clearInterval(timer)
+  clearInterval(timer);
 })
 </script>
 

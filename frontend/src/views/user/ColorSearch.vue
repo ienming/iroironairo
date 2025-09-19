@@ -6,6 +6,7 @@ import { diff } from "color-diff";
 import Bookmark from "@/components/Bookmark.vue";
 import Navigator from "@/components/Navigator.vue";
 import IroModal from "@/components/IroModal.vue";
+import { getReverseColor } from "../../composable/common";
 
 const route = useRoute();
 const data = inject("csvData", []);
@@ -15,16 +16,29 @@ const colorHsl = computed(() => {
     return JSON.parse(route.query.color);
   }else return
 });
+
 const colorHex = computed(() => {
   if (colorHsl.value){
     return hsl2Hex(colorHsl.value.h, colorHsl.value.s, colorHsl.value.l);
   }else return
 });
+
 const colorRgb = computed(() => {
   if (colorHex.value){
     return hex2Rgb(colorHex.value);
   }else return
 });
+
+const colorSwatchStyle = computed(() => {
+  if (colorHsl) {
+    const output = getReverseColor(colorHsl.value);
+    return {
+      backgroundColor: `hsl(${colorHsl.value.h},${colorHsl.value.s}%,${colorHsl.value.l}%)`,
+      color: `hsl(${output.h},${output.s}%,${output.l}%)`,
+    };
+  }
+  return '';
+})
 
 function colorDifference(color1, color2) {
   let result = diff(color1, color2);
@@ -72,33 +86,22 @@ const hasData = computed(()=>{
 })
 
 // Random photo
-const randomPhotoLoaded = ref(false)
+const isRandomPhotoLoaded = ref(false)
 const randomIndex = ref(0)
 const randomPhoto = computed(()=>{
   if (hasData.value){
     return dataFiltered.value[randomIndex.value]
   }
 })
-const randomPhotoColor = computed(()=>{
-  if (randomPhoto.value){
-    return hsl2Hex(
-      randomPhoto.value.colors[0].h,
-      randomPhoto.value.colors[0].s,
-      randomPhoto.value.colors[0].l
-    )
-  }
-})
 function lotteryPhoto(){
   if (hasData.value){
-    randomPhotoLoaded.value = false
+    isRandomPhotoLoaded.value = false
     const maxIndex = dataFiltered.value.length - 1;
     randomIndex.value = Math.floor(Math.random() * (maxIndex + 1));
   }
 }
-const randomPhotoEl = ref(null)
-function loadRandomPhoto(){
-  randomPhotoLoaded.value = true;
-}
+const randomPhotoEl = ref(null);
+const isRandomPhotoError = ref(false);
 
 // 月份分群
 const months = [
@@ -229,12 +232,11 @@ onMounted(()=>{
                 dataFiltered.length + "張 / " + data.length + "張照片"
               }}</span>
             </div>
-          </div>  
-          <div class="bg-white rounded-3 ms-0 shadow-lg overflow-hidden row col-12 col-lg-4">
+          </div>
+          <div class="col-12 col-lg-4">
             <div
-              :style="{ 'background-color': colorHex }"
-              class="mb-lg-0 col-lg-6 color-searched" />
-            <div class="col-lg-6 py-1 py-lg-3">
+              class="rounded-3 ms-0 shadow-lg p-2 fs-small"
+              :style="colorSwatchStyle">
               <p class="mb-1">{{ colorHex }}</p>
               <p class="mb-1">
                 {{ "RGB: " + colorRgb.r + ", " + colorRgb.g + ", " + colorRgb.b }}
@@ -267,12 +269,13 @@ onMounted(()=>{
             :src="randomPhoto.url_google"
             style="width: 1px;"
             class="position-absolute"
-            @load="loadRandomPhoto">
+            @load="isRandomPhotoLoaded = true"
+            @error="isRandomPhotoError = true">
           <transition
             name="fade"
             mode="out-in">
             <section
-              v-if="randomPhotoLoaded">
+              v-if="isRandomPhotoLoaded">
               <div class="random-photo-container">
                 <img
                   ref="randomPhotoEl"
@@ -298,20 +301,38 @@ onMounted(()=>{
                 <p>{{ randomPhoto.description }}</p>
               </div>
             </section>
+            <section v-else-if="isRandomPhotoError">
+              <div class="d-flex flex-column justify-content-center align-items-center loading-container">
+                <p>找不到照片</p>
+                <p>写真が見つからない</p>
+              </div>
+            </section>
+            <section v-else>
+              <div class="d-flex justify-content-center align-items-center loading-container">
+                  <div
+                    role="status"
+                    class="spinner-border" />
+                </div>
+            </section>
           </transition>
         </div>
       </section>
       <!-- Data viz -->
       <section class="ps-4 ps-lg-0 pb-8 overflow-x-scroll">
         <div>
-            <div class="d-flex gap-2 py-4 border-top border-bottom mb-3">
-                <div class="d-flex gap-1 align-items-center">
-                  <div style="width: 15px; height: 15px;" class="rounded-pill bg-dark opacity-25"></div>
-                  <span>關西地區</span>
+            <div class="d-flex flex-column gap-3 py-4 border-top border-bottom mb-3">
+                <div class="d-flex gap-2">
+                  <div class="d-flex gap-1 align-items-center">
+                    <div style="width: 15px; height: 15px;" class="rounded-pill bg-dark opacity-25"></div>
+                    <span>關西地區</span>
+                  </div>
+                  <div class="d-flex gap-1 align-items-center">
+                    <div style="width: 15px; height: 15px;" class="bg-dark opacity-25"></div>
+                    <span>非關西地區</span>
+                  </div>
                 </div>
-                <div class="d-flex gap-1 align-items-center">
-                  <div style="width: 15px; height: 15px;" class="bg-dark opacity-25"></div>
-                  <span>非關西地區</span>
+                <div class="fs-small">
+                  由於住在神戶，所以大部分生活照在關西地區，非關西地區則是出去旅遊的照片。
                 </div>
             </div>
             <section v-for="month of months" class="mb-3">
@@ -389,14 +410,6 @@ onMounted(()=>{
 </template>
 
 <style scoped>
-.color-searched{
-  height: 80px;
-}
-@media screen and (min-width: 992px) {
-  .color-searched{
-    height: unset;
-  }
-}
 .color-data {
   --size: 30px;
   width: var(--size);
@@ -437,5 +450,10 @@ onMounted(()=>{
   .grid-layout {
     grid-template-columns: minmax(50vw, 700px) auto;
   }
+}
+
+.loading-container {
+  min-height: 50vh;
+  opacity: 0.5;
 }
 </style>
