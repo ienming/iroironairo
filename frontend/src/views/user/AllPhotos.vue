@@ -504,49 +504,54 @@ onMounted(() => {
   <div class="min-vh-100 bg-silver">
     <section>
       <div class="d-flex">
-        <div v-if="randomPhotos.length > 2" id="randomPhoto_3">
-          <img
-            ref="randomPhoto_3"
-            :src="randomPhotos[2].url_google"
-            class="d-none"
-            @load="randomPhotoLoaded('3')"
-          />
-          <transition name="fade" mode="out-in">
+        <div style="height: 33vh;">
+          <div
+            id="randomPhoto_3"
+            v-if="randomPhotos.length > 2">
             <img
-              v-if="randomPhotoStatus['3']"
+              ref="randomPhoto_3"
               :src="randomPhotos[2].url_google"
-              alt=""
-              style="width: auto; height: 25vh"
-              class="random-photo"
-            />
-            <div
-              v-else
-              style="height: 25vh; width: 18.75vh"
-              :style="{
-                'background-color': hsl2Hex(
-                  randomPhotos[2].colors[0].h,
-                  randomPhotos[2].colors[0].s,
-                  randomPhotos[2].colors[0].l
-                ),
-              }"
-            ></div>
-          </transition>
+              class="d-none"
+              @load="randomPhotoLoaded('3')" />
+            <transition
+              name="fade"
+              mode="out-in">
+              <img
+                v-if="randomPhotoStatus['3']"
+                alt=""
+                class="random-photo"
+                :src="randomPhotos[2].url_google" />
+              <div
+                v-else
+                :style="{
+                  'background-color': hsl2Hex(
+                    randomPhotos[2].colors[0].h,
+                    randomPhotos[2].colors[0].s,
+                    randomPhotos[2].colors[0].l
+                  ),
+                }"
+                class="random-photo" />
+            </transition>
+          </div>
         </div>
-        <div v-if="randomPhotos.length > 0" class="d-none d-lg-block" id="randomPhoto_1">
+        <div
+          id="randomPhoto_1"
+          v-if="randomPhotos.length > 0"
+          class="d-none d-lg-block">
           <img
             ref="randomPhoto_1"
-            :src="randomPhotos[0].url_google"
             class="d-none"
-            @load="randomPhotoLoaded('1')"
-          />
-          <transition name="fade" mode="out-in">
+            :src="randomPhotos[0].url_google"
+            @load="randomPhotoLoaded('1')" />
+          <transition
+            name="fade"
+            mode="out-in">
             <img
               v-if="randomPhotoStatus['1']"
-              :src="randomPhotos[0].url_google"
               alt=""
               style="width: auto; height: 25vh"
               class="random-photo"
-            />
+              :src="randomPhotos[0].url_google" />
             <div
               v-else
               style="height: 25vh; width: 18.75vh"
@@ -556,8 +561,7 @@ onMounted(() => {
                   randomPhotos[0].colors[0].s,
                   randomPhotos[0].colors[0].l
                 ),
-              }"
-            ></div>
+              }" />
           </transition>
         </div>
       </div>
@@ -566,6 +570,7 @@ onMounted(() => {
       <section
         ref="showCaseDiv"
         class="pt-6 ps-6 d-flex justify-content-start overflow-scroll"
+        style="height: 33vh"
         @wheel.prevent="horizontalScroll"
         @mouseover="hoveringShowCase = true"
         @mouseleave="reAnimateShowCase" >
@@ -575,8 +580,7 @@ onMounted(() => {
             :key="id">
             <div
               v-if="d.type == 'monthTag'"
-              style="height: 25vh"
-              class="ff-serif position-relative">
+              class="ff-serif position-relative h-100">
               <p
                 class="bg-silver p-1 m-0 position-absolute"
                 style="top: -60px">
@@ -587,8 +591,7 @@ onMounted(() => {
             <div
               v-else
               role="button"
-              style="height: 25vh"
-              class="position-relative color-data"
+              class="position-relative color-data h-100"
               :style="{
                 'background-color': hsl2Hex(
                   d.main_color.h,
@@ -685,9 +688,7 @@ onMounted(() => {
         {{ dataFiltered.filter((d) => d["_id"]).length }} 張 /
         {{ data.length }} 張照片
       </span>
-      <div
-        v-if="dataFiltered.length"
-        class="d-flex flex-wrap gap-3">
+      <div class="d-flex flex-wrap gap-3">
         <selection
           class="w-100"
           label="拍攝月份"
@@ -773,7 +774,8 @@ h1 {
 }
 
 .random-photo {
-  width: 105px;
+  width: auto;
+  max-height: 25vh;
   overflow: hidden;
 }
 
